@@ -1,29 +1,26 @@
 {
   "name": "based-boilerplate",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "Boilerplate for Based.io apps",
   "license": "MIT",
   "main": "dist/server/index.js",
-  "scripts": {
-    "start": "port=3030 && node dist/server/index.js",
-    "dev": "aristotle watch -t src/index.tsx -p 3030",
-    "build": "aristotle build -t src/index.tsx -d dist",
-    "postbuild": "cd ./dist && npm install --production"
-  },
+  "scripts": {},
   "prettier": "@saulx/prettier-config",
   "eslintConfig": {
     "extends": "@saulx/eslint-config"
   },
   "dependencies": {
-    "@based/client": "^3.3.0",
-    "@based/react": "^4.1.0"
+    "@based/client": "4.7.3",
+    "@based/react": "^4.3.1",
+    "@based/ui": "^5.10.1"
   },
   "devDependencies": {
-    "@based/cli": "^3.0.0",
-    "@saulx/aristotle": "^4.5.0",
+    "@based/cli": "5.2.4",
+    "@saulx/eslint-config": "^1.1.1",
+    "@saulx/prettier-config": "^1.0.0",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
-    "@saulx/eslint-config": "^1.1.1",
-    "@saulx/prettier-config": "^1.0.0"
+    "react": "18",
+    "react-dom": "18"
   }
 }
