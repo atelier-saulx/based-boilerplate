@@ -4,18 +4,20 @@
   "description": "Boilerplate for Based.io apps",
   "license": "MIT",
   "main": "dist/server/index.js",
-  "scripts": {},
+  "scripts": {
+    "zip": "rm -f latest.zip && zip -r latest.zip * -x node_modules/\\* -x package-lock.json"
+  },
   "prettier": "@saulx/prettier-config",
   "eslintConfig": {
     "extends": "@saulx/eslint-config"
   },
   "dependencies": {
-    "@based/client": "4.7.3",
-    "@based/react": "^4.3.1",
-    "@based/ui": "^5.10.1"
+    "@based/client": "^4.7.6",
+    "@based/react": "^4.4.0",
+    "@based/ui": "^5.10.14"
   },
   "devDependencies": {
-    "@based/cli": "5.2.4",
+    "@based/cli": "^5.3.0",
     "@saulx/eslint-config": "^1.1.1",
     "@saulx/prettier-config": "^1.0.0",
     "@types/react": "^18.0.25",
