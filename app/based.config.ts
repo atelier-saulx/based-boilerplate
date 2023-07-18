@@ -1,7 +1,7 @@
 export default {
   type: 'app',
-  name: 'demo',
+  name: 'app',
   public: true,
-  main: './src/index.tsx',
+  main: './index.tsx',
   path: '/',
 }
