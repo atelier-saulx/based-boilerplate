@@ -7,8 +7,7 @@ import basedConfig from '../based.json'
 export const client = based(basedConfig)
 
 const App = () => {
-  const { data: counter, loading, error } = useQuery('counter')
-  console.log({ counter, loading, error })
+  const { data: counter, loading } = useQuery('counter')
   return (
     <div
       style={{
