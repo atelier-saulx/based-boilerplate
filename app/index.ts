@@ -1,4 +1,8 @@
-export default async (based, { css, js, favicon }, ctx) => {
+import { BasedAppFunction } from '@based/functions'
+
+// Functions of type 'app' are specialized to
+// bundle and serve frontend applications
+const app: BasedAppFunction = async (_based, { css, js, favicon }, _ctx) => {
   return /* HTML */ `<!DOCTYPE html>
     <html lang="en">
       <head>
@@ -9,6 +13,7 @@ export default async (based, { css, js, favicon }, ctx) => {
         />
         <meta name="title" content="based.io" />
         <title>based.io</title>
+        <link rel="icon" type="image/x-icon" href="${favicon}" />
         <style>
           ${await css.text}
         </style>
@@ -21,3 +26,4 @@ export default async (based, { css, js, favicon }, ctx) => {
       </body>
     </html>`
 }
+export default app

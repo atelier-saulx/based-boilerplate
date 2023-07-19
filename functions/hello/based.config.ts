@@ -1,10 +1,7 @@
 import { BasedFunctionConfig } from '@based/functions'
 
 const config: BasedFunctionConfig = {
-  type: 'app',
-  name: 'app',
-  public: true,
-  main: './app.tsx',
-  path: '/',
+  name: 'hello',
+  type: 'function',
 }
 export default config

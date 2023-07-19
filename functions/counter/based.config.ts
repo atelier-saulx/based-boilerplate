@@ -1,10 +1,8 @@
 import { BasedFunctionConfig } from '@based/functions'
 
 const config: BasedFunctionConfig = {
-  type: 'app',
-  name: 'app',
+  name: 'counter',
+  type: 'query',
   public: true,
-  main: './app.tsx',
-  path: '/',
 }
 export default config
