@@ -6,5 +6,6 @@ const config: BasedFunctionConfig = {
   public: true,
   main: './app.tsx',
   path: '/',
+  favicon: './favicon.ico',
 }
 export default config

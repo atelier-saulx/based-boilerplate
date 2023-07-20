@@ -11,9 +11,9 @@ const app: BasedAppFunction = async (_based, { css, js, favicon }, _ctx) => {
           name="viewport"
           content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover"
         />
-        <meta name="title" content="based.io" />
-        <title>based.io</title>
-        <link rel="icon" type="image/x-icon" href="${favicon}" />
+        <meta name="title" content="_project_title_" />
+        <title>_project_title_</title>
+        <link rel="icon" type="image/x-icon" href="${favicon.url}" />
         <style>
           ${await css.text}
         </style>
