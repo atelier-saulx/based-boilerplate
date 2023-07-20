@@ -1,13 +1,13 @@
 import React from 'react'
 import { render } from 'react-dom'
-// import based from '@based/client'
+import based from '@based/client'
+import { Provider, useQuery } from '@based/react'
 
-// Don't forget to edit your based.json file with your project info
-//
-// import basedConfig from '../based.json'
-// export const client = based(basedConfig)
+import basedConfig from '../based.json'
+export const client = based(basedConfig)
 
 const App = () => {
+  const { data: counter, loading } = useQuery('counter')
   return (
     <div
       style={{
@@ -35,10 +35,15 @@ const App = () => {
           fontSize: '20pt',
         }}
       >
-        Hello World!
+        Hello World! {loading ? '-' : counter}
       </h2>
     </div>
   )
 }
 
-render(<App />, document.body)
+render(
+  <Provider client={client}>
+    <App />
+  </Provider>,
+  document.body
+)
