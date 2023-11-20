@@ -1,5 +1,5 @@
 {
-  "org": "<your_org_name>",
-  "project": "<your_project_name>",
-  "env": "<your_env_name>"
+  "org": "pizzatime",
+  "project": "pizzatime",
+  "env": "production"
 }
