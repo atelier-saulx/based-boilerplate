@@ -15,8 +15,14 @@
   },
   "dependencies": {
     "@based/client": "^4.7.6",
-    "@based/react": "^4.4.0",
-    "@based/ui": "^5.10.14"
+    "@based/pretty-date": "^1.0.4",
+    "@based/react": "^4.6.1",
+    "@based/ui": "0.1.112-v2",
+    "@dnd-kit/sortable": "^8.0.0",
+    "@saulx/crypto": "^1.0.0",
+    "inlines": "^0.2.2",
+    "kabouter": "^1.4.6",
+    "postmark": "^3.11.0"
   },
   "devDependencies": {
     "@based/cli": "^5.5.3",

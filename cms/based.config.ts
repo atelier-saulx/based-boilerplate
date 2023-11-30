@@ -2,10 +2,10 @@ import { BasedFunctionConfig } from '@based/functions'
 
 const config: BasedFunctionConfig = {
   type: 'app',
-  name: 'app',
+  name: 'cms',
   public: true,
   main: './App.tsx',
-  path: '/',
+  path: '/cms',
   favicon: './favicon.ico',
 }
 export default config

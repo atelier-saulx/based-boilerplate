@@ -6,6 +6,9 @@ export default {
     },
     user: {
       prefix: 'us',
+      fields: {
+        currentToken: { type: 'string' },
+      },
     },
   },
 }
