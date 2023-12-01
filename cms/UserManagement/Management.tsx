@@ -195,7 +195,7 @@ export const Management = () => {
                         },
                       }}
                       alwaysAccept
-                      onChange={(v) => setUserValues(v)}
+                      onChange={(v) => setUserValues({ ...userValues, ...v })}
                     />
                   </Modal.Body>
                   <Modal.Actions>
