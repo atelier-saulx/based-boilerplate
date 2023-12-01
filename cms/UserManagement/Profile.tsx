@@ -26,7 +26,7 @@ export const Profile = () => {
       setPic(data.profileImg)
     }
   }, [data])
-  console.log(data)
+  console.log(authState)
 
   return (
     <styled.div

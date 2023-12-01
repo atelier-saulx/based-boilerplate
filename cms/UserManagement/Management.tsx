@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { styled } from 'inlines'
 import {
+  Avatar,
   Button,
   Dropdown,
   FormGroup,
@@ -28,6 +29,7 @@ export const Management = () => {
       id: true,
       email: true,
       createdAt: true,
+      profileImg: true,
       //   $all: true,
       $list: {
         $find: {
@@ -116,9 +118,14 @@ export const Management = () => {
         <Modal.Root>
           <Table
             columns={[
+              { header: 'Email', key: 'email' },
               { header: 'ID', key: 'id', renderAs: 'badge' },
               { header: 'Name', key: 'name' },
-              { header: 'Email', key: 'email' },
+              {
+                header: 'Avatar',
+                key: 'profileImg',
+                renderAs: 'avatar',
+              },
               {
                 header: 'Created',
                 key: 'createdAt',
