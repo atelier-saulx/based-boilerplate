@@ -17,7 +17,9 @@ export const ContentEditor = ({ id, section }) => {
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
-  console.log('🙀', data, loading)
+  // console.log('🙀', data, loading)
+
+  // console.log('schema', schema)
 
   // filter out some system fields
   let schemaFields = schema?.types[section].fields

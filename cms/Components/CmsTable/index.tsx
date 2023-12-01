@@ -96,7 +96,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   )
 
   // console.log(result, 'Result>?')
-  // console.log(parsedData, 'ParsedDAta?')
+  console.log(parsedData, 'ParsedDAta?')
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
 
@@ -293,8 +293,6 @@ export const CmsTable: FC<CmsTableProps> = ({
           </Text>
         </styled.div>
         {addedFilters.map((item, idx) => {
-          console.log('ITEM 🍿', item)
-
           let itemKey = Object.keys(item[0])[0]
 
           console.log(itemKey)
@@ -349,10 +347,9 @@ export const CmsTable: FC<CmsTableProps> = ({
                       label="$field"
                       value={fieldValue}
                       type="select"
-                      options={[
-                        { value: 'string', label: 'string' },
-                        { value: 'nummer', label: 'nummer' },
-                      ]}
+                      options={columnNames.map((item) => ({
+                        value: item,
+                      }))}
                       onChange={(v) => setFieldValue(v)}
                     />
                     <Input

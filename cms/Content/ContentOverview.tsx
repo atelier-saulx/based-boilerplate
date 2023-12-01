@@ -12,6 +12,8 @@ export const ContentOverview = () => {
   const route = useRoute('[section][id]')
   const routeSection = route.query.section
 
+  console.log('👽', schema?.types[routeSection as string].fields)
+
   return (
     <styled.div style={{ padding: '24px 48px', width: '100%' }}>
       <Row
