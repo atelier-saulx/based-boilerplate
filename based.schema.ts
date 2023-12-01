@@ -8,6 +8,7 @@ export default {
       prefix: 'us',
       fields: {
         currentToken: { type: 'string' },
+        profileImg: { type: 'url' },
       },
     },
   },

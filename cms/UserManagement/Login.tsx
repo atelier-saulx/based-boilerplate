@@ -61,6 +61,8 @@ export const Login = () => {
           <div style={{ height: 12 }} />
           <Button
             size="large"
+            keyboardShortcut="Enter"
+            displayShortcut
             style={{ marginLeft: 'auto' }}
             onClick={
               data?.user.length === 0

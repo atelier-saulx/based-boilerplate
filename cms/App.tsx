@@ -11,8 +11,9 @@ import { SideBar } from './Sidebar'
 import { SchemaBuilder } from './Schema'
 import { Login } from './UserManagement/Login'
 import { Management } from './UserManagement/Management'
-import { Avatar, TopNavigation } from '@based/ui'
+import { Avatar, Button, Dropdown, IconLogOut, TopNavigation } from '@based/ui'
 import { Logo } from './Sidebar/Logo'
+import { Profile } from './UserManagement/Profile'
 
 export const client = based(basedConfig)
 
@@ -27,7 +28,33 @@ export const App = () => {
     >
       <TopNavigation>
         <Logo />
-        <Avatar style={{ marginLeft: 'auto' }}>{authState.userId}</Avatar>
+        <Dropdown.Root>
+          <Dropdown.Trigger>
+            <Button style={{ marginLeft: 'auto' }} size="xsmall">
+              <Avatar>{authState.userId}</Avatar>
+            </Button>
+          </Dropdown.Trigger>
+          <Dropdown.Items>
+            <Dropdown.Item
+              onClick={() =>
+                //@ts-expect-error
+
+                route.setQuery({ section: 'profile', type: null, id: null })
+              }
+            >
+              Profile
+            </Dropdown.Item>
+            <Dropdown.Separator />
+            <Dropdown.Item
+              onClick={() =>
+                client.setAuthState({ token: undefined, persistent: true })
+              }
+              icon={<IconLogOut />}
+            >
+              Logout
+            </Dropdown.Item>
+          </Dropdown.Items>
+        </Dropdown.Root>
       </TopNavigation>
       <styled.div style={{ display: 'flex', flexDirection: 'row' }}>
         <SideBar />
@@ -36,6 +63,8 @@ export const App = () => {
             <FileLibrary />
           ) : section === 'schema-builder' ? (
             <SchemaBuilder />
+          ) : section === 'profile' ? (
+            <Profile />
           ) : section === 'user-management' ? (
             <Management />
           ) : (

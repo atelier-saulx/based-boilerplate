@@ -215,7 +215,8 @@ export const Management = () => {
                         client
                           .call('db:set', {
                             $id: userId.id,
-                            ...{ ...userId, ...userValues },
+                            ...userId,
+                            ...userValues,
                           })
                           .then(() => close())
                       }}
