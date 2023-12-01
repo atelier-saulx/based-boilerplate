@@ -69,7 +69,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   const [fieldValue, setFieldValue] = useState('')
   const [filterValue, setFilterValue] = useState('')
   const [addedFilters, setAddedFilters] = useState<{}[]>([])
-  const [customFilter, setCustomFilter] = useState<{}>()
+  const [customFilter, setCustomFilter] = useState<any>()
 
   let w = width
   let h = height
@@ -81,7 +81,7 @@ export const CmsTable: FC<CmsTableProps> = ({
     query,
     getQueryItems,
     rowHeight: 60,
-    queryId: queryId + sortOptions.$field + sortOptions.$order,
+    queryId: queryId + sortOptions.$field + sortOptions.$order + customFilter,
     sortOptions: sortOptions,
     itemCount: data?.length,
     height: h,
@@ -95,8 +95,12 @@ export const CmsTable: FC<CmsTableProps> = ({
     (item) => !hiddenColumns.includes(item.toLowerCase())
   )
 
+  useEffect(() => {
+    setCustomFilter('')
+    setAddedFilters([])
+  }, [queryId])
   // console.log(result, 'Result>?')
-  // console.log(parsedData, 'ParsedDAta?')
+  console.log(parsedData, 'ParsedDAta?')
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
 
@@ -117,7 +121,7 @@ export const CmsTable: FC<CmsTableProps> = ({
       //  filter[allKeys[0]] = nestedObject[allKeys[0]]
 
       //   console.log('🥝', filter)
-      //   console.log('🥥', filterCopy)
+      console.log('🥥', filterCopy)
       setCustomFilter({ ...filterCopy })
     }
   }, [addedFilters.length])
@@ -293,8 +297,6 @@ export const CmsTable: FC<CmsTableProps> = ({
           </Text>
         </styled.div>
         {addedFilters.map((item, idx) => {
-          console.log('ITEM 🍿', item)
-
           let itemKey = Object.keys(item[0])[0]
 
           console.log(itemKey)
@@ -349,10 +351,9 @@ export const CmsTable: FC<CmsTableProps> = ({
                       label="$field"
                       value={fieldValue}
                       type="select"
-                      options={[
-                        { value: 'string', label: 'string' },
-                        { value: 'nummer', label: 'nummer' },
-                      ]}
+                      options={columnNames.map((item) => ({
+                        value: item,
+                      }))}
                       onChange={(v) => setFieldValue(v)}
                     />
                     <Input
