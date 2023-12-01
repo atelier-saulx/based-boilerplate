@@ -31,7 +31,7 @@ export const App = () => {
       </TopNavigation>
       <styled.div style={{ display: 'flex', flexDirection: 'row' }}>
         <SideBar />
-        <div style={{ marginTop: 90 }}>
+        <div style={{ marginTop: 65, width: '100%' }}>
           {section === 'file-library' ? (
             <FileLibrary />
           ) : section === 'schema-builder' ? (
