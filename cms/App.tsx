@@ -22,12 +22,11 @@ export const App = () => {
   const route = useRoute('[section]')
   const section = route.query.section
 
-  if (!authState.userId) return <Login />
-
   const { data, loading } = useQuery('db', {
     $id: authState.userId,
     profileImg: true,
   })
+  if (!authState.userId) return <Login />
 
   return (
     <styled.div
