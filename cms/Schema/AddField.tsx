@@ -38,6 +38,12 @@ export const SCHEMA_FIELDS = [
     color: 'brand',
   },
   {
+    label: 'Rich Text',
+    description: 'Stored as JSON and seperate field for HTML ',
+    icon: <IconText />,
+    color: 'brand',
+  },
+  {
     label: 'Number',
     description: 'A Float',
     icon: <IconText />,
