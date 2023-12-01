@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Provider, useAuthState } from '@based/react'
+import { Provider, useAuthState, useQuery } from '@based/react'
 import based from '@based/client'
 import basedConfig from '../based.json'
 import { useRoute } from 'kabouter'
@@ -21,7 +21,14 @@ export const App = () => {
   const route = useRoute('[section]')
   const authState = useAuthState()
   const section = route.query.section
+
   if (!authState.userId) return <Login />
+
+  const { data, loading } = useQuery('db', {
+    $id: authState.userId,
+    profileImg: true,
+  })
+
   return (
     <styled.div
       style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
@@ -31,7 +38,7 @@ export const App = () => {
         <Dropdown.Root>
           <Dropdown.Trigger>
             <Button style={{ marginLeft: 'auto' }} size="xsmall">
-              <Avatar>{authState.userId}</Avatar>
+              <Avatar src={data?.profileImg}>{authState.userId}</Avatar>
             </Button>
           </Dropdown.Trigger>
           <Dropdown.Items>
