@@ -151,6 +151,10 @@ export const CmsTable: FC<CmsTableProps> = ({
                   setSelectedRowIndexes([...tempArr])
                 }
               }}
+              //   onClick={(e) => {
+              //     e.stopPropagation()
+              //     e.preventDefault()
+              //   }}
             />
           </styled.div>
         )}
