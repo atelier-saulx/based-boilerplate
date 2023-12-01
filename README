@@ -1,0 +1,7 @@
+
+
+run npx ts-node scripts/generateKeypair.ts to generate user keypair
+then npx @based/cli secrets set -k userPublicKey -v '<yourkeyhere>'
+and  npx @based/cli secrets set -k userPrivateKey -v '<yourkeyhere>'
+
+and npx @based/cli secrets set -k postmarkKey -v '<yourkeyhere>'
