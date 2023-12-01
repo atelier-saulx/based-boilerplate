@@ -42,7 +42,7 @@ export const ContentEditor = ({ id, section }) => {
         {schema && (
           <FormGroup
             alwaysAccept
-            onChange={(v) => setFormFieldChanges(v)}
+            onChange={(v) => setFormFieldChanges({ ...formFieldChanges, ...v })}
             config={filteredSchemaFields}
             values={{ ...data, ...formFieldChanges }}
           />
@@ -50,10 +50,11 @@ export const ContentEditor = ({ id, section }) => {
       </styled.div>
       <PublishSideBar
         updatedAt={data?.updatedAt}
-        onClick={() => {
-          client
+        onClick={async () => {
+          await client
             .call('db:set', {
               $id: id,
+              ...data,
               ...formFieldChanges,
             })
             .catch((err) => console.log(err))
