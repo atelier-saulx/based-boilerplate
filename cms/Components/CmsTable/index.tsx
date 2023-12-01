@@ -1,4 +1,4 @@
-import React, { CSSProperties, FC, useState, useRef } from 'react'
+import React, { CSSProperties, FC, useState, useRef, useEffect } from 'react'
 import AutoSizer from 'react-virtualized-auto-sizer'
 import { VariableSizeGrid as Grid } from 'react-window'
 import { Style, styled } from 'inlines'
@@ -69,6 +69,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   const [fieldValue, setFieldValue] = useState('')
   const [filterValue, setFilterValue] = useState('')
   const [addedFilters, setAddedFilters] = useState<{}[]>([])
+  const [customFilter, setCustomFilter] = useState<{}>()
 
   let w = width
   let h = height
@@ -84,7 +85,7 @@ export const CmsTable: FC<CmsTableProps> = ({
     sortOptions: sortOptions,
     itemCount: data?.length,
     height: h,
-    // filter: filter,
+    filter: customFilter || filter,
   })
 
   const parsedData = query ? result.items : data
@@ -97,7 +98,29 @@ export const CmsTable: FC<CmsTableProps> = ({
   // console.log(result, 'Result>?')
   // console.log(parsedData, 'ParsedDAta?')
   //  console.log(query, 'the query?')
-  console.log(filter)
+  //   console.log(filter, 'What the filter man')
+
+  // update the filter
+  useEffect(() => {
+    if (addedFilters.length > 0) {
+      let allKeys = addedFilters.map(
+        (item, idx) => Object.keys(addedFilters[idx][0])[0]
+      )
+
+      var nestedObject = {}
+      allKeys.reduce(function (o, s, idx) {
+        return (o[s] = addedFilters[idx][0][s])
+      }, nestedObject)
+
+      let filterCopy = { ...filter }
+      filterCopy[allKeys[0]] = nestedObject[allKeys[0]]
+      //  filter[allKeys[0]] = nestedObject[allKeys[0]]
+
+      //   console.log('🥝', filter)
+      //   console.log('🥥', filterCopy)
+      setCustomFilter({ ...filterCopy })
+    }
+  }, [addedFilters.length])
 
   const tableHeaderRef = useRef<HTMLDivElement>()
 
@@ -270,7 +293,11 @@ export const CmsTable: FC<CmsTableProps> = ({
           </Text>
         </styled.div>
         {addedFilters.map((item, idx) => {
-          let itemKey = Object.keys(item)[0]
+          console.log('ITEM 🍿', item)
+
+          let itemKey = Object.keys(item[0])[0]
+
+          console.log(itemKey)
 
           return (
             <React.Fragment key={idx}>
@@ -289,8 +316,8 @@ export const CmsTable: FC<CmsTableProps> = ({
                 }}
               >
                 <Text light size={14}>
-                  {item[itemKey].$field} {item[itemKey].$operator}{' '}
-                  {item[itemKey].$value}
+                  {item[0][itemKey].$field} {item[0][itemKey].$operator}{' '}
+                  {item[0][itemKey].$value}
                 </Text>
               </styled.div>
             </React.Fragment>
@@ -323,8 +350,8 @@ export const CmsTable: FC<CmsTableProps> = ({
                       value={fieldValue}
                       type="select"
                       options={[
-                        { value: 'x', label: 'X' },
-                        { value: 'y', label: 'Y' },
+                        { value: 'string', label: 'string' },
+                        { value: 'nummer', label: 'nummer' },
                       ]}
                       onChange={(v) => setFieldValue(v)}
                     />
@@ -349,6 +376,8 @@ export const CmsTable: FC<CmsTableProps> = ({
                   </Modal.Body>
                   <Modal.Actions>
                     <Button
+                      keyboardShortcut="Esc"
+                      displayShortcut
                       onClick={() => {
                         setAndOr('$and')
                         setOperator('=')
@@ -361,6 +390,8 @@ export const CmsTable: FC<CmsTableProps> = ({
                       Cancel
                     </Button>
                     <Button
+                      keyboardShortcut="Enter"
+                      displayShortcut
                       onClick={() => {
                         let newFilter = {
                           [andOr]: {
@@ -371,7 +402,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                         }
 
                         close()
-                        setAddedFilters([...addedFilters, newFilter])
+                        setAddedFilters([...addedFilters, [newFilter]])
 
                         setAndOr('$and')
                         setOperator('=')
