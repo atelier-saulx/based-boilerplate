@@ -1,11 +1,14 @@
 import React, { useMemo, useState } from 'react'
 import { styled } from 'inlines'
-import { Button, Container, Input, Tabs, Tab, Text } from '@based/ui'
+import { Button, Container, Input, Tabs, Tab, Text, Badge } from '@based/ui'
 import { Logo } from '../Sidebar/Logo'
 import { useClient, useQuery } from '@based/react'
+import { useRoute } from 'kabouter'
 
 export const Login = () => {
   const code = useMemo(() => (~~(Math.random() * 1e6)).toString(16), [])
+  const route = useRoute('[section]')
+  const section = route.query.section
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const client = useClient()
@@ -40,16 +43,15 @@ export const Login = () => {
       <Container
         icon={<Logo />}
         style={{ maxWidth: '700px', width: '70%' }}
-        description="description"
-        label="label"
+        label="CMS"
+        description="login"
       >
-        {code}
         {data?.user.length === 0 ? (
           <Text>
             No users found, please input credentials to create a first user
           </Text>
         ) : (
-          'wanan login'
+          ''
         )}
         <styled.div
           style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
@@ -59,6 +61,7 @@ export const Login = () => {
           )}
           <Input type="text" label="Email" onChange={(v) => setEmail(v)} />
           <div style={{ height: 12 }} />
+          <Badge color="brand">{code}</Badge>
           <Button
             size="large"
             keyboardShortcut="Enter"
@@ -74,6 +77,8 @@ export const Login = () => {
                     setEmail('')
                   }
                 : async () => {
+                    //@ts-ignore
+                    route.setQuery({ section: null, type: null, id: null })
                     await client
                       .call('login', { email: email, displayCode: code })
                       .catch((e) => console.log(e))

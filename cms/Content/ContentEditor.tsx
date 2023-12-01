@@ -16,7 +16,7 @@ export const ContentEditor = ({ id, section }) => {
   })
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
-
+  console.log(data)
   // console.log('🙀', data, loading)
 
   // console.log('schema', schema)

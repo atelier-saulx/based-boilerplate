@@ -18,16 +18,15 @@ import { Profile } from './UserManagement/Profile'
 export const client = based(basedConfig)
 
 export const App = () => {
-  const route = useRoute('[section]')
   const authState = useAuthState()
+  const route = useRoute('[section]')
   const section = route.query.section
-
-  if (!authState.userId) return <Login />
 
   const { data, loading } = useQuery('db', {
     $id: authState.userId,
     profileImg: true,
   })
+  if (!authState.userId) return <Login />
 
   return (
     <styled.div
@@ -45,7 +44,6 @@ export const App = () => {
             <Dropdown.Item
               onClick={() =>
                 //@ts-expect-error
-
                 route.setQuery({ section: 'profile', type: null, id: null })
               }
             >
@@ -53,9 +51,11 @@ export const App = () => {
             </Dropdown.Item>
             <Dropdown.Separator />
             <Dropdown.Item
-              onClick={() =>
+              onClick={() => {
+                //@ts-expect-error
+                route.setQuery({ section: null, type: null, id: null })
                 client.setAuthState({ token: undefined, persistent: true })
-              }
+              }}
               icon={<IconLogOut />}
             >
               Logout

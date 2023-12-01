@@ -138,21 +138,51 @@ export const SpecificFieldModal = ({
               const newMeta = Object.fromEntries(
                 Object.entries(meta).filter(([_, v]) => v != false)
               )
-              await client.call('db:set-schema', {
-                mutate: true,
-                schema: {
-                  types: {
-                    [routeType]: {
-                      fields: {
-                        [meta.fieldName || meta.displayName.toLowerCase()]: {
-                          type: fieldType.toLowerCase(),
-                          meta: newMeta,
+              if (fieldType === 'Rich Text') {
+                await client.call('db:set-schema', {
+                  mutate: true,
+                  schema: {
+                    types: {
+                      [routeType]: {
+                        fields: {
+                          [meta.fieldName || meta.displayName.toLowerCase()]: {
+                            type: 'json',
+                            meta: {
+                              ...newMeta,
+                              linkedField: `${
+                                meta.field || meta.displayName.toLowerCase()
+                              }NameHTML`,
+                              format: 'rich-text',
+                            },
+                          },
+                          [`${
+                            meta.field || meta.displayName.toLowerCase()
+                          }NameHTML`]: {
+                            type: 'string',
+                            meta: { isLinkedField: true },
+                          },
                         },
                       },
                     },
                   },
-                },
-              })
+                })
+              } else {
+                await client.call('db:set-schema', {
+                  mutate: true,
+                  schema: {
+                    types: {
+                      [routeType]: {
+                        fields: {
+                          [meta.fieldName || meta.displayName.toLowerCase()]: {
+                            type: fieldType.toLowerCase(),
+                            meta: newMeta,
+                          },
+                        },
+                      },
+                    },
+                  },
+                })
+              }
 
               setOpenSpecificFieldModal(false)
             }

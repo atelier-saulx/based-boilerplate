@@ -66,23 +66,33 @@ export const Management = () => {
       }}
     >
       <div style={{ width: 900, height: 400 }}>
-        <Text size={48}>User Management</Text>
         <Modal.Root>
-          <Modal.Trigger>
-            <Button
-              icon={<IconPlus />}
-              size="small"
-              onClick={async () => {
-                // await client.call('db:set', {
-                //   // TODO check this ? en default?
-                //   $language: 'en',
-                //   type: routeSection,
-                // })
-              }}
-            >
-              Add new User
-            </Button>
-          </Modal.Trigger>
+          <styled.div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              marginBottom: 36,
+            }}
+          >
+            <Text size={24} weight="strong">
+              User Management
+            </Text>
+            <Modal.Trigger>
+              <Button
+                icon={<IconPlus />}
+                size="small"
+                onClick={async () => {
+                  // await client.call('db:set', {
+                  //   // TODO check this ? en default?
+                  //   $language: 'en',
+                  //   type: routeSection,
+                  // })
+                }}
+              >
+                Add new User
+              </Button>
+            </Modal.Trigger>
+          </styled.div>
           <Modal.Content>
             {({ close }) => {
               return (
