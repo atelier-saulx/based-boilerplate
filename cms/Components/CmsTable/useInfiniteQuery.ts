@@ -12,7 +12,7 @@ type CurrentRef = {
   blocks: number
   scrollY: number
   items: any[]
-  timer: ReturnType<typeof setTimeout>
+  timer: ReturnType<typeof setTimeout> | any
   subs: { [subId: string]: () => void }
 }
 
@@ -79,8 +79,9 @@ export const useInfiniteQuery = ({
   })
 
   useEffect(() => {
+    console.log('🔥')
     current.items = []
-  }, [queryId, filter])
+  }, [queryId])
 
   useEffect(() => {
     return () => {
@@ -93,8 +94,8 @@ export const useInfiniteQuery = ({
   }, [current])
 
   if (!query) {
-    useEffect(() => {}, [])
-    useEffect(() => {}, [])
+    // useEffect(() => {}, [])
+    // useEffect(() => {}, [])
     return {
       loading: false,
       itemCount: 0,
