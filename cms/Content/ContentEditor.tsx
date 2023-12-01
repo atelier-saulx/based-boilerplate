@@ -42,7 +42,7 @@ export const ContentEditor = ({ id, section }) => {
         {schema && (
           <FormGroup
             alwaysAccept
-            onChange={(v) => setFormFieldChanges({ ...formFieldChanges, v })}
+            onChange={(v) => setFormFieldChanges({ ...formFieldChanges, ...v })}
             config={filteredSchemaFields}
             values={{ ...data, ...formFieldChanges }}
           />
