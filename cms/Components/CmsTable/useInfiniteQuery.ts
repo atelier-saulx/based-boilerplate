@@ -29,6 +29,7 @@ export const useInfiniteQuery = ({
   queryId = '0',
   delay = 100,
   sortOptions,
+  filter,
 }: {
   query?: (
     start: number,
@@ -45,6 +46,7 @@ export const useInfiniteQuery = ({
   treshold?: number
   queryId?: string
   sortOptions?: SortOptions
+  filter?: {}
 }): {
   loading: boolean
   itemCount: number
@@ -78,7 +80,7 @@ export const useInfiniteQuery = ({
 
   useEffect(() => {
     current.items = []
-  }, [queryId])
+  }, [queryId, filter])
 
   useEffect(() => {
     return () => {
@@ -107,7 +109,7 @@ export const useInfiniteQuery = ({
     let i = blocks
     while (i--) {
       const start = offset + limit * i
-      const q = query(start, limit, sortOptions as SortOptions)
+      const q = query(start, limit, sortOptions as SortOptions, filter)
       subs[q.id] =
         current.subs[q.id] ||
         q.subscribe((data, checksum) => {
@@ -125,7 +127,7 @@ export const useInfiniteQuery = ({
       }
     }
     current.subs = subs
-  }, [offset, blocks, current, queryId, sortOptions])
+  }, [offset, blocks, current, queryId, sortOptions, filter])
 
   useEffect(update, [
     blockHeight,

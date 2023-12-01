@@ -69,7 +69,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   const [fieldValue, setFieldValue] = useState('')
   const [filterValue, setFilterValue] = useState('')
   const [addedFilters, setAddedFilters] = useState<{}[]>([])
-  const [customFilter, setCustomFilter] = useState()
+  const [customFilter, setCustomFilter] = useState<{}>()
 
   let w = width
   let h = height
@@ -85,7 +85,7 @@ export const CmsTable: FC<CmsTableProps> = ({
     sortOptions: sortOptions,
     itemCount: data?.length,
     height: h,
-    // filter: filter,
+    filter: customFilter || filter,
   })
 
   const parsedData = query ? result.items : data
@@ -98,25 +98,27 @@ export const CmsTable: FC<CmsTableProps> = ({
   // console.log(result, 'Result>?')
   // console.log(parsedData, 'ParsedDAta?')
   //  console.log(query, 'the query?')
-  console.log(filter)
+  //   console.log(filter, 'What the filter man')
 
   // update the filter
   useEffect(() => {
-    let allKeys = addedFilters.map((item, idx) => [
-      Object.keys(addedFilters[idx][0])[0],
-    ])
-
-    console.log(allKeys, 'all the keys')
-    console.log('fire', addedFilters)
     if (addedFilters.length > 0) {
-      for (let i = 0; i < addedFilters.length; i++) {
-        //   let key = Object.keys(addedFilters[i][0])[0]
-        // console.log('🔑', allKeys[i])
+      let allKeys = addedFilters.map(
+        (item, idx) => Object.keys(addedFilters[idx][0])[0]
+      )
 
-        filter[currentKeys] = addedFilters[i][0][allKeys[i]]
+      var nestedObject = {}
+      allKeys.reduce(function (o, s, idx) {
+        return (o[s] = addedFilters[idx][0][s])
+      }, nestedObject)
 
-        console.log('🥝', filter)
-      }
+      let filterCopy = { ...filter }
+      filterCopy[allKeys[0]] = nestedObject[allKeys[0]]
+      //  filter[allKeys[0]] = nestedObject[allKeys[0]]
+
+      //   console.log('🥝', filter)
+      //   console.log('🥥', filterCopy)
+      setCustomFilter({ ...filterCopy })
     }
   }, [addedFilters.length])
 
@@ -348,8 +350,8 @@ export const CmsTable: FC<CmsTableProps> = ({
                       value={fieldValue}
                       type="select"
                       options={[
-                        { value: 'x', label: 'X' },
-                        { value: 'y', label: 'Y' },
+                        { value: 'string', label: 'string' },
+                        { value: 'nummer', label: 'nummer' },
                       ]}
                       onChange={(v) => setFieldValue(v)}
                     />

@@ -51,7 +51,7 @@ export const ContentOverview = () => {
         <CmsTable
           width={900}
           height={600}
-          query={(offset, limit, sortOptions) => {
+          query={(offset, limit, sortOptions, filter) => {
             return client.query('db', {
               $id: 'root',
               children: {
@@ -61,11 +61,7 @@ export const ContentOverview = () => {
                   $offset: offset,
                   $limit: 25,
                   $find: {
-                    $filter: {
-                      $operator: '=',
-                      $field: 'type',
-                      $value: routeSection,
-                    },
+                    $filter: filter,
                   },
                 },
               },
