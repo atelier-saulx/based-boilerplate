@@ -43,9 +43,9 @@ type SchemaItem = {
   meta: any
   id: string
   label: string
-  order: number
+  index: number
 }
-type unorderedSchemaItem = Omit<SchemaItem, 'order'>
+type unorderedSchemaItem = Omit<SchemaItem, 'index'>
 
 const parseSchema = (schema, routeType) => {
   if (!schema || !routeType) return
@@ -53,14 +53,14 @@ const parseSchema = (schema, routeType) => {
   const array = [] as unorderedSchemaItem[]
   const type = schema.types[routeType as string].fields
   for (const i in type) {
-    if (type[i].meta?.order) {
+    if (type[i].meta?.index) {
       orderedArray.push({
         name: i,
         meta: type[i].meta,
         id: i,
         type: type[i].type,
         label: i,
-        order: type[i].meta.order,
+        index: +type[i].meta.index,
       })
     } else {
       array.push({
@@ -72,7 +72,7 @@ const parseSchema = (schema, routeType) => {
       })
     }
   }
-  orderedArray.sort((a, b) => a?.order - b?.order)
+  orderedArray.sort((a, b) => a?.index - b?.index)
 
   return [...orderedArray, ...array]
 }
@@ -85,7 +85,7 @@ const parseItems = (items, schema, routeType) => {
     const type = items[i]
     object[type.name] = {
       ...schemaType[type.name],
-      meta: { ...type.meta, order: i },
+      meta: { ...type.meta, index: +i },
     }
   }
   return object
@@ -104,7 +104,7 @@ export const SchemaFields = () => {
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
-  // console.log('Schema?? 🐸', schema)
+  console.log('Schema?? 🐸', schema)
 
   const SYSTEM_FIELDS_LABELS = SYSTEM_FIELDS.map((item) => item.label)
   // console.log(schema?.types[routeType as string].fields)
