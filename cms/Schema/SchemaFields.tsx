@@ -110,7 +110,6 @@ export const SchemaFields = () => {
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [itemToEdit, setItemToEdit] = useState('')
-  const [rearrange, setRearrange] = useState(false)
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
@@ -131,7 +130,6 @@ export const SchemaFields = () => {
 
   useEffect(() => {
     setArray(parseSchema(schema, routeType))
-    setRearrange(false)
   }, [schema, routeType])
 
   return (
@@ -287,35 +285,25 @@ export const SchemaFields = () => {
         </Modal.Root>
       </DndContext>
       <div style={{ height: 20 }} />
-      {rearrange && (
-        <Confirmation
-          // style={{ marginTop: '40px', marginBottom: 0 }}
-          onCancel={() => {
-            setRearrange(false)
-            setArray(parseSchema(schema, routeType))
-          }}
-          label="Confirm"
-          onConfirm={async () => {
-            await client.call('db:set-schema', {
-              mutate: true,
-              schema: {
-                types: {
-                  [routeType as string]: {
-                    fields: parseItems(array, schema, routeType),
-                  },
-                },
-              },
-            })
-          }}
-        />
-      )}
     </div>
   )
-  function handleDragEnd(event) {
-    const { active, over } = event
 
+  async function handleDragEnd(event) {
+    const { active, over } = event
+    const thingy = async () => {
+      await client.call('db:set-schema', {
+        mutate: true,
+        schema: {
+          types: {
+            [routeType as string]: {
+              fields: parseItems(tempArr, schema, routeType),
+            },
+          },
+        },
+      })
+    }
+    let tempArr = []
     if (active.id !== over.id) {
-      setRearrange(true)
       setArray((items) => {
         const oldIndex = items?.findIndex(
           (item) => item.id === active.id
@@ -323,6 +311,8 @@ export const SchemaFields = () => {
         const newIndex = items?.findIndex(
           (item) => item.id === over.id
         ) as number
+        tempArr = arrayMove(items as any, oldIndex, newIndex)
+        thingy()
         return arrayMove(items as any, oldIndex, newIndex)
       })
     }
