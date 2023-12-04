@@ -45,22 +45,22 @@ type SchemaItem = {
   label: string
   index: number
 }
-type unorderedSchemaItem = Omit<SchemaItem, 'index'>
+type unindexedSchemaItem = Omit<SchemaItem, 'index'>
 
 const parseSchema = (schema, routeType) => {
   if (!schema || !routeType) return
-  const orderedArray = [] as SchemaItem[]
-  const array = [] as unorderedSchemaItem[]
+  const indexedArray = [] as SchemaItem[]
+  const array = [] as unindexedSchemaItem[]
   const type = schema.types[routeType as string].fields
   for (const i in type) {
     if (type[i].meta?.index) {
-      orderedArray.push({
+      indexedArray.push({
         name: i,
         meta: type[i].meta,
         id: i,
         type: type[i].type,
         label: i,
-        index: +type[i].meta.index,
+        index: type[i].meta.index,
       })
     } else {
       array.push({
@@ -72,11 +72,9 @@ const parseSchema = (schema, routeType) => {
       })
     }
   }
-  orderedArray.sort((a, b) => a?.meta.index - b?.meta.index)
+  indexedArray.sort((a, b) => a?.index - b?.index)
 
-  console.log(orderedArray, '🙀')
-
-  return [...orderedArray, ...array]
+  return [...indexedArray, ...array]
 }
 
 const parseItems = (items, schema, routeType) => {
@@ -87,7 +85,7 @@ const parseItems = (items, schema, routeType) => {
     const type = items[i]
     object[type.name] = {
       ...schemaType[type.name],
-      meta: { ...type.meta, index: +i },
+      meta: { ...type.meta, index: i },
     }
   }
   return object
@@ -106,7 +104,7 @@ export const SchemaFields = () => {
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
-  console.log('Schema?? 🐸', schema)
+  // console.log('Schema?? 🐸', schema)
 
   const SYSTEM_FIELDS_LABELS = SYSTEM_FIELDS.map((item) => item.label)
   // console.log(schema?.types[routeType as string].fields)
@@ -118,41 +116,13 @@ export const SchemaFields = () => {
     })
   )
   const [array, setArray] = useState<
-    SchemaItem[] | unorderedSchemaItem[] | any
+    SchemaItem[] | unindexedSchemaItem[] | any
   >(parseSchema(schema, routeType))
 
   useEffect(() => {
     setArray(parseSchema(schema, routeType))
     setRearrange(false)
   }, [schema, routeType])
-
-  const handleDragEnd = async (event) => {
-    const { active, over } = event
-
-    if (active.id !== over.id) {
-      await setRearrange(true)
-      await setArray((items) => {
-        const oldIndex = items?.findIndex(
-          (item) => item.id === active.id
-        ) as number
-        const newIndex = items?.findIndex(
-          (item) => item.id === over.id
-        ) as number
-        return arrayMove(items as any, oldIndex, newIndex)
-      })
-
-      await client.call('db:set-schema', {
-        mutate: true,
-        schema: {
-          types: {
-            [routeType as string]: {
-              fields: parseItems(array, schema, routeType),
-            },
-          },
-        },
-      })
-    }
-  }
 
   return (
     <div style={{}}>
@@ -184,14 +154,14 @@ export const SchemaFields = () => {
                 )
                 return (
                   <SchemaField
-                    id={i}
+                    id={item.id}
                     ALL_FIELDS={ALL_FIELDS}
                     SYSTEM_FIELDS_LABELS={SYSTEM_FIELDS_LABELS}
                     index={index}
                     item={item}
                     setItemToEdit={setItemToEdit}
                     setOpenEditModal={setOpenEditModal}
-                    key={i}
+                    key={item.id}
                     onClick={async () => {
                       const fields = schema?.types[routeType as string].fields
 
@@ -258,7 +228,7 @@ export const SchemaFields = () => {
         </Modal.Root>
       </DndContext>
       <div style={{ height: 20 }} />
-      {/* {rearrange && (
+      {rearrange && (
         <Confirmation
           // style={{ marginTop: '40px', marginBottom: 0 }}
           onCancel={() => {
@@ -279,7 +249,23 @@ export const SchemaFields = () => {
             })
           }}
         />
-      )} */}
+      )}
     </div>
   )
+  function handleDragEnd(event) {
+    const { active, over } = event
+
+    if (active.id !== over.id) {
+      setRearrange(true)
+      setArray((items) => {
+        const oldIndex = items?.findIndex(
+          (item) => item.id === active.id
+        ) as number
+        const newIndex = items?.findIndex(
+          (item) => item.id === over.id
+        ) as number
+        return arrayMove(items as any, oldIndex, newIndex)
+      })
+    }
+  }
 }
