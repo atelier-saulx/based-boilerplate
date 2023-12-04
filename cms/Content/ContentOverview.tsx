@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { styled } from 'inlines'
-import { Text, Row, Button, IconPlus, QuickTable, Table } from '@based/ui'
+import { Text, Row, Button, IconPlus, Table } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
 import { CmsTable } from '../Components/CmsTable'

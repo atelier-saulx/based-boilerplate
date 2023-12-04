@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { styled } from 'inlines'
 import { useClient, useQuery } from '@based/react'
-import { Text, Badge, Row, FormGroup } from '@based/ui'
+import { Text, Badge, Row, FormGroup, scrollAreaStyle } from '@based/ui'
 import { PublishSideBar } from './PublishSideBar'
 
 const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'id', 'aliases']
@@ -33,7 +33,14 @@ export const ContentEditor = ({ id, section }) => {
   }
 
   return (
-    <styled.div style={{ width: '100%', display: 'flex' }}>
+    <styled.div
+      style={{
+        width: '100%',
+        display: 'flex',
+        // ...scrollAreaStyle,
+        // maxHeight: 'calc(40% - 90px)',
+      }}
+    >
       <styled.div style={{ padding: '24px 48px', width: '100%' }}>
         <Row style={{ marginBottom: 32 }}>
           <Text weight="strong" size={24} style={{ marginRight: 12 }}>
