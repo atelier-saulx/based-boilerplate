@@ -94,7 +94,7 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   let columnNames: any[] = [...new Set(parsedData?.flatMap(Object.keys))]
 
-  console.log(columnNamesInRightOrder, '🍟')
+  // console.log(columnNamesInRightOrder, '🍟')
   if (columnNamesInRightOrder && columnNamesInRightOrder.length > 0) {
     columnNames = columnNamesInRightOrder
   }
@@ -108,7 +108,7 @@ export const CmsTable: FC<CmsTableProps> = ({
     setAddedFilters([])
   }, [queryId])
   // console.log(result, 'Result>?')
-  console.log(parsedData, 'ParsedDAta?')
+  // console.log(parsedData, 'ParsedDAta?')
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
 

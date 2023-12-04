@@ -8,6 +8,7 @@ export const PublishSideBar = ({ updatedAt, onClick }) => {
     <styled.div
       style={{
         minWidth: 224,
+        minHeight: 'calc(100vh - 67px)',
         height: '100%',
         backgroundColor: color('background', 'neutral', 'surface'),
         borderLeft: `1px solid ${color(

@@ -63,7 +63,13 @@ export const SchemaBuilder = () => {
   }, [openEditModal])
 
   return (
-    <styled.div style={{ display: 'flex', width: '100%' }}>
+    <styled.div
+      style={{
+        display: 'flex',
+        width: '100%',
+        minHeight: '100%',
+      }}
+    >
       <SchemaSidebar />
       {routeType ? (
         <styled.div style={{ padding: '24px 48px', width: '100%' }}>
