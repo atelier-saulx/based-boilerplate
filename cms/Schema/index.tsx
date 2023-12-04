@@ -223,7 +223,8 @@ export const SchemaBuilder = () => {
                     },
                   })
                 }
-                // TODO remove type from url
+                //@ts-ignore
+                route.setQuery({ section: section, type: null })
                 setOpenDeleteModal(false)
               }}
               color="alert"

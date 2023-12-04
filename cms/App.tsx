@@ -1,6 +1,6 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
-import { Provider, useAuthState, useQuery } from '@based/react'
+import { useAuthState, useQuery } from '@based/react'
 import based from '@based/client'
 import basedConfig from '../based.json'
 import { useRoute } from 'kabouter'
@@ -11,7 +11,18 @@ import { SideBar } from './Sidebar'
 import { SchemaBuilder } from './Schema'
 import { Login } from './UserManagement/Login'
 import { Management } from './UserManagement/Management'
-import { Avatar, Button, Dropdown, IconLogOut, TopNavigation } from '@based/ui'
+import {
+  Avatar,
+  Button,
+  Dropdown,
+  IconEye,
+  IconLogOut,
+  ThemeProvider,
+  Provider,
+  TopNavigation,
+  color,
+  useTheme,
+} from '@based/ui'
 import { Logo } from './Sidebar/Logo'
 import { Profile } from './UserManagement/Profile'
 
@@ -21,6 +32,9 @@ export const App = () => {
   const authState = useAuthState()
   const route = useRoute('[section]')
   const section = route.query.section
+  const { theme, setTheme } = useTheme()
+  // setTheme('dark')
+  // console.log(theme)
 
   const { data, loading } = useQuery('db', {
     $id: authState.userId,
@@ -30,10 +44,16 @@ export const App = () => {
 
   return (
     <styled.div
-      style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        minHeight: '100vh',
+        backgroundColor: color('background', 'default'),
+      }}
     >
       <TopNavigation>
         <Logo />
+
         <Dropdown.Root>
           <Dropdown.Trigger>
             <Button style={{ marginLeft: 'auto' }} size="xsmall">
@@ -48,6 +68,13 @@ export const App = () => {
               }
             >
               Profile
+            </Dropdown.Item>
+            <Dropdown.Separator />
+            <Dropdown.Item
+              icon={<IconEye />}
+              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+            >
+              {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
             </Dropdown.Item>
             <Dropdown.Separator />
             <Dropdown.Item

@@ -157,13 +157,13 @@ export const SpecificFieldModal = ({
                               index: newIndex,
                               linkedField: `${
                                 meta.field || meta.displayName.toLowerCase()
-                              }NameHTML`,
+                              }HTML`,
                               format: 'rich-text',
                             },
                           },
                           [`${
                             meta.field || meta.displayName.toLowerCase()
-                          }NameHTML`]: {
+                          }HTML`]: {
                             type: 'string',
                             meta: { isLinkedField: true },
                           },
