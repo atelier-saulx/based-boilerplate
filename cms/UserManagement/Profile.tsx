@@ -32,9 +32,8 @@ export const Profile = () => {
     <styled.div
       style={{
         display: 'flex',
-        height: '100%',
-        justifyContent: 'center',
-        alignItems: 'center',
+        padding: '48px 48px',
+        width: '100%',
       }}
     >
       <Container
