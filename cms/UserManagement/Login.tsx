@@ -43,19 +43,17 @@ export const Login = () => {
       <Container
         icon={<Logo />}
         style={{ maxWidth: '700px', width: '70%' }}
-        label="CMS"
-        description="login"
+        // label="CMS"
+        // description="login"
       >
-        {data?.user.length === 0 ? (
-          <Text>
-            No users found, please input credentials to create a first user
-          </Text>
-        ) : (
-          ''
-        )}
         <styled.div
           style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
         >
+          <Text size={18} weight="strong">
+            {data?.user.length === 0
+              ? 'No users found, please input credentials to create a first user'
+              : 'Login'}
+          </Text>
           {data?.user.length === 0 && (
             <Input type="text" label="Name" onChange={(v) => setName(v)} />
           )}
