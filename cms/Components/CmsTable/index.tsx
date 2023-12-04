@@ -40,6 +40,7 @@ type CmsTableProps = {
   onRowClick?: (v, rIdx) => void
   onCellClick?: (v, rIdx, cIdx) => void
   onDelete?: () => void
+  columnNamesInRightOrder?: string[]
   style?: CSSProperties | Style
 }
 
@@ -53,6 +54,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   onRowClick,
   onCellClick,
   onDelete,
+  columnNamesInRightOrder,
   style,
   filter,
 }) => {
@@ -90,9 +92,15 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   const parsedData = query ? result.items : data
 
-  const columnNames = [...new Set(parsedData?.flatMap(Object.keys))] as string[]
-  const hiddenColumnNames = columnNames.filter(
-    (item) => !hiddenColumns.includes(item.toLowerCase())
+  let columnNames: any[] = [...new Set(parsedData?.flatMap(Object.keys))]
+
+  console.log(columnNamesInRightOrder, '🍟')
+  if (columnNamesInRightOrder) {
+    columnNames = columnNamesInRightOrder
+  }
+
+  let hiddenColumnNames = columnNames?.filter(
+    (item) => !hiddenColumns?.includes(item?.toLowerCase())
   )
 
   useEffect(() => {
@@ -351,7 +359,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                       label="$field"
                       value={fieldValue}
                       type="select"
-                      options={columnNames.map((item) => ({
+                      options={columnNames?.map((item) => ({
                         value: item,
                       }))}
                       onChange={(v) => setFieldValue(v)}
@@ -437,14 +445,16 @@ export const CmsTable: FC<CmsTableProps> = ({
                 key={idx}
                 title={item}
                 type="checkbox"
-                value={!hiddenColumns.includes(item.toLowerCase())}
+                value={!hiddenColumns?.includes(item?.toLowerCase())}
                 onChange={(v) => {
                   if (v) {
                     setFilteredColumns([
-                      ...hiddenColumns.filter((x) => x !== item.toLowerCase()),
+                      ...hiddenColumns?.filter(
+                        (x) => x !== item?.toLowerCase()
+                      ),
                     ])
                   } else {
-                    setFilteredColumns([...hiddenColumns, item.toLowerCase()])
+                    setFilteredColumns([...hiddenColumns, item?.toLowerCase()])
                   }
                 }}
               />
@@ -469,7 +479,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                 paddingRight: 8,
               }}
             >
-              {hiddenColumnNames.map((item, idx) => (
+              {hiddenColumnNames?.map((item, idx) => (
                 <styled.div
                   key={idx}
                   style={{
@@ -535,7 +545,7 @@ export const CmsTable: FC<CmsTableProps> = ({
               className="grid-class"
               height={height}
               rowCount={parsedData?.length}
-              columnCount={hiddenColumnNames.length}
+              columnCount={hiddenColumnNames?.length}
               width={w}
               rowHeight={(index) => ROW_HEIGHT}
               columnWidth={(index) =>
