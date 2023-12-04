@@ -2,7 +2,16 @@ import React, { useEffect, useState } from 'react'
 import { styled } from 'inlines'
 import { useQuery, useClient } from '@based/react'
 import { useRoute } from 'kabouter'
-import { IconExtension, IconStar, Modal, Row, Confirmation } from '@based/ui'
+import {
+  IconExtension,
+  IconStar,
+  Modal,
+  Row,
+  Confirmation,
+  Text,
+  Button,
+  IconDelete,
+} from '@based/ui'
 import { CheckboxInput } from '@based/ui/dist/components/Input/CheckboxInput'
 import { SCHEMA_FIELDS } from './AddField'
 import { SpecificFieldModal } from './SpecificFieldModal'
@@ -99,6 +108,7 @@ export const SchemaFields = () => {
 
   const [showSystemFields, setShowSystemFields] = useState(false)
   const [openEditModal, setOpenEditModal] = useState(false)
+  const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [itemToEdit, setItemToEdit] = useState('')
   const [rearrange, setRearrange] = useState(false)
 
@@ -161,6 +171,7 @@ export const SchemaFields = () => {
                     item={item}
                     setItemToEdit={setItemToEdit}
                     setOpenEditModal={setOpenEditModal}
+                    setOpenDeleteModal={setOpenDeleteModal}
                     key={item.id}
                     onClick={async () => {
                       const fields = schema?.types[routeType as string].fields
@@ -224,6 +235,54 @@ export const SchemaFields = () => {
               field={itemToEdit}
               setOpenSpecificFieldModal={setOpenEditModal}
             />
+          </Modal.Content>
+        </Modal.Root>
+        {/* Delete modal */}
+        <Modal.Root open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
+          <Modal.Content>
+            {({ close }) => (
+              <>
+                <Modal.Title>Delete field</Modal.Title>
+                <Modal.Body>
+                  <Text>
+                    Are you sure you want to delete the field{' '}
+                    <b>{itemToEdit}</b>
+                  </Text>
+                  <Modal.Warning type="alert">
+                    You are about to delete the field <b>{itemToEdit}</b> for
+                    all users.
+                  </Modal.Warning>
+                </Modal.Body>
+                <Modal.Actions>
+                  <Button onClick={close} color="system">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={async () => {
+                      await client.call('db:set-schema', {
+                        mutate: true,
+                        schema: {
+                          types: {
+                            [routeType as string]: {
+                              fields: {
+                                [itemToEdit]: { $delete: true },
+                              },
+                            },
+                          },
+                        },
+                      })
+                      close()
+                    }}
+                    color="alert"
+                    icon={<IconDelete />}
+                    displayShortcut
+                    keyboardShortcut="Enter"
+                  >
+                    Delete
+                  </Button>
+                </Modal.Actions>
+              </>
+            )}
           </Modal.Content>
         </Modal.Root>
       </DndContext>

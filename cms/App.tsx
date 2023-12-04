@@ -52,7 +52,13 @@ export const App = () => {
       }}
     >
       <TopNavigation>
-        <Logo />
+        <Logo
+          style={{ cursor: 'pointer' }}
+          onClick={() => {
+            // @ts-ignore
+            route.setQuery({ section: null })
+          }}
+        />
 
         <Dropdown.Root>
           <Dropdown.Trigger>

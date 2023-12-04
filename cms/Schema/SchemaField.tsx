@@ -21,6 +21,7 @@ export const SchemaField = ({
   item,
   index,
   setOpenEditModal,
+  setOpenDeleteModal,
   setItemToEdit,
   id,
 }) => {
@@ -88,17 +89,20 @@ export const SchemaField = ({
         <Dropdown.Item
           //@ts-ignore
           onClick={(e) => {
-            //   e.preventDefault(e)
-            //   e.stopPropagation(e)
-            console.log('click')
             setOpenEditModal(true)
-            console.log('item??', item)
             setItemToEdit(item.name)
           }}
         >
           Edit
         </Dropdown.Item>
-        <Dropdown.Item onClick={onClick}>Delete</Dropdown.Item>
+        <Dropdown.Item
+          onClick={() => {
+            setItemToEdit(item.name)
+            setOpenDeleteModal(true)
+          }}
+        >
+          Delete
+        </Dropdown.Item>
       </Dropdown.Items>
     </Dropdown.Root>
   )

@@ -229,6 +229,8 @@ export const SchemaBuilder = () => {
                     },
                   })
                 }
+
+                setDeleteString('')
                 //@ts-ignore
                 route.setQuery({ section: section, type: null })
                 setOpenDeleteModal(false)
@@ -237,7 +239,7 @@ export const SchemaBuilder = () => {
               displayShortcut
               keyboardShortcut="Enter"
             >
-              Save
+              Delete
             </Button>
           </Modal.Actions>
         </Modal.Content>
