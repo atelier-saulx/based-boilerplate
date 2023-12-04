@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { styled } from 'inlines'
-import { Text, Row, Button, IconPlus, Table } from '@based/ui'
+import { Text, Row, Button, IconPlus } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
 import { CmsTable } from '../Components/CmsTable'
@@ -11,8 +11,6 @@ export const ContentOverview = () => {
 
   const route = useRoute('[section][id]')
   const routeSection = route.query.section
-
-  const [columnNamesInRightOrder, setColumnNamesInRightOrder] = useState([])
 
   // TODO: ordering columns based on index
 
@@ -30,7 +28,7 @@ export const ContentOverview = () => {
     console.log(realFields, 'flio')
 
     let sortedByMetaIndex = realFields.sort(
-      (p1: any, p2: any) => p1[1].meta.index - p2[1].meta.index
+      (p1: any, p2: any) => p1[1]?.meta?.index - p2[1]?.meta?.index
     )
 
     for (let i = 0; i < sortedByMetaIndex.length; i++) {

@@ -40,7 +40,11 @@ export const SpecificFieldModal = ({
 
   let thisSpecificField = schema.types[routeType].fields[field]
 
-  // console.log(field, '🐸', thisSpecificField)
+  let newIndex = Object.keys(schema.types[routeType].fields).length + 1
+  // console.log(
+  //   Object.keys(schema.types[routeType].fields).length,
+  //   'current length'
+  // )
 
   useEffect(() => {
     if (thisSpecificField?.meta) {
@@ -133,6 +137,7 @@ export const SpecificFieldModal = ({
           onClick={async () => {
             // TODO set meta fields if there are also description
             // let metaFields
+
             //  routeType
             if (meta.displayName) {
               const newMeta = Object.fromEntries(
@@ -149,6 +154,7 @@ export const SpecificFieldModal = ({
                             type: 'json',
                             meta: {
                               ...newMeta,
+                              index: newIndex,
                               linkedField: `${
                                 meta.field || meta.displayName.toLowerCase()
                               }NameHTML`,
@@ -175,7 +181,10 @@ export const SpecificFieldModal = ({
                         fields: {
                           [meta.fieldName || meta.displayName.toLowerCase()]: {
                             type: fieldType.toLowerCase(),
-                            meta: newMeta,
+                            meta: {
+                              ...newMeta,
+                              index: newIndex,
+                            },
                           },
                         },
                       },

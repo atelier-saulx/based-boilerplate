@@ -72,7 +72,9 @@ const parseSchema = (schema, routeType) => {
       })
     }
   }
-  orderedArray.sort((a, b) => a?.index - b?.index)
+  orderedArray.sort((a, b) => a?.meta.index - b?.meta.index)
+
+  console.log(orderedArray, '🙀')
 
   return [...orderedArray, ...array]
 }
@@ -124,6 +126,34 @@ export const SchemaFields = () => {
     setRearrange(false)
   }, [schema, routeType])
 
+  const handleDragEnd = async (event) => {
+    const { active, over } = event
+
+    if (active.id !== over.id) {
+      await setRearrange(true)
+      await setArray((items) => {
+        const oldIndex = items?.findIndex(
+          (item) => item.id === active.id
+        ) as number
+        const newIndex = items?.findIndex(
+          (item) => item.id === over.id
+        ) as number
+        return arrayMove(items as any, oldIndex, newIndex)
+      })
+
+      await client.call('db:set-schema', {
+        mutate: true,
+        schema: {
+          types: {
+            [routeType as string]: {
+              fields: parseItems(array, schema, routeType),
+            },
+          },
+        },
+      })
+    }
+  }
+
   return (
     <div style={{}}>
       <DndContext
@@ -154,14 +184,14 @@ export const SchemaFields = () => {
                 )
                 return (
                   <SchemaField
-                    id={item.id}
+                    id={i}
                     ALL_FIELDS={ALL_FIELDS}
                     SYSTEM_FIELDS_LABELS={SYSTEM_FIELDS_LABELS}
                     index={index}
                     item={item}
                     setItemToEdit={setItemToEdit}
                     setOpenEditModal={setOpenEditModal}
-                    key={item.id}
+                    key={i}
                     onClick={async () => {
                       const fields = schema?.types[routeType as string].fields
 
@@ -228,7 +258,7 @@ export const SchemaFields = () => {
         </Modal.Root>
       </DndContext>
       <div style={{ height: 20 }} />
-      {rearrange && (
+      {/* {rearrange && (
         <Confirmation
           // style={{ marginTop: '40px', marginBottom: 0 }}
           onCancel={() => {
@@ -249,23 +279,7 @@ export const SchemaFields = () => {
             })
           }}
         />
-      )}
+      )} */}
     </div>
   )
-  function handleDragEnd(event) {
-    const { active, over } = event
-
-    if (active.id !== over.id) {
-      setRearrange(true)
-      setArray((items) => {
-        const oldIndex = items?.findIndex(
-          (item) => item.id === active.id
-        ) as number
-        const newIndex = items?.findIndex(
-          (item) => item.id === over.id
-        ) as number
-        return arrayMove(items as any, oldIndex, newIndex)
-      })
-    }
-  }
 }

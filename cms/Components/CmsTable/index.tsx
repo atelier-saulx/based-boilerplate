@@ -95,7 +95,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   let columnNames: any[] = [...new Set(parsedData?.flatMap(Object.keys))]
 
   console.log(columnNamesInRightOrder, '🍟')
-  if (columnNamesInRightOrder) {
+  if (columnNamesInRightOrder && columnNamesInRightOrder.length > 0) {
     columnNames = columnNamesInRightOrder
   }
 
