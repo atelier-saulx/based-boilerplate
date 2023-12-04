@@ -69,7 +69,7 @@ export const SchemaField = ({
         <Badge color={ALL_FIELDS[index].color as any} light>
           {item.type}
         </Badge>
-        {item.index}-{index}
+
         <Dropdown.Trigger>
           <Button
             onClick={(e) => {

@@ -21,7 +21,9 @@ export const SchemaSidebar = () => {
 
   if (schema) {
     let schemaTypes = schema?.types
-    let schemaTypeKeys = Object.keys(schemaTypes)
+    let schemaTypeKeys = Object.keys(schemaTypes).sort((a, b) =>
+      a.localeCompare(b)
+    )
 
     schemaTypeKeys
       .filter((key) => key !== 'user')
@@ -37,7 +39,9 @@ export const SchemaSidebar = () => {
   return (
     <Menu
       header={
-        <styled.div style={{ position: 'relative', width: '100%' }}>
+        <styled.div
+          style={{ position: 'relative', width: '100%', minHeight: '100%' }}
+        >
           <Modal.Root>
             <Modal.Trigger>
               <Button icon={<IconPlus />} light size="small">
