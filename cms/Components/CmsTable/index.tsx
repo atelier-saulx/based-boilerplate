@@ -99,7 +99,7 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   const parsedData = query ? result.items : data
 
-  console.log(filter, customFilter, 'Query??')
+  // console.log(filter, customFilter, 'Query??')
 
   const client = useClient()
 
@@ -120,7 +120,7 @@ export const CmsTable: FC<CmsTableProps> = ({
     setSelectedRowIndexes([])
   }, [queryId])
   // console.log(result, 'Result>?')
-  console.log(parsedData, 'ParsedDAta?')
+  // console.log(parsedData, 'ParsedDAta?')
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
 
@@ -292,7 +292,16 @@ export const CmsTable: FC<CmsTableProps> = ({
               color="neutral"
               light
               onClick={() => {
-                selectedRowIndexes.map((idx) => console.log(parsedData[idx]))
+                selectedRowIndexes.map(async (idx) => {
+                  console.log(parsedData[idx])
+
+                  await client.call('db:set', {
+                    // TODO check this language
+                    $language: 'en',
+                    type: parsedData[idx].type,
+                    ...parsedData[idx],
+                  })
+                })
 
                 setSelectedRowIndexes([])
               }}

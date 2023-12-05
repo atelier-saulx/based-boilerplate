@@ -52,7 +52,7 @@ export const SchemaBuilder = () => {
     },
   })
 
-  console.log(schema)
+  // console.log(schema)
 
   useEffect(() => {
     if (schema) {
