@@ -5,6 +5,7 @@ import { Style, styled } from 'inlines'
 import { SortOptions, useInfiniteQuery } from './useInfiniteQuery'
 import { BasedQuery } from '@based/client'
 import { RenderAs } from './RenderAs'
+import { useClient } from '@based/react'
 import {
   Row,
   Modal,
@@ -18,6 +19,7 @@ import {
   Input,
   Text,
   color,
+  IconCopy,
 } from '@based/ui'
 
 type CmsTableProps = {
@@ -92,6 +94,8 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   const parsedData = query ? result.items : data
 
+  const client = useClient()
+
   let columnNames: any[] = [...new Set(parsedData?.flatMap(Object.keys))]
 
   // console.log(columnNamesInRightOrder, '🍟')
@@ -106,9 +110,10 @@ export const CmsTable: FC<CmsTableProps> = ({
   useEffect(() => {
     setCustomFilter('')
     setAddedFilters([])
+    setSelectedRowIndexes([])
   }, [queryId])
   // console.log(result, 'Result>?')
-  // console.log(parsedData, 'ParsedDAta?')
+  console.log(parsedData, 'ParsedDAta?')
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
 
@@ -148,10 +153,12 @@ export const CmsTable: FC<CmsTableProps> = ({
             'default'
           )}`,
           paddingRight: 8,
+          cursor: onRowClick ? 'pointer' : 'auto',
           ...style,
         }}
         onClick={() => {
           if (onRowClick) {
+            setSelectedRowIndexes([])
             onRowClick(parsedData[rowIndex], rowIndex)
           }
 
@@ -172,26 +179,29 @@ export const CmsTable: FC<CmsTableProps> = ({
               '& div': { width: '24px' },
             }}
           >
-            <Input
-              type="checkbox"
-              style={{ maxWidth: 24 }}
-              value={selectedRowIndexes.includes(rowIndex)}
-              onChange={() => {
-                console.log('selected rowindex', rowIndex)
-                if (!selectedRowIndexes.includes(rowIndex)) {
-                  setSelectedRowIndexes([...selectedRowIndexes, rowIndex])
-                } else {
-                  let tempArr = selectedRowIndexes.filter(
-                    (item) => item !== rowIndex
-                  )
-                  setSelectedRowIndexes([...tempArr])
-                }
+            <div
+              onClick={(e) => {
+                e.stopPropagation()
+                // e.preventDefault()
               }}
-              //   onClick={(e) => {
-              //     e.stopPropagation()
-              //     e.preventDefault()
-              //   }}
-            />
+            >
+              <Input
+                type="checkbox"
+                style={{ maxWidth: 24 }}
+                value={selectedRowIndexes.includes(rowIndex)}
+                onChange={() => {
+                  console.log('selected rowindex', rowIndex)
+                  if (!selectedRowIndexes.includes(rowIndex)) {
+                    setSelectedRowIndexes([...selectedRowIndexes, rowIndex])
+                  } else {
+                    let tempArr = selectedRowIndexes.filter(
+                      (item) => item !== rowIndex
+                    )
+                    setSelectedRowIndexes([...tempArr])
+                  }
+                }}
+              />
+            </div>
           </styled.div>
         )}
         {/* render cell based on column name type renderAs */}
@@ -258,29 +268,44 @@ export const CmsTable: FC<CmsTableProps> = ({
 
       {selectedRowIndexes.length > 0 && (
         <Row style={{ marginBottom: 12 }}>
-          <Row
-            style={{
-              gap: 12,
-              padding: '6px 12px',
-              border: `1px solid ${borderColor}`,
-              borderRadius: 4,
-              boxShadow: `0px 1px 4px 0px rgba(27, 36, 44, 0.04)`,
-            }}
-          >
+          <Row style={{ gap: 12, padding: '0px 12px' }}>
             <Text weight="strong" color="brand">
-              {selectedRowIndexes.length} selected rows
+              {selectedRowIndexes.length} selected
             </Text>
-            <Button size="xsmall" onClick={() => setSelectedRowIndexes([])}>
+            <Button
+              size="small"
+              color="system"
+              light
+              onClick={() => setSelectedRowIndexes([])}
+            >
               Clear selection
             </Button>
             <Button
-              size="xsmall"
+              size="small"
+              color="neutral"
+              light
+              onClick={() => {
+                selectedRowIndexes.map((idx) => console.log(parsedData[idx]))
+
+                setSelectedRowIndexes([])
+              }}
+              icon={<IconCopy />}
+            >
+              Duplicate
+            </Button>
+            <Button
+              size="small"
+              light
               color="alert"
               icon={<IconDelete />}
-              onClick={() => {
-                if (onDelete) {
-                  onDelete()
-                }
+              onClick={async () => {
+                await selectedRowIndexes.map(async (idx) => {
+                  await client.call('db:delete', {
+                    $id: parsedData[idx].id,
+                  })
+                })
+
+                setSelectedRowIndexes([])
               }}
             >
               Delete
@@ -526,6 +551,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                   <Text
                     weight="strong"
                     transform="capitalize"
+                    truncate
                     color={sortOptions.$field === item ? 'brand' : 'default'}
                     onClick={() => {
                       if (sortOptions.$order === 'desc') {

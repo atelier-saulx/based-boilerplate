@@ -248,9 +248,9 @@ export const SchemaBuilder = () => {
                 }
 
                 setDeleteString('')
+                setOpenDeleteModal(false)
                 //@ts-ignore
                 route.setQuery({ section: section, type: null })
-                setOpenDeleteModal(false)
               }}
               color="alert"
               displayShortcut

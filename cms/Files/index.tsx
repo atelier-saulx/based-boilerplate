@@ -1,14 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'inlines'
-import {
-  Row,
-  Text,
-  Button,
-  IconPlus,
-  Table,
-  useInfiniteQuery,
-  useWindowResize,
-} from '@based/ui'
+import { Row, Text, Button, IconPlus, useWindowResize } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { CmsTable } from '../Components/CmsTable'
 
