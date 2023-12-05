@@ -74,6 +74,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   const [filterValue, setFilterValue] = useState('')
   const [addedFilters, setAddedFilters] = useState<{}[]>([])
   const [customFilter, setCustomFilter] = useState<any>()
+  const [renderCounter, setRenderCounter] = useState(1)
 
   let w = width
   let h = height
@@ -90,7 +91,8 @@ export const CmsTable: FC<CmsTableProps> = ({
       sortOptions.$field +
       sortOptions.$order +
       customFilter +
-      addedFilters.length,
+      addedFilters.length +
+      renderCounter,
     sortOptions: sortOptions,
     itemCount: data?.length,
     height: h,
@@ -322,6 +324,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                 })
 
                 setSelectedRowIndexes([])
+                setRenderCounter(renderCounter + 1)
               }}
             >
               Delete

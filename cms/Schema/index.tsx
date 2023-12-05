@@ -9,6 +9,7 @@ import {
   IconMoreHorizontal,
   IconEdit,
   IconDelete,
+  IconCopy,
   Modal,
   Input,
 } from '@based/ui'
@@ -94,6 +95,14 @@ export const SchemaBuilder = () => {
                     icon={<IconEdit />}
                   >
                     Edit Type
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => {
+                      // setOpenEditModal(true)
+                    }}
+                    icon={<IconCopy />}
+                  >
+                    Clone Type
                   </Dropdown.Item>
                   <Dropdown.Separator />
                   <Dropdown.Item
