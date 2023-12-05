@@ -52,15 +52,15 @@ export const SchemaBuilder = () => {
     },
   })
 
-  // console.log(schema)
+  console.log(schema)
 
   useEffect(() => {
     if (schema) {
       setTypeName(routeType)
-      setPluralName(schema?.types[routeType]?.meta?.pluralName || section)
-      setDescription(schema?.types[routeType]?.meta?.description || section)
+      setPluralName(schema?.types[routeType]?.meta?.displayName)
+      setDescription(schema?.types[routeType]?.meta?.description)
     }
-  }, [openEditModal])
+  }, [openEditModal, routeType])
 
   return (
     <styled.div
@@ -134,11 +134,16 @@ export const SchemaBuilder = () => {
             <div style={{ display: 'grid', gap: 24 }}>
               <Input
                 autoFocus
+                disabled
                 type="text"
                 label="Type name"
                 value={typeName}
-                onChange={(v) => {
-                  setTypeName(v)
+                onChange={() => {}}
+                style={{
+                  pointerEvents: 'none',
+                  '& :hover': {
+                    cursor: 'not-allowed',
+                  },
                 }}
               />
               <Input
@@ -168,7 +173,19 @@ export const SchemaBuilder = () => {
             </Button>
             <Button
               onClick={async () => {
-                // TODO Edit this in the schema db
+                await client.call('db:set-schema', {
+                  mutate: true,
+                  schema: {
+                    types: {
+                      [routeType]: {
+                        meta: {
+                          displayName: pluralName,
+                          description: description,
+                        },
+                      },
+                    },
+                  },
+                })
                 setOpenEditModal(false)
               }}
               color="primary"

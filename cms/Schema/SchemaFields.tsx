@@ -232,6 +232,7 @@ export const SchemaFields = () => {
             <SpecificFieldModal
               field={itemToEdit}
               setOpenSpecificFieldModal={setOpenEditModal}
+              editField
             />
           </Modal.Content>
         </Modal.Root>

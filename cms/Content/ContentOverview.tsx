@@ -53,7 +53,7 @@ export const ContentOverview = () => {
       >
         <Row>
           <Text size={24} weight="strong">
-            {schema?.types[routeSection as string]?.meta?.pluralName ||
+            {schema?.types[routeSection as string]?.meta?.displayName ||
               routeSection}
           </Text>
         </Row>
