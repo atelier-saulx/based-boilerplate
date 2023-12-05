@@ -85,7 +85,12 @@ export const CmsTable: FC<CmsTableProps> = ({
     query,
     getQueryItems,
     rowHeight: 60,
-    queryId: queryId + sortOptions.$field + sortOptions.$order + customFilter,
+    queryId:
+      queryId +
+      sortOptions.$field +
+      sortOptions.$order +
+      customFilter +
+      addedFilters.length,
     sortOptions: sortOptions,
     itemCount: data?.length,
     height: h,
@@ -93,6 +98,8 @@ export const CmsTable: FC<CmsTableProps> = ({
   })
 
   const parsedData = query ? result.items : data
+
+  console.log(filter, customFilter, 'Query??')
 
   const client = useClient()
 
@@ -454,6 +461,19 @@ export const CmsTable: FC<CmsTableProps> = ({
             }}
           </Modal.Content>
         </Modal.Root>
+
+        {addedFilters.length > 0 && (
+          <Button
+            size="xsmall"
+            style={{ marginLeft: 8 }}
+            onClick={() => {
+              setCustomFilter('')
+              setAddedFilters([])
+            }}
+          >
+            Clear Filter{addedFilters.length < 2 ? '' : 's'}
+          </Button>
+        )}
 
         <Dropdown.Root>
           <Dropdown.Trigger>
