@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from 'react'
 import { styled } from 'inlines'
-import { Row, Text, Button, IconPlus, Table, useInfiniteQuery } from '@based/ui'
+import {
+  Row,
+  Text,
+  Button,
+  IconPlus,
+  Table,
+  useInfiniteQuery,
+  useWindowResize,
+} from '@based/ui'
 import { useClient, useQuery } from '@based/react'
-import { useWindowResize } from '../hooks/useWindowResize'
 import { CmsTable } from '../Components/CmsTable'
 
 export const FileLibrary = () => {

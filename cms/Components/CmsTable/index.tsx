@@ -147,6 +147,7 @@ export const CmsTable: FC<CmsTableProps> = ({
             'neutralNormal',
             'default'
           )}`,
+          paddingRight: 8,
           ...style,
         }}
         onClick={() => {

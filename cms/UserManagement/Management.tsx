@@ -1,98 +1,53 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { styled } from 'inlines'
-import {
-  Avatar,
-  Button,
-  Dropdown,
-  FormGroup,
-  IconDelete,
-  IconEdit,
-  IconMoreHorizontal,
-  IconPlus,
-  Input,
-  Modal,
-  Table,
-  Text,
-} from '@based/ui'
+import { Button, FormGroup, IconPlus, Input, Modal, Row, Text } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
-import { ContentEditor } from '../Content/ContentEditor'
+import { useWindowResize } from '@based/ui'
+import { CmsTable } from '../Components/CmsTable'
 
 export const Management = () => {
   const [email, setEmail] = useState('')
   const [name, setName] = useState('')
   const [userValues, setUserValues] = useState<any>()
   const [userId, setUserId] = useState<any>()
-  const { data, loading } = useQuery('db', {
-    user: {
-      status: true,
-      name: true,
-      id: true,
-      email: true,
-      createdAt: true,
-      profileImg: true,
-      //   $all: true,
-      $list: {
-        $find: {
-          $traverse: 'children',
-          $filter: {
-            $field: 'type',
-            $operator: '=',
-            $value: 'user',
-          },
-        },
-      },
-    },
-  })
-  // const { data: user, loading: userLoading } = useQuery('db', {
-  //   $id: userId,
-  //   status: true,
-  //   name: true,
-  //   email: true,
-  //   //   $all: true,
-  //   createdAt: true,
-  // })
+  const [openEditUserModal, setOpenEditUserModal] = useState(false)
+
+  const { width, height } = useWindowResize()
+  const [tableWidth, setTableWidth] = useState<number>(600)
+  const [tableHeight, setTableHeight] = useState<number>(600)
+
+  useEffect(() => {
+    setTableWidth(width - 324)
+    setTableHeight(height - 296)
+  }, [width, height])
+
   const client = useClient()
 
-  console.log(data?.user)
-
   return (
-    <styled.div
-      style={{
-        display: 'flex',
-        width: '100%',
-        paddingTop: 90,
-        // alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <div style={{ width: 900, height: 400 }}>
+    <styled.div style={{ padding: '24px 48px', width: '100%' }}>
+      <Row
+        style={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 32,
+        }}
+      >
+        <Text size={24} weight="strong">
+          Users
+        </Text>
         <Modal.Root>
-          <styled.div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              marginBottom: 36,
-            }}
-          >
-            <Text size={24} weight="strong">
-              User Management
-            </Text>
-            <Modal.Trigger>
-              <Button
-                icon={<IconPlus />}
-                size="small"
-                onClick={async () => {
-                  // await client.call('db:set', {
-                  //   // TODO check this ? en default?
-                  //   $language: 'en',
-                  //   type: routeSection,
-                  // })
-                }}
-              >
-                Add new User
-              </Button>
-            </Modal.Trigger>
-          </styled.div>
+          <Modal.Trigger>
+            <Button
+              icon={<IconPlus />}
+              size="small"
+              ghost
+              color="primary"
+              onClick={() => {}}
+            >
+              Add new User
+            </Button>
+          </Modal.Trigger>
+
           <Modal.Content>
             {({ close }) => {
               return (
@@ -125,128 +80,97 @@ export const Management = () => {
             }}
           </Modal.Content>
         </Modal.Root>
-        <Modal.Root>
-          <Table
-            columns={[
-              { header: 'Email', key: 'email' },
-              { header: 'ID', key: 'id', renderAs: 'badge' },
-              { header: 'Name', key: 'name' },
-              {
-                header: 'Avatar',
-                key: 'profileImg',
-                renderAs: 'avatar',
+      </Row>
+      <styled.div>
+        <CmsTable
+          width={tableWidth}
+          height={tableHeight}
+          query={(offset, limit, sortOptions, filter) => {
+            return client.query('db', {
+              $id: 'root',
+              children: {
+                $all: true,
+                $list: {
+                  $sort: sortOptions,
+                  $offset: offset,
+                  $limit: 25,
+                  $find: {
+                    $filter: filter,
+                  },
+                },
               },
-              {
-                header: 'Created',
-                key: 'createdAt',
-                renderAs: 'date-time-human',
-              },
-              {
-                id: 'actions',
-                align: 'end',
-                renderAs: (row) => (
-                  <Dropdown.Root>
-                    <Dropdown.Trigger>
-                      <Button ghost icon={<IconMoreHorizontal />} />
-                    </Dropdown.Trigger>
-                    <Dropdown.Items>
-                      <Modal.Trigger>
-                        <Button
-                          // style={{ width: '100%' }}
-                          icon={<IconEdit />}
-                          size="xsmall"
-                          onClick={() => setUserId(row)}
-                        >
-                          Edit
-                        </Button>
-                      </Modal.Trigger>
+            })
+          }}
+          getQueryItems={(d) => {
+            return d.children
+          }}
+          filter={{
+            $operator: '=',
+            $field: 'type',
+            $value: 'user',
+          }}
+          // queryId forces a rerender // subscription
+          queryId={'user' as string}
+          onRowClick={(row) => {
+            setUserId(row)
+            setOpenEditUserModal(true)
+          }}
+        />
+      </styled.div>
 
-                      <Dropdown.Separator />
-                      <Modal.Root>
-                        <Modal.Trigger>
-                          <Button icon={<IconDelete />} size="xsmall">
-                            Delete
-                          </Button>
-                        </Modal.Trigger>
-                        <Modal.Confirmation
-                          title="Delete User"
-                          action={{
-                            action: async () => {
-                              client.call('db:delete', {
-                                $id: row.id,
-                              })
-                            },
-                            label: 'Confirm',
-                          }}
-                          description={`Are you sure you want to delete the user: ${row.email}`}
-                          label="This action is irreversible"
-                          type="alert"
-                        />
-                      </Modal.Root>
-                    </Dropdown.Items>
-                  </Dropdown.Root>
-                ),
-              },
-            ]}
-            onRowClick={(e) => console.log(e)}
-            header="sticky"
-            virtualized={false}
-            border={true}
-            data={data?.user}
-          />
-          <Modal.Content>
-            {({ close }) => {
-              return (
-                <>
-                  <Modal.Title>Edit {userId?.id}</Modal.Title>
-                  <Modal.Body>
-                    <FormGroup
-                      values={{ ...userId, ...userValues }}
-                      config={{
-                        status: { type: 'string' },
-                        name: { type: 'string' },
-                        email: { type: 'string' },
-                        createdAt: {
-                          type: 'number',
-                          meta: { readOnly: true },
-                        },
-                      }}
-                      alwaysAccept
-                      onChange={(v) => setUserValues({ ...userValues, ...v })}
-                    />
-                  </Modal.Body>
-                  <Modal.Actions>
-                    <Button
-                      color="neutral"
-                      light
-                      onClick={close}
-                      displayShortcut
-                      keyboardShortcut="Esc"
-                    >
-                      Cancel
-                    </Button>
-                    <Button
-                      displayShortcut
-                      keyboardShortcut="Enter"
-                      onClick={async () => {
-                        client
-                          .call('db:set', {
-                            $id: userId.id,
-                            ...userId,
-                            ...userValues,
-                          })
-                          .then(() => close())
-                      }}
-                    >
-                      Confirm
-                    </Button>
-                  </Modal.Actions>
-                </>
-              )
-            }}
-          </Modal.Content>
-        </Modal.Root>
-      </div>
+      <Modal.Root open={openEditUserModal} onOpenChange={setOpenEditUserModal}>
+        <Modal.Content>
+          {({ close }) => {
+            return (
+              <>
+                <Modal.Title>Edit {userId?.id}</Modal.Title>
+                <Modal.Body>
+                  <FormGroup
+                    values={{ ...userId, ...userValues }}
+                    config={{
+                      status: { type: 'string' },
+                      name: { type: 'string' },
+                      email: { type: 'string' },
+                      createdAt: {
+                        type: 'number',
+                        meta: { readOnly: true },
+                      },
+                    }}
+                    alwaysAccept
+                    onChange={(v) => setUserValues({ ...userValues, ...v })}
+                  />
+                </Modal.Body>
+                <Modal.Actions>
+                  <Button
+                    color="neutral"
+                    light
+                    onClick={close}
+                    displayShortcut
+                    keyboardShortcut="Esc"
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    displayShortcut
+                    keyboardShortcut="Enter"
+                    onClick={async () => {
+                      client
+                        .call('db:set', {
+                          $id: userId.id,
+                          ...userId,
+                          ...userValues,
+                        })
+                        .then(() => close())
+                    }}
+                  >
+                    Confirm
+                  </Button>
+                </Modal.Actions>
+              </>
+            )
+          }}
+        </Modal.Content>
+      </Modal.Root>
     </styled.div>
   )
 }
