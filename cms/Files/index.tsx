@@ -1,10 +1,21 @@
 import React, { useState } from 'react'
 import { styled } from 'inlines'
-import { Row, Text, Button, IconPlus, Table, useInfiniteQuery } from '@based/ui'
+import {
+  Row,
+  Text,
+  Button,
+  IconPlus,
+  Table,
+  useInfiniteQuery,
+  Toggle,
+} from '@based/ui'
 import { useClient, useQuery } from '@based/react'
+import { Tile } from './Tile'
+import { Explorer } from './Explorer'
 
 export const FileLibrary = () => {
   // const client = useClient()
+  const [table, setTable] = useState(false)
 
   const [filter, setFilter] = useState({
     operator: '=',
@@ -53,26 +64,31 @@ export const FileLibrary = () => {
       >
         <Text size={24} weight="strong">
           Files
+          <Toggle value={!table} onChange={(v: any | string) => setTable(!v)} />
         </Text>
         <Button icon={<IconPlus />} ghost color="primary" size="small">
           Add File
         </Button>
       </Row>
       <styled.div style={{ maxWidth: 854 }}>
-        <Table
-          data={data}
-          topBar
-          onVisibleElementsChange={setVisibleElements}
-          onScrollToBottom={() => {
-            fetchMore()
-          }}
-          onFilterChange={(v) => {
-            if (v) {
-              setFilter(v)
-              filterChange()
-            }
-          }}
-        />
+        {table ? (
+          <Table
+            data={data}
+            topBar
+            onVisibleElementsChange={setVisibleElements}
+            onScrollToBottom={() => {
+              fetchMore()
+            }}
+            onFilterChange={(v) => {
+              if (v) {
+                setFilter(v)
+                filterChange()
+              }
+            }}
+          />
+        ) : (
+          <Explorer data={data} />
+        )}
       </styled.div>
     </styled.div>
   )
