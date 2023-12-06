@@ -1,12 +1,19 @@
 import React, { useState } from 'react'
 import { styled } from 'inlines'
 import { IconFile, IconFolder, Input, Text, color } from '@based/ui'
+import { useSortable } from '@dnd-kit/sortable'
+import { CSS } from '@dnd-kit/utilities'
 
 export const Tile = ({ folder, name, setOpenSidebar, id, setSelected }) => {
   const [editName, setEditName] = useState(false)
+  const { attributes, listeners, setNodeRef, transform, transition } =
+    useSortable({ id: id })
 
   return (
     <styled.button
+      ref={setNodeRef}
+      {...attributes}
+      {...listeners}
       // onClick={() => console.log('NOOO')}
       style={{
         maxHeight: 128,
@@ -31,7 +38,10 @@ export const Tile = ({ folder, name, setOpenSidebar, id, setSelected }) => {
         },
         '&:active': {
           background: color('action', 'system', 'subtleActive'),
+          cursor: 'grabbing',
         },
+        transform: CSS.Transform.toString(transform),
+        transition,
       }}
       onBlur={() => setEditName(false)}
       onClick={

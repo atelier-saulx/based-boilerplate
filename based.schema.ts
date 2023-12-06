@@ -5,6 +5,14 @@ export default {
       prefix: 'fi',
     },
     folder: {
+      fields: {
+        items2: {
+          type: 'array',
+          items: {
+            type: 'string',
+          },
+        },
+      },
       prefix: 'di',
     },
     user: {

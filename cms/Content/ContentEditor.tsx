@@ -24,6 +24,7 @@ export const ContentEditor = ({ id, section }) => {
     $id: id,
     $all: true,
   })
+  console.log(data)
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
   console.log(data)
@@ -78,11 +79,11 @@ export const ContentEditor = ({ id, section }) => {
         {schema && (
           <FormGroup
             alwaysAccept
+            config={filteredSchemaFields}
             onChange={(v) => {
               setSomeThingChanged(true)
               setFormFieldChanges({ ...formFieldChanges, ...v })
             }}
-            config={filteredSchemaFields}
             values={{ ...data, ...formFieldChanges }}
           />
         )}
@@ -92,6 +93,7 @@ export const ContentEditor = ({ id, section }) => {
         setSomeThingChanged={setSomeThingChanged}
         updatedAt={data?.updatedAt}
         onClick={async () => {
+          console.log('asdfasdf', { ...data, ...formFieldChanges })
           await client
             .call('db:set', {
               $id: id,

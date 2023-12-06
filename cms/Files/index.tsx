@@ -33,34 +33,6 @@ export const FileLibrary = () => {
     value: 'file',
   })
 
-  const { data, fetchMore, setVisibleElements, filterChange } =
-    useInfiniteQuery(
-      {
-        accessFn: (data) => data.files,
-        queryFn: (offset) => ({
-          $id: 'root',
-          files: {
-            $all: true,
-            $list: {
-              $sort: { $field: 'updatedAt', $order: 'desc' },
-              $offset: offset,
-              $limit: 25,
-              $find: {
-                $traverse: 'children',
-                $filter: {
-                  $operator: filter?.operator,
-                  $field: filter?.field,
-                  $value: filter?.value,
-                },
-              },
-            },
-          },
-        }),
-      }
-
-      // , [filter]
-    )
-
   return (
     <styled.div style={{ padding: '24px 48px', width: '100%' }}>
       <Row
@@ -113,7 +85,7 @@ export const FileLibrary = () => {
             //  columnNamesInRightOrder={arr}
           />
         ) : (
-          <Explorer data={data} />
+          <Explorer />
         )}
       </styled.div>
     </styled.div>
