@@ -50,7 +50,7 @@ export const SCHEMA_FIELDS = [
     color: 'blue',
   },
   {
-    label: 'Integer',
+    label: 'Int',
     description: 'Whole numbers',
     icon: <IconText />,
     color: 'blue',

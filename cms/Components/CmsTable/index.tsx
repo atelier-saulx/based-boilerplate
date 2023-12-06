@@ -43,7 +43,6 @@ type CmsTableProps = {
   }
   onRowClick?: (v, rIdx) => void
   onCellClick?: (v, rIdx, cIdx) => void
-
   columnNamesInRightOrder?: string[]
   style?: CSSProperties | Style
 }
@@ -426,6 +425,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                         { value: '!=' },
                         { value: '<' },
                         { value: '>' },
+                        { value: 'includes' },
                       ]}
                       onChange={(v) => setOperator(v)}
                     />
