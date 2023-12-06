@@ -13,8 +13,6 @@ export const PublishSideBar = ({
   const route = useRoute('[section][id]')
   const section = route.query.section
 
-  console.log(someThingChanged, 'what the f')
-
   return (
     <styled.div
       style={{
@@ -57,8 +55,6 @@ export const PublishSideBar = ({
           cursor: someThingChanged ? 'pointer' : 'not-allowed',
         }}
         color="system"
-        // disabled={someThingChanged}
-
         onClick={() => {
           // TODO check if publish was succesfull
           onClick()

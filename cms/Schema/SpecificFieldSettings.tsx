@@ -176,6 +176,16 @@ export const SpecificFieldSettings = ({
             onChange={(v) => setMeta({ field: 'display', value: v })}
           />
         </>
+      ) : fieldType === 'timestamp' ? (
+        <>
+          <Input
+            type="select"
+            label="Display Date Format"
+            value={meta?.display}
+            options={dateFormatOptions}
+            onChange={(v) => setMeta({ field: 'display', value: v })}
+          />
+        </>
       ) : (
         '🙈'
       )}
@@ -489,4 +499,13 @@ const languageSelectOptions = [
   { value: 'yo', label: 'Yoruba' },
   { value: 'za', label: 'Zhuang, Chuang' },
   { value: 'zu', label: 'Zulu' },
+]
+
+const dateFormatOptions = [
+  { value: 'date' },
+  { value: 'date-time' },
+  { value: 'date-time-text' },
+  { value: 'human' },
+  { value: 'time' },
+  { value: 'time-precise' },
 ]

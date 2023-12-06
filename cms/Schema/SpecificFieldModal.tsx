@@ -136,7 +136,9 @@ export const SpecificFieldModal = ({
               </styled.div>
             </div>
           </Tab>
-          {fieldType.toLowerCase() !== 'cardinality' && (
+          {fieldType.toLowerCase() !== 'boolean' &&
+          fieldType.toLowerCase() !== 'cardinality' &&
+          fieldType.toLowerCase() !== 'json' ? (
             <Tab label="Settings">
               <SpecificFieldSettings
                 fieldType={fieldType.toLowerCase()}
@@ -144,6 +146,8 @@ export const SpecificFieldModal = ({
                 meta={meta}
               />
             </Tab>
+          ) : (
+            <></>
           )}
         </Tabs>
       </Modal.Body>

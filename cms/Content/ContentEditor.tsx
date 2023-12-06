@@ -46,7 +46,7 @@ export const ContentEditor = ({ id, section }) => {
       style={{
         width: '100%',
         display: 'flex',
-        // ...scrollAreaStyle,
+        //  ...scrollAreaStyle,
         // maxHeight: 'calc(40% - 90px)',
       }}
     >
@@ -104,8 +104,3 @@ export const ContentEditor = ({ id, section }) => {
     </styled.div>
   )
 }
-
-// onChange={(v) => {
-//   console.log('hellow wtap?', v)
-
-// }}
