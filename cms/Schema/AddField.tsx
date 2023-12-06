@@ -56,6 +56,12 @@ export const SCHEMA_FIELDS = [
     color: 'blue',
   },
   {
+    label: 'Enum',
+    description: 'Set of named constants',
+    icon: <IconText />,
+    color: 'blue',
+  },
+  {
     label: 'Boolean',
     description: 'True or False',
     icon: <IconTurnOff />,

@@ -20,6 +20,8 @@ import {
   Text,
   color,
   IconCopy,
+  Toggle,
+  Badge,
 } from '@based/ui'
 
 type CmsTableProps = {
@@ -41,7 +43,7 @@ type CmsTableProps = {
   }
   onRowClick?: (v, rIdx) => void
   onCellClick?: (v, rIdx, cIdx) => void
-  onDelete?: () => void
+
   columnNamesInRightOrder?: string[]
   style?: CSSProperties | Style
 }
@@ -55,12 +57,17 @@ export const CmsTable: FC<CmsTableProps> = ({
   getQueryItems,
   onRowClick,
   onCellClick,
-  onDelete,
   columnNamesInRightOrder,
   style,
   filter,
 }) => {
-  const [hiddenColumns, setFilteredColumns] = useState<string[]>([])
+  const [hiddenColumns, setFilteredColumns] = useState<string[]>([
+    'ancestors',
+    'descendants',
+    'aliases',
+    'parents',
+    'children',
+  ])
   const [sortOptions, setSortOptions] = useState<SortOptions>({
     $field: 'updatedAt',
     $order: 'desc',
@@ -70,8 +77,9 @@ export const CmsTable: FC<CmsTableProps> = ({
   // filter shizzle
   const [andOr, setAndOr] = useState('$and')
   const [operator, setOperator] = useState('=')
+  const [typeOfValue, setTypeOfValue] = useState('string')
   const [fieldValue, setFieldValue] = useState('')
-  const [filterValue, setFilterValue] = useState('')
+  const [filterValue, setFilterValue] = useState<number | string | boolean>('')
   const [addedFilters, setAddedFilters] = useState<{}[]>([])
   const [customFilter, setCustomFilter] = useState<any>()
   const [renderCounter, setRenderCounter] = useState(1)
@@ -372,7 +380,7 @@ export const CmsTable: FC<CmsTableProps> = ({
               >
                 <Text light size={14}>
                   {item[0][itemKey].$field} {item[0][itemKey].$operator}{' '}
-                  {item[0][itemKey].$value}
+                  {item[0][itemKey].$value.toString()}
                 </Text>
               </styled.div>
             </React.Fragment>
@@ -421,12 +429,50 @@ export const CmsTable: FC<CmsTableProps> = ({
                       ]}
                       onChange={(v) => setOperator(v)}
                     />
-                    <Input
-                      label="$value"
-                      value={filterValue}
-                      type="text"
-                      onChange={(v) => setFilterValue(v)}
-                    />
+                    <Row style={{ gap: 12 }}>
+                      <div style={{ flex: '1  auto', alignItems: 'center' }}>
+                        {typeOfValue === 'boolean' ? (
+                          <>
+                            <Text weight="medium">$value</Text>
+                            <Toggle
+                              value={filterValue as boolean}
+                              onChange={(v) => setFilterValue(v)}
+                            />
+                          </>
+                        ) : (
+                          <Input
+                            label="$value"
+                            value={filterValue as any}
+                            type={typeOfValue === 'number' ? 'number' : 'text'}
+                            onChange={(v) =>
+                              v ? setFilterValue(v) : setFilterValue(false)
+                            }
+                          />
+                        )}
+                      </div>
+                      <div style={{ minWidth: 164 }}>
+                        <Input
+                          type="select"
+                          label="Typeof $value"
+                          value={typeOfValue}
+                          options={[
+                            { value: 'string' },
+                            { value: 'number' },
+                            { value: 'boolean' },
+                          ]}
+                          onChange={(v) => {
+                            setTypeOfValue(v)
+                            if (v === 'string') {
+                              setFilterValue((filterValue) =>
+                                filterValue.toString()
+                              )
+                            } else if (v === 'number') {
+                              setFilterValue((filterValue) => +filterValue)
+                            }
+                          }}
+                        />
+                      </div>
+                    </Row>
                   </Modal.Body>
                   <Modal.Actions>
                     <Button
@@ -437,6 +483,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                         setOperator('=')
                         setFieldValue('')
                         setFilterValue('')
+                        setTypeOfValue('string')
                         close()
                       }}
                       color="system"
@@ -451,7 +498,10 @@ export const CmsTable: FC<CmsTableProps> = ({
                           [andOr]: {
                             $field: fieldValue,
                             $operator: operator,
-                            $value: filterValue,
+                            $value:
+                              typeOfValue === 'boolean'
+                                ? !!filterValue
+                                : filterValue,
                           },
                         }
 
@@ -462,6 +512,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                         setOperator('=')
                         setFieldValue('')
                         setFilterValue('')
+                        setTypeOfValue('string')
                       }}
                       color="primary"
                     >
