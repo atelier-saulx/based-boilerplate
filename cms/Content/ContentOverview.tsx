@@ -1,10 +1,9 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { styled } from 'inlines'
-import { Text, Row, Button, IconPlus } from '@based/ui'
+import { Text, Row, Button, IconPlus, useWindowResize } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
 import { CmsTable } from '../Components/CmsTable'
-import { useWindowResize } from '../hooks/useWindowResize'
 
 export const ContentOverview = () => {
   const client = useClient()
@@ -14,11 +13,8 @@ export const ContentOverview = () => {
   const routeSection = route.query.section
 
   const { width, height } = useWindowResize()
-
   const [tableWidth, setTableWidth] = useState<number>(600)
   const [tableHeight, setTableHeight] = useState<number>(600)
-
-  const tableWrapperContainerRef = useRef<HTMLDivElement>()
 
   let arr: string[] = []
   if (schema) {
@@ -36,10 +32,8 @@ export const ContentOverview = () => {
   }
 
   useEffect(() => {
-    if (tableWrapperContainerRef.current) {
-      setTableWidth(width - 324)
-      setTableHeight(height - 296)
-    }
+    setTableWidth(width - 324)
+    setTableHeight(height - 296)
   }, [width, height])
 
   return (
@@ -53,7 +47,7 @@ export const ContentOverview = () => {
       >
         <Row>
           <Text size={24} weight="strong">
-            {schema?.types[routeSection as string]?.meta?.pluralName ||
+            {schema?.types[routeSection as string]?.meta?.displayName ||
               routeSection}
           </Text>
         </Row>
@@ -78,7 +72,7 @@ export const ContentOverview = () => {
           {schema?.types[routeSection as string]?.meta?.description}
         </Text>
       )}
-      <styled.div ref={tableWrapperContainerRef}>
+      <styled.div>
         <CmsTable
           width={tableWidth}
           height={tableHeight}

@@ -2,7 +2,14 @@ import React from 'react'
 import { prettyDate } from '@based/pretty-date'
 import { prettyNumber } from '@based/pretty-number'
 import { styled } from 'inlines'
-import { Text, Badge, Thumbnail, IconAttachment, Toggle } from '@based/ui'
+import {
+  Text,
+  Badge,
+  Thumbnail,
+  IconAttachment,
+  Toggle,
+  Avatar,
+} from '@based/ui'
 
 export const RenderAs = ({ colName, input }) => {
   let cName = colName.toLowerCase()
@@ -31,6 +38,8 @@ export const RenderAs = ({ colName, input }) => {
     )
   } else if (typeof input === 'boolean') {
     return <Toggle value={input} disabled />
+  } else if (cName === 'profileimg') {
+    return <Avatar src={input} autoColor />
   }
 
   return <Text truncate>{input}</Text>

@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useRoute } from 'kabouter'
 import { useQuery, useClient } from '@based/react'
 import { styled } from '@based/ui'
-import { Menu, Modal, Button, IconPlus, Input } from '@based/ui'
+import { Menu, Modal, Button, IconPlus, Input, getPluralName } from '@based/ui'
 
 export const SchemaSidebar = () => {
   const route = useRoute('[section][type]')
@@ -11,7 +11,7 @@ export const SchemaSidebar = () => {
   const routeType = route.query.type
 
   const [typeName, setTypeName] = useState('')
-  const [pluralName, setPluralName] = useState('')
+  const [displayName, setDisplayName] = useState('')
   const [description, setDescription] = useState('')
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
@@ -31,7 +31,7 @@ export const SchemaSidebar = () => {
       .map((key) => {
         menuItems[key] = {
           value: key,
-          label: schemaTypes[key]?.meta?.pluralName || key,
+          label: schemaTypes[key]?.meta?.displayName || key,
         }
       })
   }
@@ -67,15 +67,17 @@ export const SchemaSidebar = () => {
                             setTypeName(v)
                           }}
                         />
+                        {displayName}
                         <Input
                           label="Display name (plural)"
                           type="text"
                           value={
-                            pluralName || typeName
+                            displayName ||
+                            (typeName && getPluralName(schema, typeName))
                             // TODO: get this generatePlural from UI lib
                             // ? generatePlural(typeName) : undefined
                           }
-                          onChange={(v) => setPluralName(v)}
+                          onChange={(v) => setDisplayName(v)}
                         />
                         <Input
                           label="Description"
@@ -101,8 +103,10 @@ export const SchemaSidebar = () => {
                             fields: {},
                             meta: {
                               name: typeName,
-                              pluralName,
-                              description,
+                              displayName:
+                                displayName ||
+                                (typeName && getPluralName(schema, typeName)),
+                              description: description,
                             },
                           }
                           if (schema) {

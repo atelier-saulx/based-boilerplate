@@ -1,13 +1,14 @@
 import React, { useReducer, useState, useEffect } from 'react'
 import { styled } from 'inlines'
 import { useRoute } from 'kabouter'
-import { Modal, Button, Input, Tab, Tabs } from '@based/ui'
+import { Modal, Button, Input, Tab, Tabs, getPluralName } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { SpecificFieldSettings } from './SpecificFieldSettings'
 
 type SpecificFieldModalProps = {
   field: string
   setOpenSpecificFieldModal: (v: boolean) => void
+  editField?: boolean
 }
 
 const metaReducer = (state, action) => {
@@ -27,6 +28,7 @@ const metaReducer = (state, action) => {
 export const SpecificFieldModal = ({
   field,
   setOpenSpecificFieldModal,
+  editField,
 }: SpecificFieldModalProps) => {
   const [meta, setMeta] = useReducer(metaReducer, {})
   const [fieldType, setFieldType] = useState(field)
@@ -45,6 +47,8 @@ export const SpecificFieldModal = ({
   //   Object.keys(schema.types[routeType].fields).length,
   //   'current length'
   // )
+
+  console.log(meta, 'meta')
 
   useEffect(() => {
     if (thisSpecificField?.meta) {
@@ -79,10 +83,10 @@ export const SpecificFieldModal = ({
                 label="Field name"
                 description="API field-name used in the sdk and clients"
                 type="text"
-                value={
-                  meta?.fieldName || meta?.displayName?.toLowerCase() || ''
-                }
-                onChange={(v) => setMeta({ field: 'fieldName', value: v })}
+                disabled={editField}
+                style={{ pointerEvents: editField ? 'none' : 'auto' }}
+                value={meta?.name || meta?.displayName?.toLowerCase() || ''}
+                onChange={(v) => setMeta({ field: 'name', value: v })}
               />
               <Input
                 label="Description (Optional)"
@@ -150,7 +154,7 @@ export const SpecificFieldModal = ({
                     types: {
                       [routeType]: {
                         fields: {
-                          [meta.fieldName || meta.displayName.toLowerCase()]: {
+                          [meta.name || meta.displayName.toLowerCase()]: {
                             type: 'json',
                             meta: {
                               ...newMeta,
@@ -179,7 +183,7 @@ export const SpecificFieldModal = ({
                     types: {
                       [routeType]: {
                         fields: {
-                          [meta.fieldName || meta.displayName.toLowerCase()]: {
+                          [meta.name || meta.displayName.toLowerCase()]: {
                             type: fieldType.toLowerCase(),
                             meta: {
                               ...newMeta,

@@ -1,57 +1,23 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { styled } from 'inlines'
-import {
-  Row,
-  Text,
-  Button,
-  IconPlus,
-  Table,
-  useInfiniteQuery,
-  Toggle,
-} from '@based/ui'
+import { Row, Text, Button, IconPlus, useWindowResize } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { Tile } from './Tile'
 import { Explorer } from './Explorer'
+import { CmsTable } from '../Components/CmsTable'
 
 export const FileLibrary = () => {
-  // const client = useClient()
+  const client = useClient()
   const [table, setTable] = useState(false)
 
-  const [filter, setFilter] = useState({
-    operator: '=',
-    field: 'type',
-    value: 'file',
-  })
+  const { width, height } = useWindowResize()
+  const [tableWidth, setTableWidth] = useState<number>(600)
+  const [tableHeight, setTableHeight] = useState<number>(600)
 
-  const { data, fetchMore, setVisibleElements, filterChange } =
-    useInfiniteQuery(
-      {
-        accessFn: (data) => data.files,
-        queryFn: (offset) => ({
-          $id: 'root',
-          files: {
-            $all: true,
-            $list: {
-              $sort: { $field: 'updatedAt', $order: 'desc' },
-              $offset: offset,
-              $limit: 25,
-              $find: {
-                $traverse: 'children',
-                $filter: {
-                  $operator: filter?.operator,
-                  $field: filter?.field,
-                  $value: filter?.value,
-                },
-              },
-            },
-          },
-        }),
-      }
-
-      // , [filter]
-    )
-
-  console.log(data)
+  useEffect(() => {
+    setTableWidth(width - 324)
+    setTableHeight(height - 296)
+  }, [width, height])
 
   return (
     <styled.div style={{ padding: '24px 48px', width: '100%' }}>
@@ -70,25 +36,39 @@ export const FileLibrary = () => {
           Add File
         </Button>
       </Row>
-      <styled.div style={{ maxWidth: 854 }}>
-        {table ? (
-          <Table
-            data={data}
-            topBar
-            onVisibleElementsChange={setVisibleElements}
-            onScrollToBottom={() => {
-              fetchMore()
-            }}
-            onFilterChange={(v) => {
-              if (v) {
-                setFilter(v)
-                filterChange()
-              }
-            }}
-          />
-        ) : (
-          <Explorer data={data} />
-        )}
+      <styled.div>
+        <CmsTable
+          width={tableWidth}
+          height={tableHeight}
+          query={(offset, limit, sortOptions, filter) => {
+            return client.query('db', {
+              $id: 'root',
+              children: {
+                $all: true,
+                $list: {
+                  $sort: sortOptions,
+                  $offset: offset,
+                  $limit: 25,
+                  $find: {
+                    $filter: filter,
+                  },
+                },
+              },
+            })
+          }}
+          getQueryItems={(d) => {
+            return d.children
+          }}
+          filter={{
+            $operator: '=',
+            $field: 'type',
+            $value: 'file',
+          }}
+          // queryId forces a rerender // subscription
+          queryId={'file' as string}
+          //  onRowClick={(row) => route.setQuery({ id: row.id })}
+          //  columnNamesInRightOrder={arr}
+        />
       </styled.div>
     </styled.div>
   )

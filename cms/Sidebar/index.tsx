@@ -26,7 +26,7 @@ export const SideBar = () => {
       .map((key) => {
         menuItems[key] = {
           value: key,
-          label: schemaTypes[key]?.meta?.pluralName || key,
+          label: schemaTypes[key]?.meta?.displayName || key,
         }
       })
   }

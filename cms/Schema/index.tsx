@@ -9,6 +9,7 @@ import {
   IconMoreHorizontal,
   IconEdit,
   IconDelete,
+  IconCopy,
   Modal,
   Input,
 } from '@based/ui'
@@ -26,6 +27,7 @@ export const SchemaBuilder = () => {
   const [description, setDescription] = useState('')
   //
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
+  const [openCloneModal, setOpenCloneModal] = useState(false)
   const [deleteString, setDeleteString] = useState('')
 
   const route = useRoute('[section][type]')
@@ -56,11 +58,13 @@ export const SchemaBuilder = () => {
 
   useEffect(() => {
     if (schema) {
-      setTypeName(routeType)
-      setPluralName(schema?.types[routeType]?.meta?.pluralName || section)
-      setDescription(schema?.types[routeType]?.meta?.description || section)
+      let displayName = schema?.types[routeType]?.meta?.displayName
+
+      setTypeName(openCloneModal ? routeType + '-copy' : routeType)
+      setPluralName(openCloneModal ? displayName + '-copy' : displayName)
+      setDescription(schema?.types[routeType]?.meta?.description)
     }
-  }, [openEditModal])
+  }, [openEditModal, openCloneModal, routeType])
 
   return (
     <styled.div
@@ -94,6 +98,14 @@ export const SchemaBuilder = () => {
                     icon={<IconEdit />}
                   >
                     Edit Type
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => {
+                      setOpenCloneModal(true)
+                    }}
+                    icon={<IconCopy />}
+                  >
+                    Clone Type
                   </Dropdown.Item>
                   <Dropdown.Separator />
                   <Dropdown.Item
@@ -134,11 +146,16 @@ export const SchemaBuilder = () => {
             <div style={{ display: 'grid', gap: 24 }}>
               <Input
                 autoFocus
+                disabled
                 type="text"
                 label="Type name"
                 value={typeName}
-                onChange={(v) => {
-                  setTypeName(v)
+                onChange={() => {}}
+                style={{
+                  pointerEvents: 'none',
+                  '& :hover': {
+                    cursor: 'not-allowed',
+                  },
                 }}
               />
               <Input
@@ -168,7 +185,19 @@ export const SchemaBuilder = () => {
             </Button>
             <Button
               onClick={async () => {
-                // TODO Edit this in the schema db
+                await client.call('db:set-schema', {
+                  mutate: true,
+                  schema: {
+                    types: {
+                      [routeType]: {
+                        meta: {
+                          displayName: pluralName,
+                          description: description,
+                        },
+                      },
+                    },
+                  },
+                })
                 setOpenEditModal(false)
               }}
               color="primary"
@@ -176,6 +205,73 @@ export const SchemaBuilder = () => {
               keyboardShortcut="Enter"
             >
               Save
+            </Button>
+          </Modal.Actions>
+        </Modal.Content>
+      </Modal.Root>
+      {/* Clone  Modal */}
+      <Modal.Root open={openCloneModal} onOpenChange={setOpenCloneModal}>
+        <Modal.Content>
+          <Modal.Title>Clone {routeType}</Modal.Title>
+          <Modal.Body>
+            <div style={{ display: 'grid', gap: 24 }}>
+              <Input
+                autoFocus
+                type="text"
+                label="New Type name"
+                value={typeName}
+                onChange={(v) => {
+                  setTypeName(v)
+                }}
+              />
+              <Input
+                label="Display name (plural)"
+                type="text"
+                value={pluralName}
+                onChange={(v) => setPluralName(v)}
+              />
+              <Input
+                label="Description"
+                type="textarea"
+                value={description}
+                onChange={(v) => setDescription(v)}
+              />
+            </div>
+          </Modal.Body>
+          <Modal.Actions>
+            <Button
+              onClick={() => {
+                setOpenCloneModal(false)
+              }}
+              color="system"
+              displayShortcut
+              keyboardShortcut="Esc"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                await client.call('db:set-schema', {
+                  mutate: true,
+                  schema: {
+                    types: {
+                      [typeName]: {
+                        meta: {
+                          displayName: pluralName,
+                          description: description,
+                        },
+                        fields: schema.types[routeType].fields,
+                      },
+                    },
+                  },
+                })
+                setOpenCloneModal(false)
+              }}
+              color="primary"
+              displayShortcut
+              keyboardShortcut="Enter"
+            >
+              Clone
             </Button>
           </Modal.Actions>
         </Modal.Content>
@@ -229,15 +325,17 @@ export const SchemaBuilder = () => {
                     },
                   })
                 }
+
+                setDeleteString('')
+                setOpenDeleteModal(false)
                 //@ts-ignore
                 route.setQuery({ section: section, type: null })
-                setOpenDeleteModal(false)
               }}
               color="alert"
               displayShortcut
               keyboardShortcut="Enter"
             >
-              Save
+              Delete
             </Button>
           </Modal.Actions>
         </Modal.Content>

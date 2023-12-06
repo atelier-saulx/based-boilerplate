@@ -5,6 +5,7 @@ import { Style, styled } from 'inlines'
 import { SortOptions, useInfiniteQuery } from './useInfiniteQuery'
 import { BasedQuery } from '@based/client'
 import { RenderAs } from './RenderAs'
+import { useClient } from '@based/react'
 import {
   Row,
   Modal,
@@ -18,6 +19,9 @@ import {
   Input,
   Text,
   color,
+  IconCopy,
+  Toggle,
+  Badge,
 } from '@based/ui'
 
 type CmsTableProps = {
@@ -39,7 +43,7 @@ type CmsTableProps = {
   }
   onRowClick?: (v, rIdx) => void
   onCellClick?: (v, rIdx, cIdx) => void
-  onDelete?: () => void
+
   columnNamesInRightOrder?: string[]
   style?: CSSProperties | Style
 }
@@ -53,12 +57,17 @@ export const CmsTable: FC<CmsTableProps> = ({
   getQueryItems,
   onRowClick,
   onCellClick,
-  onDelete,
   columnNamesInRightOrder,
   style,
   filter,
 }) => {
-  const [hiddenColumns, setFilteredColumns] = useState<string[]>([])
+  const [hiddenColumns, setFilteredColumns] = useState<string[]>([
+    'ancestors',
+    'descendants',
+    'aliases',
+    'parents',
+    'children',
+  ])
   const [sortOptions, setSortOptions] = useState<SortOptions>({
     $field: 'updatedAt',
     $order: 'desc',
@@ -68,10 +77,12 @@ export const CmsTable: FC<CmsTableProps> = ({
   // filter shizzle
   const [andOr, setAndOr] = useState('$and')
   const [operator, setOperator] = useState('=')
+  const [typeOfValue, setTypeOfValue] = useState('string')
   const [fieldValue, setFieldValue] = useState('')
-  const [filterValue, setFilterValue] = useState('')
+  const [filterValue, setFilterValue] = useState<number | string | boolean>('')
   const [addedFilters, setAddedFilters] = useState<{}[]>([])
   const [customFilter, setCustomFilter] = useState<any>()
+  const [renderCounter, setRenderCounter] = useState(1)
 
   let w = width
   let h = height
@@ -83,7 +94,13 @@ export const CmsTable: FC<CmsTableProps> = ({
     query,
     getQueryItems,
     rowHeight: 60,
-    queryId: queryId + sortOptions.$field + sortOptions.$order + customFilter,
+    queryId:
+      queryId +
+      sortOptions.$field +
+      sortOptions.$order +
+      customFilter +
+      addedFilters.length +
+      renderCounter,
     sortOptions: sortOptions,
     itemCount: data?.length,
     height: h,
@@ -91,6 +108,10 @@ export const CmsTable: FC<CmsTableProps> = ({
   })
 
   const parsedData = query ? result.items : data
+
+  // console.log(filter, customFilter, 'Query??')
+
+  const client = useClient()
 
   let columnNames: any[] = [...new Set(parsedData?.flatMap(Object.keys))]
 
@@ -106,6 +127,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   useEffect(() => {
     setCustomFilter('')
     setAddedFilters([])
+    setSelectedRowIndexes([])
   }, [queryId])
   // console.log(result, 'Result>?')
   // console.log(parsedData, 'ParsedDAta?')
@@ -147,10 +169,13 @@ export const CmsTable: FC<CmsTableProps> = ({
             'neutralNormal',
             'default'
           )}`,
+          paddingRight: 8,
+          cursor: onRowClick ? 'pointer' : 'auto',
           ...style,
         }}
         onClick={() => {
           if (onRowClick) {
+            setSelectedRowIndexes([])
             onRowClick(parsedData[rowIndex], rowIndex)
           }
 
@@ -171,26 +196,29 @@ export const CmsTable: FC<CmsTableProps> = ({
               '& div': { width: '24px' },
             }}
           >
-            <Input
-              type="checkbox"
-              style={{ maxWidth: 24 }}
-              value={selectedRowIndexes.includes(rowIndex)}
-              onChange={() => {
-                console.log('selected rowindex', rowIndex)
-                if (!selectedRowIndexes.includes(rowIndex)) {
-                  setSelectedRowIndexes([...selectedRowIndexes, rowIndex])
-                } else {
-                  let tempArr = selectedRowIndexes.filter(
-                    (item) => item !== rowIndex
-                  )
-                  setSelectedRowIndexes([...tempArr])
-                }
+            <div
+              onClick={(e) => {
+                e.stopPropagation()
+                // e.preventDefault()
               }}
-              //   onClick={(e) => {
-              //     e.stopPropagation()
-              //     e.preventDefault()
-              //   }}
-            />
+            >
+              <Input
+                type="checkbox"
+                style={{ maxWidth: 24 }}
+                value={selectedRowIndexes.includes(rowIndex)}
+                onChange={() => {
+                  console.log('selected rowindex', rowIndex)
+                  if (!selectedRowIndexes.includes(rowIndex)) {
+                    setSelectedRowIndexes([...selectedRowIndexes, rowIndex])
+                  } else {
+                    let tempArr = selectedRowIndexes.filter(
+                      (item) => item !== rowIndex
+                    )
+                    setSelectedRowIndexes([...tempArr])
+                  }
+                }}
+              />
+            </div>
           </styled.div>
         )}
         {/* render cell based on column name type renderAs */}
@@ -257,29 +285,54 @@ export const CmsTable: FC<CmsTableProps> = ({
 
       {selectedRowIndexes.length > 0 && (
         <Row style={{ marginBottom: 12 }}>
-          <Row
-            style={{
-              gap: 12,
-              padding: '6px 12px',
-              border: `1px solid ${borderColor}`,
-              borderRadius: 4,
-              boxShadow: `0px 1px 4px 0px rgba(27, 36, 44, 0.04)`,
-            }}
-          >
+          <Row style={{ gap: 12, padding: '0px 12px' }}>
             <Text weight="strong" color="brand">
-              {selectedRowIndexes.length} selected rows
+              {selectedRowIndexes.length} selected
             </Text>
-            <Button size="xsmall" onClick={() => setSelectedRowIndexes([])}>
+            <Button
+              size="small"
+              color="system"
+              light
+              onClick={() => setSelectedRowIndexes([])}
+            >
               Clear selection
             </Button>
             <Button
-              size="xsmall"
+              size="small"
+              color="neutral"
+              light
+              onClick={() => {
+                selectedRowIndexes.map(async (idx) => {
+                  console.log(parsedData[idx])
+
+                  await client.call('db:set', {
+                    // TODO check this language
+                    $language: 'en',
+                    type: parsedData[idx].type,
+                    ...parsedData[idx],
+                  })
+                })
+
+                setSelectedRowIndexes([])
+              }}
+              icon={<IconCopy />}
+            >
+              Duplicate
+            </Button>
+            <Button
+              size="small"
+              light
               color="alert"
               icon={<IconDelete />}
-              onClick={() => {
-                if (onDelete) {
-                  onDelete()
-                }
+              onClick={async () => {
+                await selectedRowIndexes.map(async (idx) => {
+                  await client.call('db:delete', {
+                    $id: parsedData[idx].id,
+                  })
+                })
+
+                setSelectedRowIndexes([])
+                setRenderCounter(renderCounter + 1)
               }}
             >
               Delete
@@ -327,7 +380,7 @@ export const CmsTable: FC<CmsTableProps> = ({
               >
                 <Text light size={14}>
                   {item[0][itemKey].$field} {item[0][itemKey].$operator}{' '}
-                  {item[0][itemKey].$value}
+                  {item[0][itemKey].$value.toString()}
                 </Text>
               </styled.div>
             </React.Fragment>
@@ -376,12 +429,50 @@ export const CmsTable: FC<CmsTableProps> = ({
                       ]}
                       onChange={(v) => setOperator(v)}
                     />
-                    <Input
-                      label="$value"
-                      value={filterValue}
-                      type="text"
-                      onChange={(v) => setFilterValue(v)}
-                    />
+                    <Row style={{ gap: 12 }}>
+                      <div style={{ flex: '1  auto', alignItems: 'center' }}>
+                        {typeOfValue === 'boolean' ? (
+                          <>
+                            <Text weight="medium">$value</Text>
+                            <Toggle
+                              value={filterValue as boolean}
+                              onChange={(v) => setFilterValue(v)}
+                            />
+                          </>
+                        ) : (
+                          <Input
+                            label="$value"
+                            value={filterValue as any}
+                            type={typeOfValue === 'number' ? 'number' : 'text'}
+                            onChange={(v) =>
+                              v ? setFilterValue(v) : setFilterValue(false)
+                            }
+                          />
+                        )}
+                      </div>
+                      <div style={{ minWidth: 164 }}>
+                        <Input
+                          type="select"
+                          label="Typeof $value"
+                          value={typeOfValue}
+                          options={[
+                            { value: 'string' },
+                            { value: 'number' },
+                            { value: 'boolean' },
+                          ]}
+                          onChange={(v) => {
+                            setTypeOfValue(v)
+                            if (v === 'string') {
+                              setFilterValue((filterValue) =>
+                                filterValue.toString()
+                              )
+                            } else if (v === 'number') {
+                              setFilterValue((filterValue) => +filterValue)
+                            }
+                          }}
+                        />
+                      </div>
+                    </Row>
                   </Modal.Body>
                   <Modal.Actions>
                     <Button
@@ -392,6 +483,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                         setOperator('=')
                         setFieldValue('')
                         setFilterValue('')
+                        setTypeOfValue('string')
                         close()
                       }}
                       color="system"
@@ -406,7 +498,10 @@ export const CmsTable: FC<CmsTableProps> = ({
                           [andOr]: {
                             $field: fieldValue,
                             $operator: operator,
-                            $value: filterValue,
+                            $value:
+                              typeOfValue === 'boolean'
+                                ? !!filterValue
+                                : filterValue,
                           },
                         }
 
@@ -417,6 +512,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                         setOperator('=')
                         setFieldValue('')
                         setFilterValue('')
+                        setTypeOfValue('string')
                       }}
                       color="primary"
                     >
@@ -428,6 +524,19 @@ export const CmsTable: FC<CmsTableProps> = ({
             }}
           </Modal.Content>
         </Modal.Root>
+
+        {addedFilters.length > 0 && (
+          <Button
+            size="xsmall"
+            style={{ marginLeft: 8 }}
+            onClick={() => {
+              setCustomFilter('')
+              setAddedFilters([])
+            }}
+          >
+            Clear Filter{addedFilters.length < 2 ? '' : 's'}
+          </Button>
+        )}
 
         <Dropdown.Root>
           <Dropdown.Trigger>
@@ -525,6 +634,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                   <Text
                     weight="strong"
                     transform="capitalize"
+                    truncate
                     color={sortOptions.$field === item ? 'brand' : 'default'}
                     onClick={() => {
                       if (sortOptions.$order === 'desc') {
