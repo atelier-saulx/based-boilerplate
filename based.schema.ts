@@ -4,6 +4,9 @@ export default {
     file: {
       prefix: 'fi',
     },
+    folder: {
+      prefix: 'di',
+    },
     user: {
       prefix: 'us',
       fields: {

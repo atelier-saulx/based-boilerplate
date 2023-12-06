@@ -4,7 +4,7 @@ import { Tile } from './Tile'
 import { Button, FormGroup, SidePanel, scrollAreaStyle } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 
-const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'id', 'aliases']
+const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
 
 export const Explorer = ({ data }) => {
   const [openSidebar, setOpenSidebar] = useState(false)
@@ -49,7 +49,9 @@ export const Explorer = ({ data }) => {
       ))}
       <SidePanel.Root open={openSidebar}>
         <SidePanel.Content>
-          <SidePanel.Title>Name</SidePanel.Title>
+          <SidePanel.Title closeFunc={() => setOpenSidebar(false)}>
+            Name
+          </SidePanel.Title>
           <SidePanel.Body>
             <FormGroup
               onChange={(v) => {
