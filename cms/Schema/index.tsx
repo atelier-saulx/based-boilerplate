@@ -54,7 +54,7 @@ export const SchemaBuilder = () => {
     },
   })
 
-  // console.log(schema)
+  console.log('DAS SCHEMA FIELDS', schema?.types[routeType].fields)
 
   useEffect(() => {
     if (schema) {

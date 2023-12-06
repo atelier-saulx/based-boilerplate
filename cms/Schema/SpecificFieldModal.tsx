@@ -106,13 +106,31 @@ export const SpecificFieldModal = ({
                   type="checkbox"
                   title="Read only"
                   value={meta?.readOnly}
-                  onChange={(v) => setMeta({ field: 'readOnly', value: v })}
+                  onChange={(v) => {
+                    if (v) {
+                      setMeta({ field: 'readOnly', value: v })
+                      if (meta?.writeOnly) {
+                        setMeta({ field: 'writeOnly', value: !v })
+                      }
+                    } else {
+                      setMeta({ field: 'readOnly', value: v })
+                    }
+                  }}
                 />
                 <Input
                   type="checkbox"
                   title="Write only"
                   value={meta?.writeOnly}
-                  onChange={(v) => setMeta({ field: 'writeOnly', value: v })}
+                  onChange={(v) => {
+                    if (v) {
+                      setMeta({ field: 'writeOnly', value: v })
+                      if (meta?.readOnly) {
+                        setMeta({ field: 'readOnly', value: !v })
+                      }
+                    } else {
+                      setMeta({ field: 'writeOnly', value: v })
+                    }
+                  }}
                 />
               </styled.div>
             </div>
