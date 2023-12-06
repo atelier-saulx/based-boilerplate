@@ -67,7 +67,6 @@ export const Tile = ({ folder, name, setOpenSidebar, id, setSelected }) => {
       >
         {editName ? (
           <styled.div
-            ref={inputRef}
             autoFocus
             type="text"
             onBlur={() => setEditName(false)}
