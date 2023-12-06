@@ -2,14 +2,16 @@ import React, { useState } from 'react'
 import { styled } from 'inlines'
 import { Tile } from './Tile'
 import { Button, FormGroup, SidePanel, scrollAreaStyle } from '@based/ui'
-import { useQuery } from '@based/react'
+import { useClient, useQuery } from '@based/react'
 
-const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'id', 'aliases']
+const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
 
 export const Explorer = ({ data }) => {
   const [openSidebar, setOpenSidebar] = useState(false)
   const [selected, setSelected] = useState('')
+  const [formFieldChanges, setFormFieldChanges] = useState<any>({})
 
+  const client = useClient()
   const { data: schema, loading } = useQuery('db:schema')
   const { data: fileData, loading: loadingFile } = useQuery('db', {
     $id: selected,
@@ -32,9 +34,7 @@ export const Explorer = ({ data }) => {
         display: 'grid',
         gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
         height: '100%',
-        // flexWrap: 'wrap',
         gap: 15,
-        // overflow: 'wrap',
       }}
     >
       {data.map((value, i) => (
@@ -49,24 +49,47 @@ export const Explorer = ({ data }) => {
       ))}
       <SidePanel.Root open={openSidebar}>
         <SidePanel.Content>
-          <SidePanel.Title>Name</SidePanel.Title>
-
-          <FormGroup
-            values={fileData}
-            //@ts-ignore
-            style={{ padding: 40, paddingBottom: 180, ...scrollAreaStyle }}
-            confirmationVariant="modal"
-            config={filteredSchemaFields}
-          />
-
-          <SidePanel.Actions transparent>
+          <SidePanel.Title closeFunc={() => setOpenSidebar(false)}>
+            Name
+          </SidePanel.Title>
+          <SidePanel.Body>
+            <FormGroup
+              onChange={(v) => {
+                // setSomeThingChanged(true)
+                setFormFieldChanges({ ...formFieldChanges, ...v })
+              }}
+              values={{ ...fileData, ...formFieldChanges }}
+              alwaysAccept
+              config={filteredSchemaFields}
+            />
+          </SidePanel.Body>
+          <SidePanel.Actions>
             <Button
-              keyboardShortcut="Shift+Esc"
+              keyboardShortcut="Esc"
               displayShortcut
-              style={{ marginLeft: 0, marginRight: 'auto' }}
-              onClick={() => setOpenSidebar(false)}
+              color="system"
+              onClick={() => {
+                setFormFieldChanges({})
+                setOpenSidebar(false)
+              }}
             >
-              Close
+              Cancel
+            </Button>
+            <Button
+              keyboardShortcut="Enter"
+              displayShortcut
+              onClick={async () => {
+                await client
+                  .call('db:set', {
+                    $id: selected,
+                    ...fileData,
+                    ...formFieldChanges,
+                  })
+                  .catch((err) => console.log(err))
+                setFormFieldChanges({})
+              }}
+            >
+              Save
             </Button>
           </SidePanel.Actions>
         </SidePanel.Content>

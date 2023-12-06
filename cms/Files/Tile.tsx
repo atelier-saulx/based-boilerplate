@@ -33,6 +33,7 @@ export const Tile = ({ folder, name, setOpenSidebar, id, setSelected }) => {
           background: color('action', 'system', 'subtleActive'),
         },
       }}
+      onBlur={() => setEditName(false)}
       onClick={
         !editName
           ? () => {
