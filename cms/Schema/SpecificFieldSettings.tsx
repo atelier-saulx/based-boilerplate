@@ -119,7 +119,9 @@ export const SpecificFieldSettings = ({
             />
           </styled.div>
         </>
-      ) : fieldType === 'number' ? (
+      ) : fieldType === 'number' ||
+        fieldType === 'int' ||
+        fieldType === 'timestamp' ? (
         // NUMBER
         <>
           <styled.div style={{ display: 'flex', gap: 16 }}>
@@ -158,33 +160,24 @@ export const SpecificFieldSettings = ({
               onChange={(v) => setMeta({ field: 'exclusiveMinimum', value: v })}
             />
           </styled.div>
-          <Input
-            type="select"
-            label="Display Format"
-            value={meta?.display}
-            options={numberDisplayFormatOptions}
-            onChange={(v) => setMeta({ field: 'display', value: v })}
-          />
-        </>
-      ) : fieldType === 'int' ? (
-        <>
-          <Input
-            type="select"
-            label="Display Format"
-            value={meta?.display}
-            options={numberDisplayFormatOptions}
-            onChange={(v) => setMeta({ field: 'display', value: v })}
-          />
-        </>
-      ) : fieldType === 'timestamp' ? (
-        <>
-          <Input
-            type="select"
-            label="Display Date Format"
-            value={meta?.display}
-            options={dateFormatOptions}
-            onChange={(v) => setMeta({ field: 'display', value: v })}
-          />
+          {(fieldType === 'number' || fieldType === 'int') && (
+            <Input
+              type="select"
+              label="Display Format"
+              value={meta?.display}
+              options={numberDisplayFormatOptions}
+              onChange={(v) => setMeta({ field: 'display', value: v })}
+            />
+          )}
+          {fieldType === 'timestamp' && (
+            <Input
+              type="select"
+              label="Display Date Format"
+              value={meta?.display}
+              options={dateFormatOptions}
+              onChange={(v) => setMeta({ field: 'display', value: v })}
+            />
+          )}
         </>
       ) : (
         '🙈'

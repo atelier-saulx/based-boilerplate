@@ -79,6 +79,11 @@ export const SchemaField = ({
             {item.meta.contentMediaEncoding}
           </Badge>
         )}
+        {item?.meta?.display && (
+          <Badge light color="magenta">
+            {item.meta.display}
+          </Badge>
+        )}
 
         <Dropdown.Trigger>
           <Button
