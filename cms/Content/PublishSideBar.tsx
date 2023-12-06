@@ -1,9 +1,20 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { styled } from 'inlines'
-import { color, Button, Text, Input } from '@based/ui'
+import { color, Button, Text, Input, usePropState } from '@based/ui'
 import { prettyDate } from '@based/pretty-date'
+import { useRoute } from 'kabouter'
 
-export const PublishSideBar = ({ updatedAt, onClick }) => {
+export const PublishSideBar = ({
+  updatedAt,
+  onClick,
+  someThingChanged,
+  setSomeThingChanged,
+}) => {
+  const route = useRoute('[section][id]')
+  const section = route.query.section
+
+  console.log(someThingChanged, 'what the f')
+
   return (
     <styled.div
       style={{
@@ -20,12 +31,43 @@ export const PublishSideBar = ({ updatedAt, onClick }) => {
       }}
     >
       <Button
-        style={{ width: '100%', marginBottom: 24 }}
+        style={{
+          width: '100%',
+          marginBottom: 24,
+          pointerEvents: someThingChanged ? 'auto' : 'none',
+          opacity: someThingChanged ? 1 : 0.5,
+          cursor: someThingChanged ? 'pointer' : 'not-allowed',
+        }}
         displayShortcut
         keyboardShortcut="Cmd+S"
-        onClick={onClick}
+        onClick={() => {
+          onClick()
+          setSomeThingChanged(false)
+        }}
+        // disabled={someThingChanged}
       >
         Publish
+      </Button>
+      <Button
+        style={{
+          width: '100%',
+          marginBottom: 24,
+          pointerEvents: someThingChanged ? 'auto' : 'none',
+          opacity: someThingChanged ? 1 : 0.5,
+          cursor: someThingChanged ? 'pointer' : 'not-allowed',
+        }}
+        color="system"
+        // disabled={someThingChanged}
+
+        onClick={() => {
+          // TODO check if publish was succesfull
+          onClick()
+          // @ts-ignore
+          route.setQuery({ section: section, id: null })
+          setSomeThingChanged(false)
+        }}
+      >
+        Publish & close
       </Button>
       <Text light style={{ marginBottom: 24 }}>
         Last update: {prettyDate(updatedAt, 'date-time-human')}
