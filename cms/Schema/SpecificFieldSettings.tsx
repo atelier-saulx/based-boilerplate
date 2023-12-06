@@ -2,12 +2,13 @@ import React from 'react'
 import { styled } from 'inlines'
 import { Input } from '@based/ui'
 
-// TODO: enum???
+// TODO: ???
 
 // string
 // text
 // number
 // integer
+// enum
 // boolean
 // timestamp
 // array
@@ -31,16 +32,17 @@ export const SpecificFieldSettings = ({
   meta,
 }: SpecificFieldSettingsProps) => {
   return (
+    // STRING
     <div style={{ display: 'grid', gap: 12 }}>
       {fieldType === 'string' ? (
         <>
-          <Input
+          {/* <Input
             type="checkbox"
             label="Set field as unique"
             description="Ensures that multiple entries can't have the same value"
             value={meta?.unique}
             onChange={(v) => setMeta({ field: 'unique', value: v })}
-          />
+          /> */}
           <Input
             type="select"
             label="Format"
@@ -69,11 +71,66 @@ export const SpecificFieldSettings = ({
             value={meta?.regex}
             onChange={(v) => setMeta({ field: 'regex', value: v })}
           />
-          {/* TODO: contentMediaType , contentMediaEncoding */}
+
+          <styled.div style={{ display: 'flex', gap: 16 }}>
+            <Input
+              type="select"
+              label="Content Media Types"
+              value={meta?.contentMediaType}
+              options={contentMediaTypes}
+              onChange={(v) => setMeta({ field: 'contentMediaType', value: v })}
+            />
+            {!CONTENTMEDIATYPES.includes(meta?.contentMediaType) && (
+              <Input
+                type="text"
+                label="Custom ContentMediaType"
+                value={meta?.contentMediaType}
+                onChange={(v) =>
+                  setMeta({ field: 'contentMediaType', value: v })
+                }
+              />
+            )}
+          </styled.div>
+
+          <Input
+            type="select"
+            label="Content Media Encoding"
+            value={meta?.contentMediaEncoding}
+            options={contentMediaEncodings}
+            onChange={(v) =>
+              setMeta({ field: 'contentMediaEncoding', value: v })
+            }
+          />
+
+          <styled.div
+            style={{
+              flexDirection: 'column',
+              display: 'flex',
+              gap: 16,
+              marginTop: 16,
+              maxWidth: 128,
+            }}
+          >
+            <Input
+              type="checkbox"
+              title="Multiline"
+              // description="Ensures that multiple entries can't have the same value"
+              value={meta?.multiline}
+              onChange={(v) => setMeta({ field: 'multiline', value: v })}
+            />
+            <Input
+              type="checkbox"
+              title="Display"
+              // description="Ensures that multiple entries can't have the same value"
+              value={meta?.display}
+              onChange={(v) => setMeta({ field: 'display', value: v })}
+            />
+          </styled.div>
         </>
       ) : fieldType === 'text' ? (
         <></>
       ) : fieldType === 'number' ? (
+        // NUMBER
         <>
           <styled.div style={{ display: 'flex', gap: 16 }}>
             <Input
@@ -179,4 +236,41 @@ const stringFormatOptions = [
   { value: 'taxID' },
   { value: 'licensePlate' },
   { value: 'VAT' },
+]
+
+const contentMediaTypes = [
+  { value: 'text/html' },
+  { value: 'text/plain' },
+  { value: 'text/markdown' },
+  { value: 'image/png' },
+  { value: 'image/jpeg' },
+  { value: 'video/mp4' },
+  { value: 'image/*' },
+  { value: 'video/*' },
+  { value: 'audio/*' },
+  { value: '*/*' },
+  { value: 'string/string' },
+]
+
+const CONTENTMEDIATYPES = [
+  'text/html',
+  'text/plain',
+  'text/markdown',
+  'image/png',
+  'image/jpeg',
+  'video/mp4',
+  'image/*',
+  'video/*',
+  'audio/*',
+  '*/*',
+]
+
+const contentMediaEncodings = [
+  { value: '7bit' },
+  { value: '8bit' },
+  { value: 'binary' },
+  { value: 'quoted-printable' },
+  { value: 'base16' },
+  { value: 'base32' },
+  { value: 'base64' },
 ]

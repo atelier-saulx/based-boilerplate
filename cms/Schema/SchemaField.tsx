@@ -28,6 +28,8 @@ export const SchemaField = ({
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: id })
 
+  console.log(item, '??')
+
   return (
     <Dropdown.Root>
       <styled.div
@@ -70,6 +72,13 @@ export const SchemaField = ({
         <Badge color={ALL_FIELDS[index].color as any} light>
           {item.type}
         </Badge>
+
+        {item?.meta?.format && <Badge light>{item.meta.format}</Badge>}
+        {item?.meta?.contentMediaEncoding && (
+          <Badge light color="blue">
+            {item.meta.contentMediaEncoding}
+          </Badge>
+        )}
 
         <Dropdown.Trigger>
           <Button
