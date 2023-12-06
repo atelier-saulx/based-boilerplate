@@ -1,6 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { useAuthState, useQuery } from '@based/react'
+import './global.css'
 import based from '@based/client'
 import basedConfig from '../based.json'
 import { useRoute } from 'kabouter'
