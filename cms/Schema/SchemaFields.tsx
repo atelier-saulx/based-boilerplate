@@ -62,14 +62,14 @@ const parseSchema = (schema, routeType) => {
   const array = [] as unindexedSchemaItem[]
   const type = schema.types[routeType as string]?.fields
   for (const i in type) {
-    if (type[i].meta?.index) {
+    if (type[i].index) {
       indexedArray.push({
         name: i,
         meta: type[i].meta,
         id: i,
         type: type[i].type,
         label: i,
-        index: type[i].meta.index,
+        index: +type[i].index,
       })
     } else {
       array.push({
@@ -94,7 +94,8 @@ const parseItems = (items, schema, routeType) => {
     const type = items[i]
     object[type.name] = {
       ...schemaType[type.name],
-      meta: { ...type.meta, index: i },
+      index: i,
+      meta: { ...type.meta },
     }
   }
   return object

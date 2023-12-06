@@ -22,12 +22,12 @@ export const ContentOverview = () => {
       schema?.types[routeSection as string].fields
     )
 
-    let sortedByMetaIndex = realFields.sort(
-      (p1: any, p2: any) => p1[1]?.meta?.index - p2[1]?.meta?.index
+    let sortedByIndex = realFields.sort(
+      (p1: any, p2: any) => p1[1]?.index - p2[1]?.index
     )
 
-    for (let i = 0; i < sortedByMetaIndex.length; i++) {
-      arr.push(sortedByMetaIndex[i][0] as string)
+    for (let i = 0; i < sortedByIndex.length; i++) {
+      arr.push(sortedByIndex[i][0] as string)
     }
   }
 

@@ -48,7 +48,8 @@ export const SpecificFieldModal = ({
   //   'current length'
   // )
 
-  console.log(meta, 'meta')
+  console.log('FIELD??', schema.types[routeType].fields[field])
+  // console.log(meta, 'meta')
 
   useEffect(() => {
     if (thisSpecificField?.meta) {
@@ -135,13 +136,19 @@ export const SpecificFieldModal = ({
               </styled.div>
             </div>
           </Tab>
-          <Tab label="Settings">
-            <SpecificFieldSettings
-              fieldType={fieldType.toLowerCase()}
-              setMeta={setMeta}
-              meta={meta}
-            />
-          </Tab>
+          {fieldType.toLowerCase() !== 'boolean' &&
+          fieldType.toLowerCase() !== 'cardinality' &&
+          fieldType.toLowerCase() !== 'json' ? (
+            <Tab label="Settings">
+              <SpecificFieldSettings
+                fieldType={fieldType.toLowerCase()}
+                setMeta={setMeta}
+                meta={meta}
+              />
+            </Tab>
+          ) : (
+            <></>
+          )}
         </Tabs>
       </Modal.Body>
       <Modal.Actions>
@@ -174,9 +181,9 @@ export const SpecificFieldModal = ({
                         fields: {
                           [meta.name || meta.displayName.toLowerCase()]: {
                             type: 'json',
+                            index: +thisSpecificField?.index || +newIndex,
                             meta: {
                               ...newMeta,
-                              index: newIndex,
                               linkedField: `${
                                 meta.field || meta.displayName.toLowerCase()
                               }HTML`,
@@ -203,9 +210,9 @@ export const SpecificFieldModal = ({
                         fields: {
                           [meta.name || meta.displayName.toLowerCase()]: {
                             type: fieldType.toLowerCase(),
+                            index: +thisSpecificField?.index || +newIndex,
                             meta: {
                               ...newMeta,
-                              index: newIndex,
                             },
                           },
                         },
