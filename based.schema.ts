@@ -6,6 +6,9 @@ export default {
     },
     folder: {
       fields: {
+        name: {
+          type: 'string',
+        },
         items2: {
           type: 'array',
           items: {

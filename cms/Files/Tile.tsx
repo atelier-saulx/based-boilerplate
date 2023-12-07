@@ -11,9 +11,9 @@ export const Tile = ({ folder, name, setOpenSidebar, id, setSelected }) => {
 
   return (
     <styled.button
-      ref={setNodeRef}
-      {...attributes}
-      {...listeners}
+      // ref={setNodeRef}
+      // {...attributes}
+      // {...listeners}
       // onClick={() => console.log('NOOO')}
       style={{
         maxHeight: 128,
