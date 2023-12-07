@@ -51,23 +51,7 @@ export const Explorer = ({}) => {
                 $filter: {
                   $operator: '=',
                   $field: 'type',
-                  $value: 'file',
-                },
-              },
-            },
-          },
-          folder: {
-            $all: true,
-            $list: {
-              $sort: { $field: 'updatedAt', $order: 'desc' },
-              $offset: offset,
-              //   $limit: 25,
-              $find: {
-                $traverse: 'children',
-                $filter: {
-                  $operator: '=',
-                  $field: 'type',
-                  $value: 'folder',
+                  $value: ['folder', 'file'],
                 },
               },
             },
@@ -83,6 +67,8 @@ export const Explorer = ({}) => {
     $id: selected,
     $all: true,
   })
+
+  console.log(data)
 
   const [array, setArray] = useState<any>(data)
 
@@ -107,6 +93,12 @@ export const Explorer = ({}) => {
     setArray(data)
   }, [data])
 
+  const { data: thinggg, loading: asdasd } = useQuery('db', {
+    $id: 'di7e081f84',
+    children: true,
+  })
+  console.log(thinggg)
+
   return (
     <DndContext
       sensors={sensors}
@@ -121,21 +113,34 @@ export const Explorer = ({}) => {
           gap: 15,
         }}
       >
+        <Button
+          onClick={async () => {
+            await client.call('db:set', {
+              $id: 'di7e081f84',
+              children: ['fi24f874df'],
+            })
+          }}
+        >
+          set async
+        </Button>
         <SortableContext
           items={array?.length > 0 ? array : [0]}
           strategy={rectSwappingStrategy}
         >
           {array?.length > 0 &&
-            array.map((value, i) => (
-              <Tile
-                id={value.id}
-                name={value.name}
-                key={i}
-                setSelected={setSelected}
-                folder={false}
-                setOpenSidebar={setOpenSidebar}
-              />
-            ))}
+            array.map((value, i) => {
+              console.log(value.type)
+              return (
+                <Tile
+                  folder={value.type === 'folder'}
+                  id={value.id}
+                  name={value.name}
+                  key={i}
+                  setSelected={setSelected}
+                  setOpenSidebar={setOpenSidebar}
+                />
+              )
+            })}
         </SortableContext>
         <DragOverlay>
           <Tile
