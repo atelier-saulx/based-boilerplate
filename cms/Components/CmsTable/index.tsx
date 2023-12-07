@@ -147,7 +147,6 @@ export const CmsTable: FC<CmsTableProps> = ({
 
       let filterCopy = { ...filter }
       filterCopy[allKeys[0]] = nestedObject[allKeys[0]]
-      //  filter[allKeys[0]] = nestedObject[allKeys[0]]
 
       //   console.log('🥝', filter)
       console.log('🥥', filterCopy)
@@ -172,18 +171,19 @@ export const CmsTable: FC<CmsTableProps> = ({
           cursor: onRowClick ? 'pointer' : 'auto',
           ...style,
         }}
-        onClick={() => {
-          if (onRowClick) {
-            setSelectedRowIndexes([])
-            onRowClick(parsedData[rowIndex], rowIndex)
-          }
-
+        onClick={(e) => {
           if (onCellClick) {
+            // e.stopPropagation()
             onCellClick(
               parsedData[rowIndex][hiddenColumnNames[columnIndex]],
               rowIndex,
               columnIndex
             )
+          }
+
+          if (onRowClick) {
+            setSelectedRowIndexes([])
+            onRowClick(parsedData[rowIndex], rowIndex)
           }
         }}
       >

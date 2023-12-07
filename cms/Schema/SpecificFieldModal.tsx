@@ -48,7 +48,7 @@ export const SpecificFieldModal = ({
   //   'current length'
   // )
 
-  console.log('FIELD??', schema.types[routeType].fields[field])
+  console.log('FIELD??', schema?.types[routeType]?.fields[field])
   // console.log(meta, 'meta')
 
   useEffect(() => {
@@ -167,6 +167,8 @@ export const SpecificFieldModal = ({
             // TODO set meta fields if there are also description
             // let metaFields
 
+            console.log('ORB', fieldType.toLowerCase())
+
             //  routeType
             if (meta.displayName) {
               const newMeta = Object.fromEntries(
@@ -210,6 +212,8 @@ export const SpecificFieldModal = ({
                         fields: {
                           [meta.name || meta.displayName.toLowerCase()]: {
                             type: fieldType.toLowerCase(),
+                            values:
+                              fieldType.toLowerCase() === 'record' ? [] : null,
                             index: +thisSpecificField?.index || +newIndex,
                             meta: {
                               ...newMeta,

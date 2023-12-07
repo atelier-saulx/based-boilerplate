@@ -103,6 +103,7 @@ export const ContentOverview = () => {
           // queryId forces a rerender // subscription
           queryId={routeSection as string}
           onRowClick={(row) => route.setQuery({ id: row.id })}
+          onCellClick={(e) => console.log('on cell click -> ', e)}
           columnNamesInRightOrder={arr}
         />
       </styled.div>
