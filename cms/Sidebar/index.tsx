@@ -24,17 +24,41 @@ export const SideBar = () => {
       .filter((key) => key !== 'user')
       .filter((key) => key !== 'file')
       .map((key) => {
-        menuItems[key] = {
-          value: key,
-          label: schemaTypes[key]?.meta?.displayName || key,
+        if (schemaTypes[key].parents) {
+          menuItems[schemaTypes[key].parents][key] = [
+            {
+              value: key,
+              label: schemaTypes[key]?.meta?.displayName || key,
+            },
+          ]
+        } else {
+          menuItems[key] = {
+            value: key,
+            label: schemaTypes[key]?.meta?.displayName || key,
+          }
         }
       })
   }
+
+  console.log(menuItems)
+
+  // let testa = {
+  //   flipper: { value: 'flipper', label: 'flipper' },
+  //   flapper: { value: 'flapper', label: 'flapper' },
+
+  //   boink: [
+  //     {
+  //       label: 'boink',
+  //       value: 'boink',
+  //     },
+  //   ],
+  // }
 
   return (
     <Menu
       style={{ paddingTop: 90, minHeight: '100vh' }}
       // header={<Logo />}
+
       config={{
         types: menuItems,
         schema: {

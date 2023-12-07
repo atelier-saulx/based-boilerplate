@@ -13,6 +13,7 @@ export const SchemaSidebar = () => {
   const [typeName, setTypeName] = useState('')
   const [displayName, setDisplayName] = useState('')
   const [description, setDescription] = useState('')
+  const [parent, setParent] = useState('')
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
   const client = useClient()
@@ -35,6 +36,8 @@ export const SchemaSidebar = () => {
         }
       })
   }
+
+  console.log('SCHEMA', schema)
 
   return (
     <Menu
@@ -80,6 +83,12 @@ export const SchemaSidebar = () => {
                           onChange={(v) => setDisplayName(v)}
                         />
                         <Input
+                          label="Parent ref"
+                          type="text"
+                          value={parent}
+                          onChange={(v) => setParent(v)}
+                        />
+                        <Input
                           label="Description"
                           type="textarea"
                           value={description}
@@ -100,6 +109,7 @@ export const SchemaSidebar = () => {
                         onClick={async () => {
                           const type = typeName
                           const typeSchema = {
+                            parents: parent,
                             fields: {},
                             meta: {
                               name: typeName,
