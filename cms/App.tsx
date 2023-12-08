@@ -7,23 +7,14 @@ import { useRoute } from 'kabouter'
 import { styled } from 'inlines'
 import { Content } from './Content'
 import { FileLibrary } from './Files'
-import { SideBar } from './Sidebar'
+import { SideBar } from './Components/Sidebar'
 import { SchemaBuilder } from './Schema'
 import { Login } from './UserManagement/Login'
 import { Management } from './UserManagement/Management'
-import {
-  Avatar,
-  Button,
-  Dropdown,
-  IconEye,
-  IconLogOut,
-  Provider,
-  TopNavigation,
-  color,
-  useTheme,
-} from '@based/ui'
-import { Logo } from './Sidebar/Logo'
+import { Provider, color } from '@based/ui'
+import { TopBar } from './Components/TopBar'
 import { Profile } from './UserManagement/Profile'
+import { Dashboard } from './Components/Dashboard'
 
 export const client = based(basedConfig)
 
@@ -31,7 +22,6 @@ export const App = () => {
   const authState = useAuthState()
   const route = useRoute('[section]')
   const section = route.query.section
-  const { theme, setTheme } = useTheme()
 
   const { data, loading } = useQuery('db', {
     $id: authState.userId,
@@ -48,51 +38,7 @@ export const App = () => {
         backgroundColor: color('background', 'default'),
       }}
     >
-      <TopNavigation>
-        <Logo
-          style={{ cursor: 'pointer' }}
-          onClick={() => {
-            // @ts-ignore
-            route.setQuery({ section: null })
-          }}
-        />
-
-        <Dropdown.Root>
-          <Dropdown.Trigger>
-            <Button style={{ marginLeft: 'auto' }} size="xsmall">
-              <Avatar src={data?.profileImg}>{authState.userId}</Avatar>
-            </Button>
-          </Dropdown.Trigger>
-          <Dropdown.Items>
-            <Dropdown.Item
-              onClick={() =>
-                //@ts-expect-error
-                route.setQuery({ section: 'profile', type: null, id: null })
-              }
-            >
-              Profile
-            </Dropdown.Item>
-            <Dropdown.Separator />
-            <Dropdown.Item
-              icon={<IconEye />}
-              onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
-            >
-              {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
-            </Dropdown.Item>
-            <Dropdown.Separator />
-            <Dropdown.Item
-              onClick={() => {
-                //@ts-expect-error
-                route.setQuery({ section: null, type: null, id: null })
-                client.setAuthState({ token: undefined, persistent: true })
-              }}
-              icon={<IconLogOut />}
-            >
-              Logout
-            </Dropdown.Item>
-          </Dropdown.Items>
-        </Dropdown.Root>
-      </TopNavigation>
+      <TopBar data={data} client={client} />
       <styled.div style={{ display: 'flex', flexDirection: 'row' }}>
         <SideBar />
         <div style={{ marginTop: 65, width: '100%' }}>
@@ -104,6 +50,8 @@ export const App = () => {
             <Profile />
           ) : section === 'user-management' ? (
             <Management />
+          ) : !section ? (
+            <Dashboard />
           ) : (
             <Content />
           )}
