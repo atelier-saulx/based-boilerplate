@@ -21,6 +21,8 @@ import {
   color,
   IconCopy,
   Toggle,
+  IconEdit,
+  Tooltip,
 } from '@based/ui'
 import { useRoute } from 'kabouter'
 
@@ -83,6 +85,8 @@ export const CmsTable: FC<CmsTableProps> = ({
   const [customFilter, setCustomFilter] = useState<any>()
   const [renderCounter, setRenderCounter] = useState(1)
 
+  const [enableInlineEditModus, setEnableInlineEditModus] = useState(false)
+
   let w = width
   let h = height
 
@@ -117,7 +121,6 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   let columnNames: any[] = [...new Set(parsedData?.flatMap(Object.keys))]
 
-  // console.log(columnNamesInRightOrder, '🍟')
   if (columnNamesInRightOrder && columnNamesInRightOrder.length > 0) {
     columnNames = columnNamesInRightOrder
   }
@@ -126,12 +129,14 @@ export const CmsTable: FC<CmsTableProps> = ({
     (item) => !hiddenColumns?.includes(item?.toLowerCase())
   )
 
-  let schemaFields = schema?.types[routeSection as string].fields
+  // queryId is the type in this case
+  let schemaFields = schema?.types[queryId as string]?.fields
 
   useEffect(() => {
     setCustomFilter('')
     setAddedFilters([])
     setSelectedRowIndexes([])
+    setEnableInlineEditModus(false)
   }, [queryId])
   // console.log(result, 'Result>?')
   console.log(parsedData, 'ParsedDAta?')
@@ -163,6 +168,8 @@ export const CmsTable: FC<CmsTableProps> = ({
   const tableHeaderRef = useRef<HTMLDivElement>()
 
   const Cell = ({ columnIndex, rowIndex, style }) => {
+    let cellFieldTypeOf = schemaFields[hiddenColumnNames[columnIndex]]?.type
+
     return (
       <styled.div
         style={{
@@ -174,18 +181,12 @@ export const CmsTable: FC<CmsTableProps> = ({
             'default'
           )}`,
           paddingRight: 8,
-          cursor: onRowClick ? 'pointer' : 'auto',
+          cursor: onRowClick && !enableInlineEditModus ? 'pointer' : 'auto',
           ...style,
         }}
         onClick={(e) => {
           if (onCellClick) {
             // e.stopPropagation()
-
-            console.log('🤡 🦉 🥒', hiddenColumnNames[columnIndex])
-            console.log(
-              '---> now check this',
-              schemaFields[hiddenColumnNames[columnIndex]]?.type
-            )
 
             onCellClick(
               parsedData[rowIndex][hiddenColumnNames[columnIndex]],
@@ -194,9 +195,9 @@ export const CmsTable: FC<CmsTableProps> = ({
             )
           }
 
-          if (onRowClick) {
-            // setSelectedRowIndexes([])
-            // onRowClick(parsedData[rowIndex], rowIndex)
+          if (onRowClick && !enableInlineEditModus) {
+            setSelectedRowIndexes([])
+            onRowClick(parsedData[rowIndex], rowIndex)
           }
         }}
       >
@@ -234,10 +235,29 @@ export const CmsTable: FC<CmsTableProps> = ({
           </styled.div>
         )}
         {/* render cell based on column name type renderAs */}
-        <RenderAs
-          input={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
-          colName={hiddenColumnNames[columnIndex]}
-        />
+        {cellFieldTypeOf === 'boolean' && enableInlineEditModus ? (
+          <Toggle
+            style={{ marginLeft: 6 }}
+            value={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
+            onChange={(v) => {}}
+          />
+        ) : (cellFieldTypeOf === 'string' || cellFieldTypeOf === 'text') &&
+          enableInlineEditModus ? (
+          <Input
+            type="text"
+            value={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
+          />
+        ) : cellFieldTypeOf === 'number' && enableInlineEditModus ? (
+          <Input
+            type="number"
+            value={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
+          />
+        ) : (
+          <RenderAs
+            input={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
+            colName={hiddenColumnNames[columnIndex]}
+          />
+        )}
       </styled.div>
     )
   }
@@ -550,38 +570,68 @@ export const CmsTable: FC<CmsTableProps> = ({
           </Button>
         )}
 
-        <Dropdown.Root>
-          <Dropdown.Trigger>
+        <div style={{ marginLeft: 'auto' }}>
+          <Tooltip
+            text={
+              enableInlineEditModus
+                ? 'disable inline-edit'
+                : 'enable inline-edit'
+            }
+            position="top"
+          >
             <Button
-              color="system"
-              icon={<IconEye />}
+              color={enableInlineEditModus ? 'primary' : 'system'}
+              icon={<IconEdit />}
               size="xsmall"
-              style={{ marginLeft: 'auto' }}
+              style={{
+                marginRight: 8,
+                border: enableInlineEditModus
+                  ? `1px solid ${color('background', 'brand', 'muted')}`
+                  : `1px solid ${borderColor}`,
+              }}
+              onClick={() => {
+                console.log(enableInlineEditModus, 'yo watsup')
+                setEnableInlineEditModus(!enableInlineEditModus)
+              }}
             />
-          </Dropdown.Trigger>
+          </Tooltip>
 
-          <Dropdown.Items>
-            {columnNames?.map((item, idx) => (
-              <Input
-                key={idx}
-                title={item}
-                type="checkbox"
-                value={!hiddenColumns?.includes(item?.toLowerCase())}
-                onChange={(v) => {
-                  if (v) {
-                    setFilteredColumns([
-                      ...hiddenColumns?.filter(
-                        (x) => x !== item?.toLowerCase()
-                      ),
-                    ])
-                  } else {
-                    setFilteredColumns([...hiddenColumns, item?.toLowerCase()])
-                  }
-                }}
+          <Dropdown.Root>
+            <Dropdown.Trigger>
+              <Button
+                color="system"
+                icon={<IconEye />}
+                size="xsmall"
+                style={{ marginLeft: 'auto' }}
               />
-            ))}
-          </Dropdown.Items>
-        </Dropdown.Root>
+            </Dropdown.Trigger>
+
+            <Dropdown.Items>
+              {columnNames?.map((item, idx) => (
+                <Input
+                  key={idx}
+                  title={item}
+                  type="checkbox"
+                  value={!hiddenColumns?.includes(item?.toLowerCase())}
+                  onChange={(v) => {
+                    if (v) {
+                      setFilteredColumns([
+                        ...hiddenColumns?.filter(
+                          (x) => x !== item?.toLowerCase()
+                        ),
+                      ])
+                    } else {
+                      setFilteredColumns([
+                        ...hiddenColumns,
+                        item?.toLowerCase(),
+                      ])
+                    }
+                  }}
+                />
+              ))}
+            </Dropdown.Items>
+          </Dropdown.Root>
+        </div>
       </Row>
       <AutoSizer>
         {({ height, width }) => (

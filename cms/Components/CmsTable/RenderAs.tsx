@@ -37,7 +37,7 @@ export const RenderAs = ({ colName, input }) => {
       />
     )
   } else if (typeof input === 'boolean') {
-    return <Toggle value={input} disabled />
+    return <Toggle value={input} disabled style={{ marginLeft: 6 }} />
   } else if (cName === 'profileimg') {
     return <Avatar src={input} autoColor />
   }
