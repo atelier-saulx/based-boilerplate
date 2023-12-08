@@ -570,7 +570,14 @@ export const CmsTable: FC<CmsTableProps> = ({
           </Button>
         )}
 
-        <div style={{ marginLeft: 'auto' }}>
+        <div
+          style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}
+        >
+          {enableInlineEditModus && (
+            <Button size="small" style={{ marginRight: 8 }}>
+              Save changes
+            </Button>
+          )}
           <Tooltip
             text={
               enableInlineEditModus
