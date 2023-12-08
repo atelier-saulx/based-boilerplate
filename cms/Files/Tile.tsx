@@ -28,6 +28,7 @@ export const Tile = ({
   src,
   dragEnter,
   onDragEnd,
+  dragOverItem,
 }) => {
   const [editName, setEditName] = useState(false)
 
@@ -59,6 +60,7 @@ export const Tile = ({
         // justifyContent: 'center',
         padding: 8,
         borderRadius: 12,
+        // border: dragOverItem.current === id ? '1px solid red' : '0px solid',
         '&:focus': {
           background: color('action', 'system', 'subtleSelected'),
         },

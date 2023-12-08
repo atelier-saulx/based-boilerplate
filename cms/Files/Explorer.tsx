@@ -31,68 +31,26 @@ import {
 } from '@dnd-kit/sortable'
 
 const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
-const filterFolder = () => {}
 
-export const Explorer = ({}) => {
-  const [openSidebar, setOpenSidebar] = useState(false)
-  const [selected, setSelected] = useState('')
-  const [rootId, setRootId] = useState(['root'])
-  const [path, setPath] = useState([rootId])
-  const [formFieldChanges, setFormFieldChanges] = useState<any>({})
-  console.log(rootId[rootId.length - 1])
-  const { data, fetchMore, setVisibleElements, filterChange } =
-    useInfiniteQuery(
-      {
-        accessFn: (data) => data.files,
-        queryFn: (offset) => ({
-          $id: rootId[rootId.length - 1],
-          files: {
-            $all: true,
-            $list: {
-              $sort: { $field: 'updatedAt', $order: 'desc' },
-              $offset: offset,
-              //   $limit: 25,
-              $find: {
-                $traverse: 'children',
-                $filter: {
-                  $operator: '=',
-                  $field: 'type',
-                  $value: ['folder', 'file'],
-                },
-              },
-            },
-          },
-        }),
-      }
+const filterFolder = (data, rootId) => {
+  if (data?.length < 1) return
+  const newArr = [] as any
+  for (const i in data) {
+    if (
+      data[i].parents?.filter((j) => j[0] + j[1] === 'di').length === 1 &&
+      !data[i].parents
+        .filter((i) => i !== 'root')
+        .includes(rootId[rootId.length - 1])
+    ) {
+      console.log(data[i].parents)
+    } else {
+      newArr.push(data[i])
+    }
+  }
+  return newArr
+}
 
-      //   [rootId]
-    )
-
-  //   const { data, loading: asdf } = useQuery('db', {
-  //     $id: rootId[rootId.length - 1],
-  //     file: {
-  //       $all: true,
-  //       $list: {
-  //         $find: {
-  //           $traverse: 'children',
-  //           $filter: {
-  //             $field: 'type',
-  //             $operator: '=',
-  //             $value: ['folder', 'file'],
-  //           },
-  //         },
-  //       },
-  //     },
-  //   })
-
-  const client = useClient()
-  const { data: schema, loading } = useQuery('db:schema')
-  const { data: fileData, loading: loadingFile } = useQuery('db', {
-    $id: selected,
-    $all: true,
-  })
-  const [array, setArray] = useState<any>(data)
-
+export const Explorer = ({ table }) => {
   const dragItem = useRef()
   const dragOverItem = useRef()
 
@@ -103,7 +61,6 @@ export const Explorer = ({}) => {
     dragOverItem.current = e.currentTarget.id
   }
   const drop = (e) => {
-    console.log(dragItem, dragOverItem)
     if (true) {
       setArray((items) => {
         const activeIndex = items?.findIndex(
@@ -113,20 +70,48 @@ export const Explorer = ({}) => {
           (item) => item.id === dragOverItem.current
         ) as number
 
-        // for (const i in array) {
-        //   if (parseInt(i) === overIndex) {
-        //     newArr.push(array[activeIndex])
-        //   } else if (parseInt(i) === activeIndex) {
-        //     newArr.push(array[overIndex])
-        //   } else {
-        //     newArr.push(array[parseInt(i)])
-        //   }
-        // }
-        // return newArr
         return arrayMove(items, activeIndex, overIndex)
       })
     }
   }
+
+  const [openSidebar, setOpenSidebar] = useState(false)
+  const [selected, setSelected] = useState('')
+  const [rootId, setRootId] = useState(['root'])
+  const [formFieldChanges, setFormFieldChanges] = useState<any>({})
+
+  const { data, fetchMore, setVisibleElements, filterChange } =
+    useInfiniteQuery({
+      accessFn: (data) => data.files,
+      queryFn: (offset) => ({
+        $id: rootId[rootId.length - 1],
+        files: {
+          $all: true,
+          parents: true,
+          $list: {
+            $sort: { $field: 'updatedAt', $order: 'desc' },
+            $offset: offset,
+            //   $limit: 25,
+            $find: {
+              $traverse: 'children',
+              $filter: {
+                $operator: '=',
+                $field: 'type',
+                $value: ['folder', 'file'],
+              },
+            },
+          },
+        },
+      }),
+    })
+
+  const client = useClient()
+  const { data: schema, loading } = useQuery('db:schema')
+  const { data: fileData, loading: loadingFile } = useQuery('db', {
+    $id: selected,
+    $all: true,
+  })
+  const [array, setArray] = useState<any>(filterFolder(data, rootId))
 
   let schemaFields = schema?.types.file.fields
   let filteredSchemaFields = {}
@@ -139,16 +124,20 @@ export const Explorer = ({}) => {
   }
 
   useEffect(() => {
-    setArray(data)
+    if (!array) {
+      fetchMore()
+      setArray(filterFolder(data, rootId))
+    }
   }, [data, rootId])
 
-  console.log(data)
+  useEffect(() => {
+    setArray(filterFolder(data, rootId))
+    // fetchMore()
+  }, [data, rootId, table])
 
   useEffect(() => {
-    // console.log('asdasd')
-    filterChange()
     fetchMore()
-    // setVisibleElements(25)
+    filterChange()
   }, [rootId])
 
   return (
@@ -156,7 +145,11 @@ export const Explorer = ({}) => {
       {rootId.length > 1 && (
         <Button
           onClick={() =>
-            setRootId(rootId.filter((_, i) => i !== rootId.length - 1))
+            setRootId(
+              rootId.length === 2
+                ? ['root']
+                : rootId.filter((_, i) => i === rootId.length - 1)
+            )
           }
           size="xsmall"
           color="system"
@@ -177,20 +170,23 @@ export const Explorer = ({}) => {
         {array?.length > 0 &&
           array.map((value, i) => {
             return (
-              <Tile
-                dragEnter={dragEnter}
-                dragStart={dragStart}
-                onDragEnd={drop}
-                src={value?.src}
-                rootId={rootId}
-                setRootId={setRootId}
-                folder={value.type === 'folder'}
-                id={value.id}
-                name={value.name}
-                key={i}
-                setSelected={setSelected}
-                setOpenSidebar={setOpenSidebar}
-              />
+              <div style={{}}>
+                <Tile
+                  dragOverItem={dragOverItem}
+                  dragEnter={dragEnter}
+                  dragStart={dragStart}
+                  onDragEnd={drop}
+                  src={value?.src}
+                  rootId={rootId}
+                  setRootId={setRootId}
+                  folder={value.type === 'folder'}
+                  id={value.id}
+                  name={value.name}
+                  key={i}
+                  setSelected={setSelected}
+                  setOpenSidebar={setOpenSidebar}
+                />
+              </div>
             )
           })}
       </styled.div>
