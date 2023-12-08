@@ -9,12 +9,6 @@ export default {
         name: {
           type: 'string',
         },
-        items2: {
-          type: 'array',
-          items: {
-            type: 'string',
-          },
-        },
       },
       prefix: 'di',
     },
