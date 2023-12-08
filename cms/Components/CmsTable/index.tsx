@@ -5,7 +5,7 @@ import { Style, styled } from 'inlines'
 import { SortOptions, useInfiniteQuery } from './useInfiniteQuery'
 import { BasedQuery } from '@based/client'
 import { RenderAs } from './RenderAs'
-import { useClient } from '@based/react'
+import { useClient, useQuery } from '@based/react'
 import {
   Row,
   Modal,
@@ -21,8 +21,8 @@ import {
   color,
   IconCopy,
   Toggle,
-  Badge,
 } from '@based/ui'
+import { useRoute } from 'kabouter'
 
 type CmsTableProps = {
   data?: any
@@ -109,8 +109,11 @@ export const CmsTable: FC<CmsTableProps> = ({
   const parsedData = query ? result.items : data
 
   // console.log(filter, customFilter, 'Query??')
+  const route = useRoute('[section]')
+  const routeSection = route.query.section
 
   const client = useClient()
+  const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
   let columnNames: any[] = [...new Set(parsedData?.flatMap(Object.keys))]
 
@@ -123,13 +126,16 @@ export const CmsTable: FC<CmsTableProps> = ({
     (item) => !hiddenColumns?.includes(item?.toLowerCase())
   )
 
+  let schemaFields = schema?.types[routeSection as string].fields
+
   useEffect(() => {
     setCustomFilter('')
     setAddedFilters([])
     setSelectedRowIndexes([])
   }, [queryId])
   // console.log(result, 'Result>?')
-  // console.log(parsedData, 'ParsedDAta?')
+  console.log(parsedData, 'ParsedDAta?')
+  console.log(schemaFields)
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
 
@@ -174,6 +180,13 @@ export const CmsTable: FC<CmsTableProps> = ({
         onClick={(e) => {
           if (onCellClick) {
             // e.stopPropagation()
+
+            console.log('🤡 🦉 🥒', hiddenColumnNames[columnIndex])
+            console.log(
+              '---> now check this',
+              schemaFields[hiddenColumnNames[columnIndex]]?.type
+            )
+
             onCellClick(
               parsedData[rowIndex][hiddenColumnNames[columnIndex]],
               rowIndex,
@@ -182,8 +195,8 @@ export const CmsTable: FC<CmsTableProps> = ({
           }
 
           if (onRowClick) {
-            setSelectedRowIndexes([])
-            onRowClick(parsedData[rowIndex], rowIndex)
+            // setSelectedRowIndexes([])
+            // onRowClick(parsedData[rowIndex], rowIndex)
           }
         }}
       >
@@ -262,7 +275,6 @@ export const CmsTable: FC<CmsTableProps> = ({
               '&::-webkit-scrollbar': {
                 visibility: 'visible',
               },
-
               '&::-webkit-scrollbar-thumb': {
                 backgroundColor: scrollbarColor,
                 borderRadius: '4px',
@@ -585,6 +597,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                 overflowX: 'hidden',
                 scrollBehavior: 'auto',
                 // right scrollbar offset here
+                backgroundColor: color('action', 'system', 'subtleHover'),
                 paddingRight: 8,
               }}
             >

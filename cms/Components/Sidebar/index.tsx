@@ -40,7 +40,7 @@ export const SideBar = () => {
       })
   }
 
-  console.log(menuItems)
+  // console.log(menuItems)
 
   return (
     <Menu
