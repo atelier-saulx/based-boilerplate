@@ -24,7 +24,7 @@ import {
   IconEdit,
   Tooltip,
 } from '@based/ui'
-import { useRoute } from 'kabouter'
+import deepCopy from '../utils/deepCopy'
 
 type CmsTableProps = {
   data?: any
@@ -112,9 +112,16 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   const parsedData = query ? result.items : data
 
+  const shadowData = deepCopy(parsedData)
+
+  // useEffect(() => {
+  //   console.log('🙄')
+  //   shadowData = [...parsedData]
+  // }, [enableInlineEditModus])
+
+  // console.log('shadowDATA -->', shadowData)
+
   // console.log(filter, customFilter, 'Query??')
-  const route = useRoute('[section]')
-  const routeSection = route.query.section
 
   const client = useClient()
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
@@ -139,8 +146,8 @@ export const CmsTable: FC<CmsTableProps> = ({
     setEnableInlineEditModus(false)
   }, [queryId])
   // console.log(result, 'Result>?')
-  console.log(parsedData, 'ParsedDAta?')
-  console.log(schemaFields)
+  // console.log(parsedData, 'ParsedDAta?')
+  // console.log(schemaFields)
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
 
@@ -159,7 +166,6 @@ export const CmsTable: FC<CmsTableProps> = ({
       let filterCopy = { ...filter }
       filterCopy[allKeys[0]] = nestedObject[allKeys[0]]
 
-      //   console.log('🥝', filter)
       console.log('🥥', filterCopy)
       setCustomFilter({ ...filterCopy })
     }
@@ -167,8 +173,19 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   const tableHeaderRef = useRef<HTMLDivElement>()
 
+  // Cell Component
   const Cell = ({ columnIndex, rowIndex, style }) => {
     let cellFieldTypeOf = schemaFields[hiddenColumnNames[columnIndex]]?.type
+
+    const [inputState, setInputState] = useState(
+      parsedData[rowIndex][hiddenColumnNames[columnIndex]]
+    )
+
+    useEffect(() => {
+      console.log('this changed -->', inputState)
+      shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
+      console.log('Shadow DATA ->  bitch', shadowData)
+    }, [inputState])
 
     return (
       <styled.div
@@ -185,16 +202,14 @@ export const CmsTable: FC<CmsTableProps> = ({
           ...style,
         }}
         onClick={(e) => {
-          if (onCellClick) {
-            // e.stopPropagation()
-
-            onCellClick(
-              parsedData[rowIndex][hiddenColumnNames[columnIndex]],
-              rowIndex,
-              columnIndex
-            )
-          }
-
+          // if (onCellClick) {
+          //   // e.stopPropagation()
+          //   onCellClick(
+          //     parsedData[rowIndex][hiddenColumnNames[columnIndex]],
+          //     rowIndex,
+          //     columnIndex
+          //   )
+          // }
           if (onRowClick && !enableInlineEditModus) {
             setSelectedRowIndexes([])
             onRowClick(parsedData[rowIndex], rowIndex)
@@ -238,19 +253,21 @@ export const CmsTable: FC<CmsTableProps> = ({
         {cellFieldTypeOf === 'boolean' && enableInlineEditModus ? (
           <Toggle
             style={{ marginLeft: 6 }}
-            value={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
-            onChange={(v) => {}}
+            value={inputState}
+            onChange={(v) => setInputState(v)}
           />
         ) : (cellFieldTypeOf === 'string' || cellFieldTypeOf === 'text') &&
           enableInlineEditModus ? (
           <Input
             type="text"
-            value={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
+            value={inputState}
+            onChange={(v) => setInputState(v)}
           />
         ) : cellFieldTypeOf === 'number' && enableInlineEditModus ? (
           <Input
             type="number"
-            value={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
+            value={inputState}
+            onChange={(v) => setInputState(v)}
           />
         ) : (
           <RenderAs
@@ -273,8 +290,6 @@ export const CmsTable: FC<CmsTableProps> = ({
         height: h,
         '& .grid-class': {
           scrollbarGutter: 'stable',
-          // overflowY: 'overlay',
-          // overflowX: 'overlay',
           overflow: 'scroll !important',
           // firefox
           scrollbarColor: `${scrollbarColor} transparent`,
@@ -291,7 +306,6 @@ export const CmsTable: FC<CmsTableProps> = ({
           },
           '@media (hover: hover)': {
             '&:hover': {
-              // the rest
               '&::-webkit-scrollbar': {
                 visibility: 'visible',
               },
@@ -313,7 +327,6 @@ export const CmsTable: FC<CmsTableProps> = ({
       }}
     >
       {/* selected rows options */}
-
       {selectedRowIndexes.length > 0 && (
         <Row style={{ marginBottom: 12 }}>
           <Row style={{ gap: 12, padding: '0px 12px' }}>
@@ -343,7 +356,6 @@ export const CmsTable: FC<CmsTableProps> = ({
                     ...parsedData[idx],
                   })
                 })
-
                 setSelectedRowIndexes([])
               }}
               icon={<IconCopy />}
@@ -361,7 +373,6 @@ export const CmsTable: FC<CmsTableProps> = ({
                     $id: parsedData[idx].id,
                   })
                 })
-
                 setSelectedRowIndexes([])
                 setRenderCounter(renderCounter + 1)
               }}
@@ -574,7 +585,24 @@ export const CmsTable: FC<CmsTableProps> = ({
           style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}
         >
           {enableInlineEditModus && (
-            <Button size="small" style={{ marginRight: 8 }}>
+            <Button
+              size="small"
+              style={{ marginRight: 8 }}
+              onClick={async () => {
+                // console.log('asdfasdf', { ...data, ...formFieldChanges })
+
+                console.log(parsedData, 'PARSED ')
+                console.log(shadowData, 'shadow data')
+
+                // await client
+                //   .call('db:set', {
+                //     // $id: id,
+                //     // ...parsedData,
+                //     // ...shadowData,
+                //   })
+                //   .catch((err) => console.log(err))
+              }}
+            >
               Save changes
             </Button>
           )}
@@ -597,8 +625,10 @@ export const CmsTable: FC<CmsTableProps> = ({
                   : `1px solid ${borderColor}`,
               }}
               onClick={() => {
-                console.log(enableInlineEditModus, 'yo watsup')
                 setEnableInlineEditModus(!enableInlineEditModus)
+                // if (enableInlineEditModus) {
+                //   setRenderCounter(renderCounter + 1)
+                // }
               }}
             />
           </Tooltip>
@@ -654,7 +684,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                 overflowX: 'hidden',
                 scrollBehavior: 'auto',
                 // right scrollbar offset here
-                backgroundColor: color('action', 'system', 'subtleHover'),
+                backgroundColor: color('background', 'neutral', 'surface'),
                 paddingRight: 8,
               }}
             >

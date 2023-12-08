@@ -31,6 +31,8 @@ export const ContentOverview = () => {
     }
   }
 
+  console.log(schema)
+
   useEffect(() => {
     setTableWidth(width - 324)
     setTableHeight(height - 296)
