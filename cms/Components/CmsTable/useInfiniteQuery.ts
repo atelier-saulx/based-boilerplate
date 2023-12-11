@@ -79,7 +79,8 @@ export const useInfiniteQuery = ({
   })
 
   useEffect(() => {
-    console.log('🔥')
+    // console.log('🔥 FU')
+
     current.items = []
   }, [queryId])
 
@@ -94,8 +95,8 @@ export const useInfiniteQuery = ({
   }, [current])
 
   if (!query) {
-    // useEffect(() => {}, [])
-    // useEffect(() => {}, [])
+    useEffect(() => {}, [])
+    useEffect(() => {}, [])
     return {
       loading: false,
       itemCount: 0,
@@ -114,6 +115,7 @@ export const useInfiniteQuery = ({
       subs[q.id] =
         current.subs[q.id] ||
         q.subscribe((data, checksum) => {
+          // @ts-ignore
           const items = getQueryItems(data) ?? data.items ?? []
           for (let i = 0; i < items.length; i++) {
             current.items[i + start] = items[i]

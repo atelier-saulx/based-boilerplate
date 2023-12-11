@@ -9,12 +9,13 @@ import { Content } from './Content'
 import { FileLibrary } from './Files'
 import { SideBar } from './Components/Sidebar'
 import { SchemaBuilder } from './Schema'
-import { Login } from './UserManagement/Login'
-import { Management } from './UserManagement/Management'
+import { Login } from './Settings/UserManagement/Login'
+import { Management } from './Settings/UserManagement/Management'
 import { Provider, color } from '@based/ui'
 import { TopBar } from './Components/TopBar'
-import { Profile } from './UserManagement/Profile'
+import { Profile } from './Settings/UserManagement/Profile'
 import { Dashboard } from './Components/Dashboard'
+import { Backups } from './Settings/Backups'
 
 export const client = based(basedConfig)
 
@@ -50,6 +51,8 @@ export const App = () => {
             <Profile />
           ) : section === 'user-management' ? (
             <Management />
+          ) : section === 'back-ups' ? (
+            <Backups />
           ) : !section ? (
             <Dashboard />
           ) : (

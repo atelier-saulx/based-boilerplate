@@ -23,6 +23,8 @@ import {
   Toggle,
   IconEdit,
   Tooltip,
+  IconError,
+  IconAlertFill,
 } from '@based/ui'
 import deepCopy from '../utils/deepCopy'
 
@@ -47,7 +49,10 @@ type CmsTableProps = {
   onCellClick?: (v, rIdx, cIdx) => void
   columnNamesInRightOrder?: string[]
   style?: CSSProperties | Style
+  routeId?: string
 }
+
+export const changedRows = {}
 
 export const CmsTable: FC<CmsTableProps> = ({
   data,
@@ -61,6 +66,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   columnNamesInRightOrder,
   style,
   filter,
+  routeId,
 }) => {
   const [hiddenColumns, setFilteredColumns] = useState<string[]>([
     'ancestors',
@@ -82,13 +88,14 @@ export const CmsTable: FC<CmsTableProps> = ({
   const [fieldValue, setFieldValue] = useState('')
   const [filterValue, setFilterValue] = useState<number | string | boolean>('')
   const [addedFilters, setAddedFilters] = useState<{}[]>([])
-  const [customFilter, setCustomFilter] = useState<any>()
+  const [customFilter, setCustomFilter] = useState<any>('')
   const [renderCounter, setRenderCounter] = useState(1)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const [enableInlineEditModus, setEnableInlineEditModus] = useState(false)
 
-  let w = width
-  let h = height
+  // let w = width
+  // let h = height
 
   let COLUMN_WIDTH = 124
   let ROW_HEIGHT = 60
@@ -106,22 +113,21 @@ export const CmsTable: FC<CmsTableProps> = ({
       renderCounter,
     sortOptions: sortOptions,
     itemCount: data?.length,
-    height: h,
+    height: height,
     filter: customFilter || filter,
   })
 
   const parsedData = query ? result.items : data
-
   const shadowData = deepCopy(parsedData)
 
-  // useEffect(() => {
-  //   console.log('🙄')
-  //   shadowData = [...parsedData]
-  // }, [enableInlineEditModus])
+  // if row id is in changedRows set the shadowDAta rows to that
+  shadowData.map((obj, idx) =>
+    Object.keys(changedRows).includes(obj.id)
+      ? (shadowData[idx] = changedRows[obj.id])
+      : null
+  )
 
-  // console.log('shadowDATA -->', shadowData)
-
-  // console.log(filter, customFilter, 'Query??')
+  /// store the difference ??
 
   const client = useClient()
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
@@ -144,12 +150,21 @@ export const CmsTable: FC<CmsTableProps> = ({
     setAddedFilters([])
     setSelectedRowIndexes([])
     setEnableInlineEditModus(false)
+    setErrorMessage('')
   }, [queryId])
   // console.log(result, 'Result>?')
   // console.log(parsedData, 'ParsedDAta?')
   // console.log(schemaFields)
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
+
+  useEffect(() => {
+    if (errorMessage) {
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+    }
+  }, [errorMessage])
 
   // update the filter
   useEffect(() => {
@@ -166,7 +181,8 @@ export const CmsTable: FC<CmsTableProps> = ({
       let filterCopy = { ...filter }
       filterCopy[allKeys[0]] = nestedObject[allKeys[0]]
 
-      console.log('🥥', filterCopy)
+      // console.log('🥥', filterCopy)
+      // console.log('🐵 added filters', addedFilters)
       setCustomFilter({ ...filterCopy })
     }
   }, [addedFilters.length])
@@ -178,13 +194,22 @@ export const CmsTable: FC<CmsTableProps> = ({
     let cellFieldTypeOf = schemaFields[hiddenColumnNames[columnIndex]]?.type
 
     const [inputState, setInputState] = useState(
-      parsedData[rowIndex][hiddenColumnNames[columnIndex]]
+      Object.keys(changedRows)?.includes(parsedData[rowIndex]?.id)
+        ? shadowData[rowIndex][hiddenColumnNames[columnIndex]]
+        : parsedData[rowIndex][hiddenColumnNames[columnIndex]]
     )
 
     useEffect(() => {
-      console.log('this changed -->', inputState)
-      shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
-      console.log('Shadow DATA ->  bitch', shadowData)
+      // console.log('this changed -->', inputState)
+
+      if (parsedData[rowIndex][hiddenColumnNames[columnIndex]] !== inputState) {
+        shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
+
+        // console.log('this row changed -->', shadowData[rowIndex])
+        changedRows[shadowData[rowIndex].id] = shadowData[rowIndex]
+
+        console.log(changedRows, 'changed rows🤌')
+      }
     }, [inputState])
 
     return (
@@ -235,7 +260,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                 style={{ maxWidth: 24 }}
                 value={selectedRowIndexes.includes(rowIndex)}
                 onChange={() => {
-                  console.log('selected rowindex', rowIndex)
+                  //  console.log('selected rowindex', rowIndex)
                   if (!selectedRowIndexes.includes(rowIndex)) {
                     setSelectedRowIndexes([...selectedRowIndexes, rowIndex])
                   } else {
@@ -286,8 +311,8 @@ export const CmsTable: FC<CmsTableProps> = ({
   return (
     <styled.div
       style={{
-        width: w,
-        height: h,
+        width: width,
+        height: height,
         '& .grid-class': {
           scrollbarGutter: 'stable',
           overflow: 'scroll !important',
@@ -347,7 +372,7 @@ export const CmsTable: FC<CmsTableProps> = ({
               light
               onClick={() => {
                 selectedRowIndexes.map(async (idx) => {
-                  console.log(parsedData[idx])
+                  //  console.log(parsedData[idx])
 
                   await client.call('db:set', {
                     // TODO check this language
@@ -362,23 +387,44 @@ export const CmsTable: FC<CmsTableProps> = ({
             >
               Duplicate
             </Button>
-            <Button
-              size="small"
-              light
-              color="alert"
-              icon={<IconDelete />}
-              onClick={async () => {
-                await selectedRowIndexes.map(async (idx) => {
-                  await client.call('db:delete', {
-                    $id: parsedData[idx].id,
-                  })
-                })
-                setSelectedRowIndexes([])
-                setRenderCounter(renderCounter + 1)
-              }}
-            >
-              Delete
-            </Button>
+            <Modal.Root>
+              <Modal.Trigger>
+                <Button
+                  size="small"
+                  light
+                  color="alert"
+                  icon={<IconDelete />}
+                  // onClick={async () => {
+                  //   await selectedRowIndexes.map(async (idx) => {
+                  //     await client.call('db:delete', {
+                  //       $id: parsedData[idx].id,
+                  //     })
+                  //   })
+                  //   setSelectedRowIndexes([])
+                  //   setRenderCounter(renderCounter + 1)
+                  // }}
+                >
+                  Delete
+                </Button>
+              </Modal.Trigger>
+              <Modal.Confirmation
+                title="Delete selection"
+                label="Are you sure?"
+                type="alert"
+                action={{
+                  action: async () => {
+                    await selectedRowIndexes.map(async (idx) => {
+                      await client.call('db:delete', {
+                        $id: parsedData[idx].id,
+                      })
+                    })
+                    setSelectedRowIndexes([])
+                    setRenderCounter(renderCounter + 1)
+                  },
+                  label: 'Confirm',
+                }}
+              />
+            </Modal.Root>
           </Row>
         </Row>
       )}
@@ -401,8 +447,6 @@ export const CmsTable: FC<CmsTableProps> = ({
         </styled.div>
         {addedFilters.map((item, idx) => {
           let itemKey = Object.keys(item[0])[0]
-
-          console.log(itemKey)
 
           return (
             <React.Fragment key={idx}>
@@ -589,18 +633,28 @@ export const CmsTable: FC<CmsTableProps> = ({
               size="small"
               style={{ marginRight: 8 }}
               onClick={async () => {
-                // console.log('asdfasdf', { ...data, ...formFieldChanges })
+                // console.log(parsedData, 'PARSED ')
+                // console.log(shadowData, 'shadow data')
 
-                console.log(parsedData, 'PARSED ')
-                console.log(shadowData, 'shadow data')
+                // save the rows that are changed,
+                Object.keys(changedRows).forEach(
+                  async (key) =>
+                    await client
+                      .call('db:set', {
+                        $id: key,
+                        ...changedRows[key],
+                      })
+                      .catch((err) => {
+                        console.error(err)
+                        setErrorMessage(err.message)
+                      })
+                )
 
-                // await client
-                //   .call('db:set', {
-                //     // $id: id,
-                //     // ...parsedData,
-                //     // ...shadowData,
-                //   })
-                //   .catch((err) => console.log(err))
+                // clear the rowChanges
+                setEnableInlineEditModus(!enableInlineEditModus)
+                Object.keys(changedRows).forEach(
+                  (key) => delete changedRows[key]
+                )
               }}
             >
               Save changes
@@ -615,9 +669,9 @@ export const CmsTable: FC<CmsTableProps> = ({
             position="top"
           >
             <Button
-              color={enableInlineEditModus ? 'primary' : 'system'}
-              icon={<IconEdit />}
-              size="xsmall"
+              color="system"
+              icon={!enableInlineEditModus && <IconEdit />}
+              size={!enableInlineEditModus ? 'xsmall' : 'small'}
               style={{
                 marginRight: 8,
                 border: enableInlineEditModus
@@ -626,11 +680,13 @@ export const CmsTable: FC<CmsTableProps> = ({
               }}
               onClick={() => {
                 setEnableInlineEditModus(!enableInlineEditModus)
-                // if (enableInlineEditModus) {
-                //   setRenderCounter(renderCounter + 1)
-                // }
+                Object.keys(changedRows).forEach(
+                  (key) => delete changedRows[key]
+                )
               }}
-            />
+            >
+              {enableInlineEditModus && 'Cancel'}
+            </Button>
           </Tooltip>
 
           <Dropdown.Root>
@@ -670,6 +726,23 @@ export const CmsTable: FC<CmsTableProps> = ({
           </Dropdown.Root>
         </div>
       </Row>
+
+      {errorMessage && (
+        <Row
+          style={{
+            justifyContent: 'end',
+            alignItems: 'center',
+            marginBottom: 6,
+            marginTop: '-6px',
+            marginRight: 6,
+          }}
+        >
+          <IconAlertFill color="negative" style={{ marginRight: 6 }} />
+          <Text color="negative" weight="strong">
+            {errorMessage}
+          </Text>
+        </Row>
+      )}
       <AutoSizer>
         {({ height, width }) => (
           <>
@@ -756,7 +829,7 @@ export const CmsTable: FC<CmsTableProps> = ({
               height={height}
               rowCount={parsedData?.length}
               columnCount={hiddenColumnNames?.length}
-              width={w}
+              width={width}
               rowHeight={(index) => ROW_HEIGHT}
               columnWidth={(index) =>
                 index === 0 ? COLUMN_WIDTH + 32 : COLUMN_WIDTH
