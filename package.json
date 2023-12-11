@@ -8,7 +8,8 @@
     "zip": "rm -f latest.zip && zip -r latest.zip ./ -x node_modules/\\* -x package-lock.json -x .DS_Store -x .git/\\*",
     "dev": "npx @based/cli dev",
     "deploy": "npx @based/cli deploy",
-    "bundle": "npx aristotle bundle -t app/app.tsx -d dist"
+    "bundle": "npx aristotle bundle -t cms/index.ts -d dist",
+    "putOnWebsite": "node scripts/deploy.ts"
   },
   "prettier": "@saulx/prettier-config",
   "eslintConfig": {
