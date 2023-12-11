@@ -49,6 +49,7 @@ type CmsTableProps = {
   onCellClick?: (v, rIdx, cIdx) => void
   columnNamesInRightOrder?: string[]
   style?: CSSProperties | Style
+  routeId?: string
 }
 
 export const changedRows = {}
@@ -65,6 +66,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   columnNamesInRightOrder,
   style,
   filter,
+  routeId,
 }) => {
   const [hiddenColumns, setFilteredColumns] = useState<string[]>([
     'ancestors',
@@ -92,8 +94,8 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   const [enableInlineEditModus, setEnableInlineEditModus] = useState(false)
 
-  let w = width
-  let h = height
+  // let w = width
+  // let h = height
 
   let COLUMN_WIDTH = 124
   let ROW_HEIGHT = 60
@@ -111,7 +113,7 @@ export const CmsTable: FC<CmsTableProps> = ({
       renderCounter,
     sortOptions: sortOptions,
     itemCount: data?.length,
-    height: h,
+    height: height,
     filter: customFilter || filter,
   })
 
@@ -180,6 +182,7 @@ export const CmsTable: FC<CmsTableProps> = ({
       filterCopy[allKeys[0]] = nestedObject[allKeys[0]]
 
       // console.log('🥥', filterCopy)
+      // console.log('🐵 added filters', addedFilters)
       setCustomFilter({ ...filterCopy })
     }
   }, [addedFilters.length])
@@ -191,7 +194,7 @@ export const CmsTable: FC<CmsTableProps> = ({
     let cellFieldTypeOf = schemaFields[hiddenColumnNames[columnIndex]]?.type
 
     const [inputState, setInputState] = useState(
-      Object.keys(changedRows).includes(parsedData[rowIndex].id)
+      Object.keys(changedRows)?.includes(parsedData[rowIndex]?.id)
         ? shadowData[rowIndex][hiddenColumnNames[columnIndex]]
         : parsedData[rowIndex][hiddenColumnNames[columnIndex]]
     )
@@ -203,7 +206,6 @@ export const CmsTable: FC<CmsTableProps> = ({
         shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
 
         // console.log('this row changed -->', shadowData[rowIndex])
-        // @ts-ignore
         changedRows[shadowData[rowIndex].id] = shadowData[rowIndex]
 
         console.log(changedRows, 'changed rows🤌')
@@ -309,8 +311,8 @@ export const CmsTable: FC<CmsTableProps> = ({
   return (
     <styled.div
       style={{
-        width: w,
-        height: h,
+        width: width,
+        height: height,
         '& .grid-class': {
           scrollbarGutter: 'stable',
           overflow: 'scroll !important',
@@ -806,7 +808,7 @@ export const CmsTable: FC<CmsTableProps> = ({
               height={height}
               rowCount={parsedData?.length}
               columnCount={hiddenColumnNames?.length}
-              width={w}
+              width={width}
               rowHeight={(index) => ROW_HEIGHT}
               columnWidth={(index) =>
                 index === 0 ? COLUMN_WIDTH + 32 : COLUMN_WIDTH

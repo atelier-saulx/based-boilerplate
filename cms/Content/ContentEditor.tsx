@@ -62,7 +62,7 @@ export const ContentEditor = ({ id, section }) => {
           }}
           onClick={() => {
             // @ts-ignore
-            route.setQuery({ section: section, id: null })
+            route.setQuery({ id: null })
             setSomeThingChanged(false)
           }}
         >

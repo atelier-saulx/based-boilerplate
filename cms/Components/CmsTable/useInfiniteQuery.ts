@@ -1,6 +1,7 @@
 import { BasedQuery } from '@based/client'
 import { useState, useEffect, useRef, useMemo } from 'react'
 // import { SortOptions } from './types'
+import { useRoute } from 'kabouter'
 
 export type SortOptions = {
   $field: string
@@ -54,6 +55,10 @@ export const useInfiniteQuery = ({
   cache: CurrentRef
   onScrollY: (scrollY: number) => void
 } => {
+  const route = useRoute('[section][id]')
+  const routeSection = route.query.section
+  const routeId = route.query.id
+
   const blockHeight = rowHeight * limit
   const [, setChecksum] = useState('')
 
@@ -79,9 +84,9 @@ export const useInfiniteQuery = ({
   })
 
   useEffect(() => {
-    console.log('🔥')
+    // console.log('🔥 FU')
     current.items = []
-  }, [queryId])
+  }, [routeSection, routeId])
 
   useEffect(() => {
     return () => {
@@ -114,6 +119,7 @@ export const useInfiniteQuery = ({
       subs[q.id] =
         current.subs[q.id] ||
         q.subscribe((data, checksum) => {
+          // @ts-ignore
           const items = getQueryItems(data) ?? data.items ?? []
           for (let i = 0; i < items.length; i++) {
             current.items[i + start] = items[i]
