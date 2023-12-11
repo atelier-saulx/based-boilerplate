@@ -5,7 +5,7 @@ import { Style, styled } from 'inlines'
 import { SortOptions, useInfiniteQuery } from './useInfiniteQuery'
 import { BasedQuery } from '@based/client'
 import { RenderAs } from './RenderAs'
-import { useClient } from '@based/react'
+import { useClient, useQuery } from '@based/react'
 import {
   Row,
   Modal,
@@ -21,8 +21,10 @@ import {
   color,
   IconCopy,
   Toggle,
-  Badge,
+  IconEdit,
+  Tooltip,
 } from '@based/ui'
+import deepCopy from '../utils/deepCopy'
 
 type CmsTableProps = {
   data?: any
@@ -83,6 +85,8 @@ export const CmsTable: FC<CmsTableProps> = ({
   const [customFilter, setCustomFilter] = useState<any>()
   const [renderCounter, setRenderCounter] = useState(1)
 
+  const [enableInlineEditModus, setEnableInlineEditModus] = useState(false)
+
   let w = width
   let h = height
 
@@ -108,13 +112,22 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   const parsedData = query ? result.items : data
 
+  const shadowData = deepCopy(parsedData)
+
+  // useEffect(() => {
+  //   console.log('🙄')
+  //   shadowData = [...parsedData]
+  // }, [enableInlineEditModus])
+
+  // console.log('shadowDATA -->', shadowData)
+
   // console.log(filter, customFilter, 'Query??')
 
   const client = useClient()
+  const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
   let columnNames: any[] = [...new Set(parsedData?.flatMap(Object.keys))]
 
-  // console.log(columnNamesInRightOrder, '🍟')
   if (columnNamesInRightOrder && columnNamesInRightOrder.length > 0) {
     columnNames = columnNamesInRightOrder
   }
@@ -123,13 +136,18 @@ export const CmsTable: FC<CmsTableProps> = ({
     (item) => !hiddenColumns?.includes(item?.toLowerCase())
   )
 
+  // queryId is the type in this case
+  let schemaFields = schema?.types[queryId as string]?.fields
+
   useEffect(() => {
     setCustomFilter('')
     setAddedFilters([])
     setSelectedRowIndexes([])
+    setEnableInlineEditModus(false)
   }, [queryId])
   // console.log(result, 'Result>?')
   // console.log(parsedData, 'ParsedDAta?')
+  // console.log(schemaFields)
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
 
@@ -148,7 +166,6 @@ export const CmsTable: FC<CmsTableProps> = ({
       let filterCopy = { ...filter }
       filterCopy[allKeys[0]] = nestedObject[allKeys[0]]
 
-      //   console.log('🥝', filter)
       console.log('🥥', filterCopy)
       setCustomFilter({ ...filterCopy })
     }
@@ -156,7 +173,20 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   const tableHeaderRef = useRef<HTMLDivElement>()
 
+  // Cell Component
   const Cell = ({ columnIndex, rowIndex, style }) => {
+    let cellFieldTypeOf = schemaFields[hiddenColumnNames[columnIndex]]?.type
+
+    const [inputState, setInputState] = useState(
+      parsedData[rowIndex][hiddenColumnNames[columnIndex]]
+    )
+
+    useEffect(() => {
+      console.log('this changed -->', inputState)
+      shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
+      console.log('Shadow DATA ->  bitch', shadowData)
+    }, [inputState])
+
     return (
       <styled.div
         style={{
@@ -168,20 +198,19 @@ export const CmsTable: FC<CmsTableProps> = ({
             'default'
           )}`,
           paddingRight: 8,
-          cursor: onRowClick ? 'pointer' : 'auto',
+          cursor: onRowClick && !enableInlineEditModus ? 'pointer' : 'auto',
           ...style,
         }}
         onClick={(e) => {
-          if (onCellClick) {
-            // e.stopPropagation()
-            onCellClick(
-              parsedData[rowIndex][hiddenColumnNames[columnIndex]],
-              rowIndex,
-              columnIndex
-            )
-          }
-
-          if (onRowClick) {
+          // if (onCellClick) {
+          //   // e.stopPropagation()
+          //   onCellClick(
+          //     parsedData[rowIndex][hiddenColumnNames[columnIndex]],
+          //     rowIndex,
+          //     columnIndex
+          //   )
+          // }
+          if (onRowClick && !enableInlineEditModus) {
             setSelectedRowIndexes([])
             onRowClick(parsedData[rowIndex], rowIndex)
           }
@@ -221,10 +250,31 @@ export const CmsTable: FC<CmsTableProps> = ({
           </styled.div>
         )}
         {/* render cell based on column name type renderAs */}
-        <RenderAs
-          input={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
-          colName={hiddenColumnNames[columnIndex]}
-        />
+        {cellFieldTypeOf === 'boolean' && enableInlineEditModus ? (
+          <Toggle
+            style={{ marginLeft: 6 }}
+            value={inputState}
+            onChange={(v) => setInputState(v)}
+          />
+        ) : (cellFieldTypeOf === 'string' || cellFieldTypeOf === 'text') &&
+          enableInlineEditModus ? (
+          <Input
+            type="text"
+            value={inputState}
+            onChange={(v) => setInputState(v)}
+          />
+        ) : cellFieldTypeOf === 'number' && enableInlineEditModus ? (
+          <Input
+            type="number"
+            value={inputState}
+            onChange={(v) => setInputState(v)}
+          />
+        ) : (
+          <RenderAs
+            input={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
+            colName={hiddenColumnNames[columnIndex]}
+          />
+        )}
       </styled.div>
     )
   }
@@ -240,8 +290,6 @@ export const CmsTable: FC<CmsTableProps> = ({
         height: h,
         '& .grid-class': {
           scrollbarGutter: 'stable',
-          // overflowY: 'overlay',
-          // overflowX: 'overlay',
           overflow: 'scroll !important',
           // firefox
           scrollbarColor: `${scrollbarColor} transparent`,
@@ -258,11 +306,9 @@ export const CmsTable: FC<CmsTableProps> = ({
           },
           '@media (hover: hover)': {
             '&:hover': {
-              // the rest
               '&::-webkit-scrollbar': {
                 visibility: 'visible',
               },
-
               '&::-webkit-scrollbar-thumb': {
                 backgroundColor: scrollbarColor,
                 borderRadius: '4px',
@@ -281,7 +327,6 @@ export const CmsTable: FC<CmsTableProps> = ({
       }}
     >
       {/* selected rows options */}
-
       {selectedRowIndexes.length > 0 && (
         <Row style={{ marginBottom: 12 }}>
           <Row style={{ gap: 12, padding: '0px 12px' }}>
@@ -311,7 +356,6 @@ export const CmsTable: FC<CmsTableProps> = ({
                     ...parsedData[idx],
                   })
                 })
-
                 setSelectedRowIndexes([])
               }}
               icon={<IconCopy />}
@@ -329,7 +373,6 @@ export const CmsTable: FC<CmsTableProps> = ({
                     $id: parsedData[idx].id,
                   })
                 })
-
                 setSelectedRowIndexes([])
                 setRenderCounter(renderCounter + 1)
               }}
@@ -538,38 +581,94 @@ export const CmsTable: FC<CmsTableProps> = ({
           </Button>
         )}
 
-        <Dropdown.Root>
-          <Dropdown.Trigger>
+        <div
+          style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center' }}
+        >
+          {enableInlineEditModus && (
             <Button
-              color="system"
-              icon={<IconEye />}
-              size="xsmall"
-              style={{ marginLeft: 'auto' }}
-            />
-          </Dropdown.Trigger>
+              size="small"
+              style={{ marginRight: 8 }}
+              onClick={async () => {
+                // console.log('asdfasdf', { ...data, ...formFieldChanges })
 
-          <Dropdown.Items>
-            {columnNames?.map((item, idx) => (
-              <Input
-                key={idx}
-                title={item}
-                type="checkbox"
-                value={!hiddenColumns?.includes(item?.toLowerCase())}
-                onChange={(v) => {
-                  if (v) {
-                    setFilteredColumns([
-                      ...hiddenColumns?.filter(
-                        (x) => x !== item?.toLowerCase()
-                      ),
-                    ])
-                  } else {
-                    setFilteredColumns([...hiddenColumns, item?.toLowerCase()])
-                  }
-                }}
+                console.log(parsedData, 'PARSED ')
+                console.log(shadowData, 'shadow data')
+
+                // await client
+                //   .call('db:set', {
+                //     // $id: id,
+                //     // ...parsedData,
+                //     // ...shadowData,
+                //   })
+                //   .catch((err) => console.log(err))
+              }}
+            >
+              Save changes
+            </Button>
+          )}
+          <Tooltip
+            text={
+              enableInlineEditModus
+                ? 'disable inline-edit'
+                : 'enable inline-edit'
+            }
+            position="top"
+          >
+            <Button
+              color={enableInlineEditModus ? 'primary' : 'system'}
+              icon={<IconEdit />}
+              size="xsmall"
+              style={{
+                marginRight: 8,
+                border: enableInlineEditModus
+                  ? `1px solid ${color('background', 'brand', 'muted')}`
+                  : `1px solid ${borderColor}`,
+              }}
+              onClick={() => {
+                setEnableInlineEditModus(!enableInlineEditModus)
+                // if (enableInlineEditModus) {
+                //   setRenderCounter(renderCounter + 1)
+                // }
+              }}
+            />
+          </Tooltip>
+
+          <Dropdown.Root>
+            <Dropdown.Trigger>
+              <Button
+                color="system"
+                icon={<IconEye />}
+                size="xsmall"
+                style={{ marginLeft: 'auto' }}
               />
-            ))}
-          </Dropdown.Items>
-        </Dropdown.Root>
+            </Dropdown.Trigger>
+
+            <Dropdown.Items>
+              {columnNames?.map((item, idx) => (
+                <Input
+                  key={idx}
+                  title={item}
+                  type="checkbox"
+                  value={!hiddenColumns?.includes(item?.toLowerCase())}
+                  onChange={(v) => {
+                    if (v) {
+                      setFilteredColumns([
+                        ...hiddenColumns?.filter(
+                          (x) => x !== item?.toLowerCase()
+                        ),
+                      ])
+                    } else {
+                      setFilteredColumns([
+                        ...hiddenColumns,
+                        item?.toLowerCase(),
+                      ])
+                    }
+                  }}
+                />
+              ))}
+            </Dropdown.Items>
+          </Dropdown.Root>
+        </div>
       </Row>
       <AutoSizer>
         {({ height, width }) => (
@@ -585,6 +684,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                 overflowX: 'hidden',
                 scrollBehavior: 'auto',
                 // right scrollbar offset here
+                backgroundColor: color('background', 'neutral', 'surface'),
                 paddingRight: 8,
               }}
             >

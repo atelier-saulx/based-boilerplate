@@ -2,7 +2,6 @@ import React from 'react'
 import { Menu, IconFolder, IconUsers, IconSettings } from '@based/ui'
 import { useRoute } from 'kabouter'
 import { useQuery } from '@based/react'
-// import { Logo } from './Logo'
 
 export const SideBar = () => {
   const route = useRoute('[section]')
@@ -17,8 +16,6 @@ export const SideBar = () => {
     let schemaTypeKeys = Object.keys(schemaTypes).sort((a, b) =>
       a.localeCompare(b)
     )
-
-    // console.log('test', schemaTypeKeys)
 
     schemaTypeKeys
       .filter((key) => key !== 'user')
@@ -40,13 +37,9 @@ export const SideBar = () => {
       })
   }
 
-  console.log(menuItems)
-
   return (
     <Menu
       style={{ paddingTop: 90, minHeight: '100vh' }}
-      // header={<Logo />}
-
       config={{
         types: menuItems,
         schema: {

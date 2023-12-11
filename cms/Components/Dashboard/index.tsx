@@ -1,7 +1,7 @@
 import React from 'react'
 import { styled } from 'inlines'
 import { StarterWidget } from './StarterWidget'
-import { ShowEnvWidget } from './showEnvWidget'
+import { ShowEnvWidget } from './ShowEnvWidget'
 import { ConnectionsWidget } from './ConnectionsWidget'
 
 export const Dashboard = () => {

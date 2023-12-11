@@ -24,7 +24,6 @@ export const ContentEditor = ({ id, section }) => {
     $id: id,
     $all: true,
   })
-  console.log(data)
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
   console.log(data)
