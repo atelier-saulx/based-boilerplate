@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { styled } from 'inlines'
 import { Tile } from './Tile'
 import {
@@ -10,25 +10,8 @@ import {
   useInfiniteQuery,
 } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
-import {
-  DndContext,
-  DragOverlay,
-  KeyboardSensor,
-  PointerSensor,
-  closestCenter,
-  rectIntersection,
-  useSensor,
-  useSensors,
-} from '@dnd-kit/core'
-import {
-  SortableContext,
-  arrayMove,
-  horizontalListSortingStrategy,
-  rectSortingStrategy,
-  rectSwappingStrategy,
-  sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
-} from '@dnd-kit/sortable'
+import { arrayMove } from '@dnd-kit/sortable'
+import { useRoute } from 'kabouter'
 
 const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
 
@@ -42,7 +25,6 @@ const filterFolder = (data, rootId) => {
         .filter((i) => i !== 'root')
         .includes(rootId[rootId.length - 1])
     ) {
-      console.log(data[i].parents)
     } else {
       newArr.push(data[i])
     }
@@ -50,15 +32,21 @@ const filterFolder = (data, rootId) => {
   return newArr
 }
 
-export const Explorer = ({ table }) => {
+export const Explorer = ({}) => {
   const dragItem = useRef()
   const dragOverItem = useRef()
+  // const [dragOverItem, setDragOverItem] = useState()
+  // const [dragItem, setDragItem] = useState()
 
   const dragStart = (e) => {
+    // e.preventDefault()
     dragItem.current = e.target.id
+    // setDragItem(e.target.id)
   }
   const dragEnter = (e) => {
+    // e.preventDefault()
     dragOverItem.current = e.currentTarget.id
+    // setDragOverItem(e.target.id)
   }
   const drop = (e) => {
     if (true) {
@@ -79,33 +67,73 @@ export const Explorer = ({ table }) => {
   const [selected, setSelected] = useState('')
   const [rootId, setRootId] = useState(['root'])
   const [formFieldChanges, setFormFieldChanges] = useState<any>({})
+  const client = useClient()
 
-  const { data, fetchMore, setVisibleElements, filterChange } =
-    useInfiniteQuery({
-      accessFn: (data) => data.files,
-      queryFn: (offset) => ({
-        $id: rootId[rootId.length - 1],
-        files: {
-          $all: true,
-          parents: true,
-          $list: {
-            $sort: { $field: 'updatedAt', $order: 'desc' },
-            $offset: offset,
-            //   $limit: 25,
-            $find: {
-              $traverse: 'children',
-              $filter: {
-                $operator: '=',
-                $field: 'type',
-                $value: ['folder', 'file'],
-              },
-            },
+  const route = useRoute('[folder]')
+  const section = route.query.folder
+
+  // const { data, fetchMore, setVisibleElements, filterChange } =
+  //   useInfiniteQuery({
+  //     accessFn: (data) => data.files,
+  //     queryFn: (offset) => ({
+  //       //@ts-ignore
+  //       $id: section.length > 0 ? section : 'root',
+  //       files: {
+  //         $all: true,
+  //         parents: true,
+  //         $list: {
+  //           $sort: { $field: 'updatedAt', $order: 'desc' },
+  //           $offset: offset,
+  //           //   $limit: 25,
+  //           $find: {
+  //             $traverse: 'children',
+  //             $filter: {
+  //               $operator: '=',
+  //               $field: 'type',
+  //               $value: ['folder', 'file'],
+  //             },
+  //           },
+  //         },
+  //       },
+  //     }),
+  //   })
+
+  const { data, loading: dataLoading } = useQuery('db', {
+    //@ts-ignore
+    $id: section.length > 0 ? section : 'root',
+    files: {
+      $all: true,
+      parents: true,
+      $list: {
+        //   $limit: 25,
+        $find: {
+          $traverse: 'children',
+          $filter: {
+            $operator: '=',
+            $field: 'type',
+            $value: ['folder', 'file'],
           },
         },
-      }),
-    })
+      },
+    },
+  })
+  // console.log(section)
 
-  const client = useClient()
+  console.log(data)
+  useEffect(() => {
+    setArray(data?.files)
+  }, [data])
+
+  const [, forceUpdate] = useReducer((x) => x + 1, 0)
+
+  // console.log('DATA', data)
+  // useEffect(() => {
+  //   console.log('change')
+  //   filterChange()
+  //   // fetchMore()
+  //   forceUpdate()
+  // }, [section])
+
   const { data: schema, loading } = useQuery('db:schema')
   const { data: fileData, loading: loadingFile } = useQuery('db', {
     $id: selected,
@@ -123,41 +151,24 @@ export const Explorer = ({ table }) => {
     }
   }
 
-  useEffect(() => {
-    if (!array) {
-      fetchMore()
-      setArray(filterFolder(data, rootId))
-    }
-  }, [data, rootId])
-
-  useEffect(() => {
-    setArray(filterFolder(data, rootId))
-    // fetchMore()
-  }, [data, rootId, table])
-
-  useEffect(() => {
-    fetchMore()
-    filterChange()
-  }, [rootId])
-
   return (
     <styled.div>
-      {rootId.length > 1 && (
-        <Button
-          onClick={() =>
-            setRootId(
-              rootId.length === 2
-                ? ['root']
-                : rootId.filter((_, i) => i === rootId.length - 1)
-            )
-          }
-          size="xsmall"
-          color="system"
-          icon={<IconArrowLeft />}
-        >
-          Back
-        </Button>
-      )}
+      <Button
+        onClick={() => route.setQuery({ folder: 'root' })}
+        size="xsmall"
+        color="system"
+        icon={<IconArrowLeft />}
+      >
+        Back
+      </Button>
+
+      <Button
+        onClick={async () => {
+          // fetchMore()
+        }}
+      >
+        RERENDER
+      </Button>
       <styled.div
         id={rootId}
         style={{
@@ -171,6 +182,7 @@ export const Explorer = ({ table }) => {
           array.map((value, i) => {
             return (
               <div style={{}}>
+                {/* @ts-ignore */}
                 <Tile
                   dragOverItem={dragOverItem}
                   dragEnter={dragEnter}
@@ -182,7 +194,7 @@ export const Explorer = ({ table }) => {
                   folder={value.type === 'folder'}
                   id={value.id}
                   name={value.name}
-                  key={i}
+                  key={value.id}
                   setSelected={setSelected}
                   setOpenSidebar={setOpenSidebar}
                 />

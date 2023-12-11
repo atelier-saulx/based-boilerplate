@@ -85,7 +85,7 @@ export const FileLibrary = () => {
             //  columnNamesInRightOrder={arr}
           />
         ) : (
-          <Explorer table={table} />
+          <Explorer />
         )}
       </styled.div>
     </styled.div>
