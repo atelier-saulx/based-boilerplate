@@ -3,6 +3,7 @@ import { styled } from 'inlines'
 import { IconFile, IconFolder, Input, Text, color } from '@based/ui'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
+import { useRoute } from 'kabouter'
 
 const isImage = (src) => {
   if (!src) return
@@ -31,6 +32,7 @@ export const Tile = ({
   dragOverItem,
 }) => {
   const [editName, setEditName] = useState(false)
+  const route = useRoute('[folder]')
 
   return (
     <styled.button
@@ -80,7 +82,7 @@ export const Tile = ({
               setSelected(id)
             }
           : folder
-          ? () => setRootId([...rootId, id])
+          ? () => route.setQuery({ folder: 'di7e081f84' })
           : () => setOpenSidebar(true)
       }
     >
