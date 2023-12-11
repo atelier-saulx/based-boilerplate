@@ -1,5 +1,5 @@
 import React from 'react'
-import { Menu, IconFolder, IconUsers, IconSettings } from '@based/ui'
+import { Menu, IconFolder, IconUsers, IconBolt, IconTimeClock } from '@based/ui'
 import { useRoute } from 'kabouter'
 import { useQuery } from '@based/react'
 
@@ -47,7 +47,7 @@ export const SideBar = () => {
             // @ts-ignore
             value: 'schema-builder',
             label: 'Schema Builder',
-            icon: <IconSettings />,
+            icon: <IconBolt />,
           },
         },
         files: {
@@ -57,11 +57,16 @@ export const SideBar = () => {
             icon: <IconFolder />,
           },
         },
-        users: {
+        settings: {
           ['user-management']: {
             value: 'user-management',
-            label: 'User Management',
+            label: 'Users',
             icon: <IconUsers />,
+          },
+          ['backups']: {
+            value: 'back-ups',
+            label: 'Back Ups',
+            icon: <IconTimeClock />,
           },
         },
       }}

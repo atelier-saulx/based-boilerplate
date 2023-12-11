@@ -31,8 +31,6 @@ export const ContentOverview = () => {
     }
   }
 
-  console.log(schema)
-
   useEffect(() => {
     setTableWidth(width - 324)
     setTableHeight(height - 296)
@@ -42,7 +40,7 @@ export const ContentOverview = () => {
     <styled.div style={{ padding: '24px 48px', width: '100%' }}>
       <Row
         style={{
-          marginBottom: 32,
+          marginBottom: 24,
           justifyContent: 'space-between',
           width: '100%',
         }}

@@ -88,7 +88,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   const [fieldValue, setFieldValue] = useState('')
   const [filterValue, setFilterValue] = useState<number | string | boolean>('')
   const [addedFilters, setAddedFilters] = useState<{}[]>([])
-  const [customFilter, setCustomFilter] = useState<any>()
+  const [customFilter, setCustomFilter] = useState<any>('')
   const [renderCounter, setRenderCounter] = useState(1)
   const [errorMessage, setErrorMessage] = useState('')
 
@@ -387,23 +387,44 @@ export const CmsTable: FC<CmsTableProps> = ({
             >
               Duplicate
             </Button>
-            <Button
-              size="small"
-              light
-              color="alert"
-              icon={<IconDelete />}
-              onClick={async () => {
-                await selectedRowIndexes.map(async (idx) => {
-                  await client.call('db:delete', {
-                    $id: parsedData[idx].id,
-                  })
-                })
-                setSelectedRowIndexes([])
-                setRenderCounter(renderCounter + 1)
-              }}
-            >
-              Delete
-            </Button>
+            <Modal.Root>
+              <Modal.Trigger>
+                <Button
+                  size="small"
+                  light
+                  color="alert"
+                  icon={<IconDelete />}
+                  // onClick={async () => {
+                  //   await selectedRowIndexes.map(async (idx) => {
+                  //     await client.call('db:delete', {
+                  //       $id: parsedData[idx].id,
+                  //     })
+                  //   })
+                  //   setSelectedRowIndexes([])
+                  //   setRenderCounter(renderCounter + 1)
+                  // }}
+                >
+                  Delete
+                </Button>
+              </Modal.Trigger>
+              <Modal.Confirmation
+                title="Delete selection"
+                label="Are you sure?"
+                type="alert"
+                action={{
+                  action: async () => {
+                    await selectedRowIndexes.map(async (idx) => {
+                      await client.call('db:delete', {
+                        $id: parsedData[idx].id,
+                      })
+                    })
+                    setSelectedRowIndexes([])
+                    setRenderCounter(renderCounter + 1)
+                  },
+                  label: 'Confirm',
+                }}
+              />
+            </Modal.Root>
           </Row>
         </Row>
       )}
