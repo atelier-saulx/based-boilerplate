@@ -18,54 +18,32 @@ const isImage = (src) => {
 }
 
 export const Tile = ({
-  dragStart,
-  folder,
-  name,
+  item: { name, src, id },
   setOpenSidebar,
-  id,
+  folder,
   setSelected,
-  setRootId,
-  rootId,
-  src,
-  dragEnter,
-  onDragEnd,
-  dragOverItem,
+  selected,
 }) => {
-  const [editName, setEditName] = useState(false)
   const route = useRoute('[folder]')
+  console.log(folder)
 
   return (
-    <styled.button
-      draggable
-      id={id}
-      onDragEnd={(e) => onDragEnd(e)}
-      onDragStart={(e) => {
-        // console.log('asdasdasdasd')
-        dragStart(e)
-      }}
-      onDragEnter={(e) => {
-        // console.log('asdasdasdasd')
-        dragEnter(e)
-      }}
+    <styled.div
       style={{
-        maxHeight: 128,
-        maxWidth: 90,
-        background: color('action', 'system', 'normal'),
-        color: 'inherit',
-        border: 'none',
-        font: 'inherit',
-        cursor: 'pointer',
-        outline: 'inherit',
+        height: '120px',
+        width: '90px',
         display: 'flex',
-        flexDirection: 'column',
         alignItems: 'center',
-        // justifyContent: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
         padding: 8,
         borderRadius: 12,
         // border: dragOverItem.current === id ? '1px solid red' : '0px solid',
-        '&:focus': {
-          background: color('action', 'system', 'subtleSelected'),
-        },
+
+        // background: selected
+        //   ? color('action', 'system', 'subtleSelected')
+        //   : 'inital',
+
         '&:hover': {
           background: color('action', 'system', 'subtleHover'),
         },
@@ -74,15 +52,13 @@ export const Tile = ({
           cursor: 'grabbing',
         },
       }}
-      onBlur={() => setEditName(false)}
       onClick={
-        !editName
+        !selected
           ? () => {
-              setEditName(true)
               setSelected(id)
             }
           : folder
-          ? () => route.setQuery({ folder: 'di7e081f84' })
+          ? route.setQuery({ folder: 'di7e081f84' })
           : () => setOpenSidebar(true)
       }
     >
@@ -109,17 +85,7 @@ export const Tile = ({
           <IconFile style={{ width: '100%', height: '100%' }} />
         )}
       </styled.div>
-      <div
-        style={{ width: '100%' }}
-        onClick={(e) => {
-          e.preventDefault()
-          e.stopPropagation()
-        }}
-      >
-        <Text truncate={2} selectable="none">
-          {name}
-        </Text>
-      </div>
-    </styled.button>
+      <Text selectable="none">{name}</Text>
+    </styled.div>
   )
 }
