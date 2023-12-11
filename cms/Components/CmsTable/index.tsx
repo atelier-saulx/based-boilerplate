@@ -23,6 +23,8 @@ import {
   Toggle,
   IconEdit,
   Tooltip,
+  IconError,
+  IconAlertFill,
 } from '@based/ui'
 import deepCopy from '../utils/deepCopy'
 
@@ -86,6 +88,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   const [addedFilters, setAddedFilters] = useState<{}[]>([])
   const [customFilter, setCustomFilter] = useState<any>()
   const [renderCounter, setRenderCounter] = useState(1)
+  const [errorMessage, setErrorMessage] = useState('')
 
   const [enableInlineEditModus, setEnableInlineEditModus] = useState(false)
 
@@ -145,12 +148,21 @@ export const CmsTable: FC<CmsTableProps> = ({
     setAddedFilters([])
     setSelectedRowIndexes([])
     setEnableInlineEditModus(false)
+    setErrorMessage('')
   }, [queryId])
   // console.log(result, 'Result>?')
   // console.log(parsedData, 'ParsedDAta?')
   // console.log(schemaFields)
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
+
+  useEffect(() => {
+    if (errorMessage) {
+      setTimeout(() => {
+        setErrorMessage('')
+      }, 5000)
+    }
+  }, [errorMessage])
 
   // update the filter
   useEffect(() => {
@@ -167,7 +179,7 @@ export const CmsTable: FC<CmsTableProps> = ({
       let filterCopy = { ...filter }
       filterCopy[allKeys[0]] = nestedObject[allKeys[0]]
 
-      console.log('🥥', filterCopy)
+      // console.log('🥥', filterCopy)
       setCustomFilter({ ...filterCopy })
     }
   }, [addedFilters.length])
@@ -190,11 +202,11 @@ export const CmsTable: FC<CmsTableProps> = ({
       if (parsedData[rowIndex][hiddenColumnNames[columnIndex]] !== inputState) {
         shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
 
-        console.log('this row changed -->', shadowData[rowIndex])
+        // console.log('this row changed -->', shadowData[rowIndex])
         // @ts-ignore
         changedRows[shadowData[rowIndex].id] = shadowData[rowIndex]
 
-        console.log(changedRows, 'chango rowo🤌')
+        console.log(changedRows, 'changed rows🤌')
       }
     }, [inputState])
 
@@ -246,7 +258,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                 style={{ maxWidth: 24 }}
                 value={selectedRowIndexes.includes(rowIndex)}
                 onChange={() => {
-                  console.log('selected rowindex', rowIndex)
+                  //  console.log('selected rowindex', rowIndex)
                   if (!selectedRowIndexes.includes(rowIndex)) {
                     setSelectedRowIndexes([...selectedRowIndexes, rowIndex])
                   } else {
@@ -358,7 +370,7 @@ export const CmsTable: FC<CmsTableProps> = ({
               light
               onClick={() => {
                 selectedRowIndexes.map(async (idx) => {
-                  console.log(parsedData[idx])
+                  //  console.log(parsedData[idx])
 
                   await client.call('db:set', {
                     // TODO check this language
@@ -412,8 +424,6 @@ export const CmsTable: FC<CmsTableProps> = ({
         </styled.div>
         {addedFilters.map((item, idx) => {
           let itemKey = Object.keys(item[0])[0]
-
-          console.log(itemKey)
 
           return (
             <React.Fragment key={idx}>
@@ -600,18 +610,28 @@ export const CmsTable: FC<CmsTableProps> = ({
               size="small"
               style={{ marginRight: 8 }}
               onClick={async () => {
-                // console.log('asdfasdf', { ...data, ...formFieldChanges })
+                // console.log(parsedData, 'PARSED ')
+                // console.log(shadowData, 'shadow data')
 
-                console.log(parsedData, 'PARSED ')
-                console.log(shadowData, 'shadow data')
+                // save the rows that are changed,
+                Object.keys(changedRows).forEach(
+                  async (key) =>
+                    await client
+                      .call('db:set', {
+                        $id: key,
+                        ...changedRows[key],
+                      })
+                      .catch((err) => {
+                        console.error(err)
+                        setErrorMessage(err.message)
+                      })
+                )
 
-                // await client
-                //   .call('db:set', {
-                //     // $id: id,
-                //     // ...parsedData,
-                //     // ...shadowData,
-                //   })
-                //   .catch((err) => console.log(err))
+                // clear the rowChanges
+                setEnableInlineEditModus(!enableInlineEditModus)
+                Object.keys(changedRows).forEach(
+                  (key) => delete changedRows[key]
+                )
               }}
             >
               Save changes
@@ -626,9 +646,9 @@ export const CmsTable: FC<CmsTableProps> = ({
             position="top"
           >
             <Button
-              color={enableInlineEditModus ? 'primary' : 'system'}
-              icon={<IconEdit />}
-              size="xsmall"
+              color="system"
+              icon={!enableInlineEditModus && <IconEdit />}
+              size={!enableInlineEditModus ? 'xsmall' : 'small'}
               style={{
                 marginRight: 8,
                 border: enableInlineEditModus
@@ -637,11 +657,13 @@ export const CmsTable: FC<CmsTableProps> = ({
               }}
               onClick={() => {
                 setEnableInlineEditModus(!enableInlineEditModus)
-                // if (enableInlineEditModus) {
-                //   setRenderCounter(renderCounter + 1)
-                // }
+                Object.keys(changedRows).forEach(
+                  (key) => delete changedRows[key]
+                )
               }}
-            />
+            >
+              {enableInlineEditModus && 'Cancel'}
+            </Button>
           </Tooltip>
 
           <Dropdown.Root>
@@ -681,6 +703,23 @@ export const CmsTable: FC<CmsTableProps> = ({
           </Dropdown.Root>
         </div>
       </Row>
+
+      {errorMessage && (
+        <Row
+          style={{
+            justifyContent: 'end',
+            alignItems: 'center',
+            marginBottom: 6,
+            marginTop: '-6px',
+            marginRight: 6,
+          }}
+        >
+          <IconAlertFill color="negative" style={{ marginRight: 6 }} />
+          <Text color="negative" weight="strong">
+            {errorMessage}
+          </Text>
+        </Row>
+      )}
       <AutoSizer>
         {({ height, width }) => (
           <>
