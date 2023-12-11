@@ -49,6 +49,8 @@ type CmsTableProps = {
   style?: CSSProperties | Style
 }
 
+export const changedRows = {}
+
 export const CmsTable: FC<CmsTableProps> = ({
   data,
   width = 300,
@@ -111,17 +113,16 @@ export const CmsTable: FC<CmsTableProps> = ({
   })
 
   const parsedData = query ? result.items : data
-
   const shadowData = deepCopy(parsedData)
 
-  // useEffect(() => {
-  //   console.log('🙄')
-  //   shadowData = [...parsedData]
-  // }, [enableInlineEditModus])
+  // if row id is in changedRows set the shadowDAta rows to that
+  shadowData.map((obj, idx) =>
+    Object.keys(changedRows).includes(obj.id)
+      ? (shadowData[idx] = changedRows[obj.id])
+      : null
+  )
 
-  // console.log('shadowDATA -->', shadowData)
-
-  // console.log(filter, customFilter, 'Query??')
+  /// store the difference ??
 
   const client = useClient()
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
@@ -178,13 +179,23 @@ export const CmsTable: FC<CmsTableProps> = ({
     let cellFieldTypeOf = schemaFields[hiddenColumnNames[columnIndex]]?.type
 
     const [inputState, setInputState] = useState(
-      parsedData[rowIndex][hiddenColumnNames[columnIndex]]
+      Object.keys(changedRows).includes(parsedData[rowIndex].id)
+        ? shadowData[rowIndex][hiddenColumnNames[columnIndex]]
+        : parsedData[rowIndex][hiddenColumnNames[columnIndex]]
     )
 
     useEffect(() => {
-      console.log('this changed -->', inputState)
-      shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
-      console.log('Shadow DATA ->  bitch', shadowData)
+      // console.log('this changed -->', inputState)
+
+      if (parsedData[rowIndex][hiddenColumnNames[columnIndex]] !== inputState) {
+        shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
+
+        console.log('this row changed -->', shadowData[rowIndex])
+        // @ts-ignore
+        changedRows[shadowData[rowIndex].id] = shadowData[rowIndex]
+
+        console.log(changedRows, 'chango rowo🤌')
+      }
     }, [inputState])
 
     return (
