@@ -21,10 +21,9 @@ const filterFolder = (data, rootId) => {
   for (const i in data) {
     if (
       data[i].parents?.filter((j) => j[0] + j[1] === 'di').length === 1 &&
-      !data[i].parents
-        .filter((i) => i !== 'root')
-        .includes(rootId[rootId.length - 1])
+      !data[i].parents.filter((i) => i !== 'root').includes(rootId)
     ) {
+      console.log(data[i])
     } else {
       newArr.push(data[i])
     }
@@ -33,77 +32,22 @@ const filterFolder = (data, rootId) => {
 }
 
 export const Explorer = ({}) => {
-  const dragItem = useRef()
-  const dragOverItem = useRef()
   // const [dragOverItem, setDragOverItem] = useState()
+  // const dragItem = useRef()
   // const [dragItem, setDragItem] = useState()
-
-  const dragStart = (e) => {
-    // e.preventDefault()
-    dragItem.current = e.target.id
-    // setDragItem(e.target.id)
-  }
-  const dragEnter = (e) => {
-    // e.preventDefault()
-    dragOverItem.current = e.currentTarget.id
-    // setDragOverItem(e.target.id)
-  }
-  const drop = (e) => {
-    if (true) {
-      setArray((items) => {
-        const activeIndex = items?.findIndex(
-          (item) => item.id === dragItem.current
-        ) as number
-        const overIndex = items?.findIndex(
-          (item) => item.id === dragOverItem.current
-        ) as number
-
-        return arrayMove(items, activeIndex, overIndex)
-      })
-    }
-  }
-
-  const [openSidebar, setOpenSidebar] = useState(false)
-  const [selected, setSelected] = useState('')
-  const [rootId, setRootId] = useState(['root'])
-  const [formFieldChanges, setFormFieldChanges] = useState<any>({})
-  const client = useClient()
-
   const route = useRoute('[folder]')
   const section = route.query.folder
-
-  // const { data, fetchMore, setVisibleElements, filterChange } =
-  //   useInfiniteQuery({
-  //     accessFn: (data) => data.files,
-  //     queryFn: (offset) => ({
-  //       //@ts-ignore
-  //       $id: section.length > 0 ? section : 'root',
-  //       files: {
-  //         $all: true,
-  //         parents: true,
-  //         $list: {
-  //           $sort: { $field: 'updatedAt', $order: 'desc' },
-  //           $offset: offset,
-  //           //   $limit: 25,
-  //           $find: {
-  //             $traverse: 'children',
-  //             $filter: {
-  //               $operator: '=',
-  //               $field: 'type',
-  //               $value: ['folder', 'file'],
-  //             },
-  //           },
-  //         },
-  //       },
-  //     }),
-  //   })
+  const dragOverItem = useRef<string>()
+  const containerRef = useRef<any>()
 
   const { data, loading: dataLoading } = useQuery('db', {
     //@ts-ignore
-    $id: section.length > 0 ? section : 'root',
+    // $id: section.length > 0 ? section : 'root',
+    $id: 'root',
     files: {
       $all: true,
       parents: true,
+      children: true,
       $list: {
         //   $limit: 25,
         $find: {
@@ -117,22 +61,127 @@ export const Explorer = ({}) => {
       },
     },
   })
+
+  const handleDrop = async (id) => {
+    if (!dragOverItem.current || dragOverItem.current.length < 1) {
+      return
+    }
+    const prefix = dragOverItem.current.slice(0, 2)
+    if (prefix === 'di' && id !== dragOverItem.current) {
+      console.log(dragOverItem.current)
+      const childData = await client.call('db:get', {
+        $id: dragOverItem.current,
+        children: true,
+      })
+      await client.call('db:set', {
+        $id: dragOverItem.current,
+        children: [...childData.children, id],
+      })
+    } else {
+      setArray((items) => {
+        const activeIndex = items?.findIndex((item) => item.id === id) as number
+        const overIndex = items?.findIndex(
+          (item) => item.id === dragOverItem.current
+        ) as number
+
+        return arrayMove(items, activeIndex, overIndex)
+      })
+    }
+  }
+
+  const dragStart = (e, index) => {
+    if (e.button !== 0) return
+    // setDragItem(index)
+
+    const container = containerRef.current
+    const items = [...container.childNodes]
+    const otherItems = items.filter((_, i) => i !== index)
+
+    const dragItem = items[index]
+    console.log(dragItem.id)
+
+    const dragBoundingRect = dragItem.getBoundingClientRect()
+    items.forEach((item) => {
+      const { top, left } = item.getBoundingClientRect()
+      item.style.top = top + 'px'
+      item.style.left = left + 'px'
+      item.style.position = 'aboslute'
+    })
+
+    // dragItem.style.position = 'fixed'
+    dragItem.style.width = dragBoundingRect.width + 'px'
+
+    dragItem.style.height = dragBoundingRect.height + 'px'
+    dragItem.style.top = dragBoundingRect.top + 'px'
+    dragItem.style.left = dragBoundingRect.left + 'px'
+    dragItem.style.pointerevents = 'none'
+    dragItem.style.cursor = 'grabbing'
+
+    let x = e.clientX
+    let y = e.clientY
+
+    document.onpointermove = dragMove
+    function dragMove(e) {
+      setSelected('')
+      const posX = e.clientX - x
+      const posY = e.clientY - y
+      // if (posX < 50 || posY < 50) {
+      //   return
+      // }
+      dragItem.style.transform = `translate(${posX}px, ${posY}px)`
+
+      otherItems.forEach((item) => {
+        const upper = dragItem.getBoundingClientRect()
+        const over = item.getBoundingClientRect()
+        let collision =
+          upper.y < over.y + over.height / 2 &&
+          upper.y + upper.height / 2 > over.y &&
+          upper.x < over.x + over.height / 2 &&
+          upper.x + upper.height / 2 > over.x
+        if (collision) {
+          // if (item.getAttribute('style')) {
+          //   item.style.transform = ''
+          //   // index++
+          // } else {
+          // item.style.transform = `translateY(${200}px)`
+          // item.style.background = 'green'
+          if (item.id) {
+            dragOverItem.current = item.id
+          }
+          // }
+        }
+      })
+    }
+
+    // dragItem.style.right = dragBoundingRect.right + 'px'
+    // dragItem.style.bottom = dragBoundingRect.bottom + 'px'
+
+    document.onpointerup = dragEnd
+    function dragEnd() {
+      document.onpointerup = null
+      document.onpointermove = null
+      otherItems.forEach((item) => {
+        item.style.position = 'static'
+      })
+      // setDragItem(undefined)
+      dragItem.style = ''
+      handleDrop(dragItem.id)
+    }
+  }
+
+  const [openSidebar, setOpenSidebar] = useState(false)
+  const [selected, setSelected] = useState('')
+
+  const [rootId, setRootId] = useState(['root'])
+
+  const [formFieldChanges, setFormFieldChanges] = useState<any>({})
+  const client = useClient()
+
   // console.log(section)
 
-  console.log(data)
   useEffect(() => {
-    setArray(data?.files)
+    setArray(filterFolder(data?.files, section))
   }, [data])
-
-  const [, forceUpdate] = useReducer((x) => x + 1, 0)
-
-  // console.log('DATA', data)
-  // useEffect(() => {
-  //   console.log('change')
-  //   filterChange()
-  //   // fetchMore()
-  //   forceUpdate()
-  // }, [section])
 
   const { data: schema, loading } = useQuery('db:schema')
   const { data: fileData, loading: loadingFile } = useQuery('db', {
@@ -170,33 +219,37 @@ export const Explorer = ({}) => {
         RERENDER
       </Button>
       <styled.div
+        ref={containerRef}
         id={rootId}
         style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))',
+          // flexWrap: 'wrap',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 100px))',
           height: '100%',
           gap: 15,
         }}
       >
         {array?.length > 0 &&
-          array.map((value, i) => {
+          array.map((item, i) => {
             return (
-              <div style={{}}>
-                {/* @ts-ignore */}
+              <div
+                style={{
+                  // border: '1px solid red',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
+                key={item.id}
+                id={item.id}
+                // onMouseOver={() => console.log(item.name)}
+                onPointerDown={(e) => dragStart(e, i)}
+              >
                 <Tile
-                  dragOverItem={dragOverItem}
-                  dragEnter={dragEnter}
-                  dragStart={dragStart}
-                  onDragEnd={drop}
-                  src={value?.src}
-                  rootId={rootId}
-                  setRootId={setRootId}
-                  folder={value.type === 'folder'}
-                  id={value.id}
-                  name={value.name}
-                  key={value.id}
-                  setSelected={setSelected}
+                  folder={item.id.slice(0, 2) === 'di'}
+                  selected={item.id === selected}
+                  item={item}
                   setOpenSidebar={setOpenSidebar}
+                  setSelected={setSelected}
                 />
               </div>
             )
@@ -251,54 +304,4 @@ export const Explorer = ({}) => {
       </SidePanel.Root>
     </styled.div>
   )
-
-  async function handleDragEnd(event) {
-    const { active, over } = event
-    // const thingy = async () => {
-    //   await client.call('db:set-schema', {
-    //     mutate: true,
-    //     schema: {
-    //       types: {
-    //         [routeType as string]: {
-    //           fields: parseItems(tempArr, schema, routeType),
-    //         },
-    //       },
-    //     },
-    //   })
-    // }
-    // "fi24f874df"
-    // 'fiEEXJisx0'
-    // let tempArr = []
-
-    if (active.id !== over.id) {
-      //   setItems((items) => {
-      //     const oldIndex = items.indexOf(active.id);
-      //     const newIndex = items.indexOf(over.id);
-      //     return arrayMove(items, oldIndex, newIndex);
-      //   });
-      setArray((items) => {
-        const newArr = [] as any
-
-        const activeIndex = items?.findIndex(
-          (item) => item.id === active.id
-        ) as number
-        const overIndex = items?.findIndex(
-          (item) => item.id === over.id
-        ) as number
-
-        // for (const i in array) {
-        //   if (parseInt(i) === overIndex) {
-        //     newArr.push(array[activeIndex])
-        //   } else if (parseInt(i) === activeIndex) {
-        //     newArr.push(array[overIndex])
-        //   } else {
-        //     newArr.push(array[parseInt(i)])
-        //   }
-        // }
-        return arrayMove(items, activeIndex, overIndex)
-
-        return newArr
-      })
-    }
-  }
 }
