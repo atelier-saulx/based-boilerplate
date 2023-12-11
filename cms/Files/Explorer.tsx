@@ -21,42 +21,15 @@ const filterFolder = (data, rootId) => {
   for (const i in data) {
     if (
       data[i].parents?.filter((j) => j[0] + j[1] === 'di').length === 1 &&
-      !data[i].parents
-        .filter((i) => i !== 'root')
-        .includes(rootId[rootId.length - 1])
+      !data[i].parents.filter((i) => i !== 'root').includes(rootId)
     ) {
+      console.log(data[i])
     } else {
       newArr.push(data[i])
     }
   }
   return newArr
 }
-
-// const { data, fetchMore, setVisibleElements, filterChange } =
-//   useInfiniteQuery({
-//     accessFn: (data) => data.files,
-//     queryFn: (offset) => ({
-//       //@ts-ignore
-//       $id: section.length > 0 ? section : 'root',
-//       files: {
-//         $all: true,
-//         parents: true,
-//         $list: {
-//           $sort: { $field: 'updatedAt', $order: 'desc' },
-//           $offset: offset,
-//           //   $limit: 25,
-//           $find: {
-//             $traverse: 'children',
-//             $filter: {
-//               $operator: '=',
-//               $field: 'type',
-//               $value: ['folder', 'file'],
-//             },
-//           },
-//         },
-//       },
-//     }),
-//   })
 
 export const Explorer = ({}) => {
   // const [dragOverItem, setDragOverItem] = useState()
@@ -69,7 +42,8 @@ export const Explorer = ({}) => {
 
   const { data, loading: dataLoading } = useQuery('db', {
     //@ts-ignore
-    $id: section.length > 0 ? section : 'root',
+    // $id: section.length > 0 ? section : 'root',
+    $id: 'root',
     files: {
       $all: true,
       parents: true,
@@ -93,7 +67,7 @@ export const Explorer = ({}) => {
       return
     }
     const prefix = dragOverItem.current.slice(0, 2)
-    if (prefix === 'di') {
+    if (prefix === 'di' && id !== dragOverItem.current) {
       console.log(dragOverItem.current)
       const childData = await client.call('db:get', {
         $id: dragOverItem.current,
@@ -206,7 +180,7 @@ export const Explorer = ({}) => {
   // console.log(section)
 
   useEffect(() => {
-    setArray(data?.files)
+    setArray(filterFolder(data?.files, section))
   }, [data])
 
   const { data: schema, loading } = useQuery('db:schema')
