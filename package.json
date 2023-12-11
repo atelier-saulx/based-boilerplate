@@ -7,7 +7,8 @@
   "scripts": {
     "zip": "rm -f latest.zip && zip -r latest.zip ./ -x node_modules/\\* -x package-lock.json -x .DS_Store -x .git/\\*",
     "dev": "npx @based/cli dev",
-    "deploy": "npx @based/cli deploy"
+    "deploy": "npx @based/cli deploy",
+    "bundle": "npx aristotle bundle -t app/app.tsx -d dist"
   },
   "prettier": "@saulx/prettier-config",
   "eslintConfig": {
@@ -27,6 +28,7 @@
   },
   "devDependencies": {
     "@based/cli": "^5.5.3",
+    "@saulx/aristotle": "^4.6.0",
     "@based/functions": "^2.2.2",
     "@saulx/eslint-config": "^1.1.1",
     "@saulx/prettier-config": "^1.0.0",
