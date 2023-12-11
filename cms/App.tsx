@@ -30,6 +30,10 @@ export const App = () => {
   })
   if (!authState.userId) return <Login />
 
+  const { data: schema, loading: loadingSchema } = useQuery('db:schema')
+
+  console.log(schema, '👽')
+
   return (
     <styled.div
       style={{

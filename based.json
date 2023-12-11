@@ -1,5 +1,6 @@
 {
   "org": "demo",
   "project": "demo",
-  "env": "production"
+  "env": "production",
+  "service": "@based/env-admin-hub"
 }
