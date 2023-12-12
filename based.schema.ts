@@ -14,6 +14,9 @@ export default {
         name: {
           type: 'string',
         },
+        index: {
+          type: 'number',
+        },
       },
       prefix: 'di',
     },

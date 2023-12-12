@@ -22,6 +22,8 @@ const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
 const filterFolder = (data, rootId) => {
   if (data?.length < 1) return
   const newArr = [] as any
+  const indexed = [] as any
+  const unindexed = [] as any
   for (const i in data) {
     let bool = false
     data[i].parents.map((v) => {
@@ -36,7 +38,15 @@ const filterFolder = (data, rootId) => {
       newArr.push(data[i])
     }
   }
-  return newArr
+  for (const i in newArr) {
+    if (newArr[i].index) {
+      indexed.push(newArr[i])
+    } else {
+      unindexed.push(newArr[i])
+    }
+  }
+  indexed.sort((a, b) => a?.index - b?.index)
+  return [...indexed, ...unindexed]
 }
 
 export const Explorer = ({}) => {
@@ -44,6 +54,29 @@ export const Explorer = ({}) => {
   const section = route.query.folder
   const dragOverItem = useRef<string>()
   const containerRef = useRef<any>()
+
+  const { data, loading: dataLoading } = useQuery('db', {
+    //@ts-ignore
+    // $id: section.length > 0 ? section : 'root',
+    $id: section,
+    files: {
+      $all: true,
+      parents: true,
+      children: true,
+      order: true,
+      $list: {
+        //   $limit: 25,
+        $find: {
+          $traverse: 'children',
+          $filter: {
+            $operator: '=',
+            $field: 'type',
+            $value: ['folder', 'file'],
+          },
+        },
+      },
+    },
+  })
 
   const handleDrop = async (id) => {
     if (!dragOverItem.current || dragOverItem.current.length < 1) {
@@ -62,12 +95,20 @@ export const Explorer = ({}) => {
       })
     } else {
       // setArray((items) => {
-      //   // const activeIndex = items?.findIndex((item) => item.id === id) as number
-      //   // const overIndex = items?.findIndex(
-      //   //   (item) => item.id === dragOverItem.current
-      //   // ) as number
-      //   // return arrayMove(items, activeIndex, overIndex)
+      const items = filterFolder(data.files, section) as any
+
+      const activeIndex = items?.findIndex((item) => item.id === id) as number
+      const overIndex = items?.findIndex(
+        (item) => item.id === dragOverItem.current
+      ) as number
       // })
+
+      arrayMove(items, activeIndex, overIndex).map((v: any, i) => {
+        client.call('db:set', {
+          $id: v.id,
+          index: i,
+        })
+      })
     }
   }
 
@@ -160,29 +201,6 @@ export const Explorer = ({}) => {
     $all: true,
   })
 
-  const { data, loading: dataLoading } = useQuery('db', {
-    //@ts-ignore
-    // $id: section.length > 0 ? section : 'root',
-    $id: section,
-    files: {
-      $all: true,
-      parents: true,
-      children: true,
-      order: true,
-      $list: {
-        //   $limit: 25,
-        $find: {
-          $traverse: 'children',
-          $filter: {
-            $operator: '=',
-            $field: 'type',
-            $value: ['folder', 'file'],
-          },
-        },
-      },
-    },
-  })
-  // console.log(data)
   // filterFolder(data?.files, section)
   const [path, setPath] = useState(['root'])
 
@@ -228,6 +246,7 @@ export const Explorer = ({}) => {
         }}
       >
         {data?.files?.length > 0 &&
+          //@ts-ignore
           filterFolder(data?.files, section).map((item, i) => {
             return (
               <div
