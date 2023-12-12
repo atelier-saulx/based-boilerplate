@@ -11,6 +11,7 @@ import {
   Text,
   Input,
   Breadcrumbs,
+  color,
 } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { arrayMove } from '@dnd-kit/sortable'
@@ -117,10 +118,13 @@ export const Explorer = ({}) => {
           upper.x < over.x + over.height / 2 &&
           upper.x + upper.height / 2 > over.x
         if (collision) {
+          item.style.background = color('action', 'system', 'subtleActive')
           if (item.id) {
             dragOverItem.current = item.id
           }
           // }
+        } else {
+          item.style.background = ''
         }
       })
     }
@@ -132,7 +136,9 @@ export const Explorer = ({}) => {
       otherItems.forEach((item) => {
         item.style.position = 'static'
       })
-
+      otherItems.forEach((item) => {
+        item.style.background = ''
+      })
       dragItem.style = ''
       handleDrop(dragItem.id)
     }
@@ -162,6 +168,7 @@ export const Explorer = ({}) => {
       $all: true,
       parents: true,
       children: true,
+      order: true,
       $list: {
         //   $limit: 25,
         $find: {
@@ -175,8 +182,8 @@ export const Explorer = ({}) => {
       },
     },
   })
-
-  filterFolder(data?.files, section)
+  // console.log(data)
+  // filterFolder(data?.files, section)
   const [path, setPath] = useState(['root'])
 
   // useEffect(() => {

@@ -1,5 +1,5 @@
 export default {
-  languages: ['en', 'nl'],
+  languages: ['en'],
   types: {
     file: {
       prefix: 'fi',
