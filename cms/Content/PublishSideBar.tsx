@@ -68,11 +68,6 @@ export const PublishSideBar = ({
       <Text light style={{ marginBottom: 24 }}>
         Last update: {prettyDate(updatedAt, 'date-time-human')}
       </Text>
-      <Input
-        label="Language"
-        type="select"
-        options={[{ value: 'en', label: 'en' }]}
-      />
     </styled.div>
   )
 }

@@ -1,0 +1,132 @@
+import React, { useEffect, useState } from 'react'
+import { styled } from 'inlines'
+import { Row, Text, Button, Container, Column, Input, Modal } from '@based/ui'
+import { useClient } from '@based/react'
+
+export const DatabaseSettings = () => {
+  const [backups, setBackups] = useState()
+  const [modalWarningInput, setModalWarningInput] = useState('')
+
+  const client = useClient()
+
+  useEffect(() => {
+    let killed
+
+    client.call('based:backups-list').then((data) => {
+      if (!killed) {
+        setBackups(data.backups)
+      }
+      console.log(data)
+    })
+
+    return () => {
+      killed = true
+    }
+  }, [])
+
+  console.log(backups)
+
+  // client.call('db:get', {})
+
+  return (
+    <styled.div style={{ padding: '24px 48px', width: '100%' }}>
+      <div
+        style={{
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: 32,
+        }}
+      >
+        <Text size={24} weight="strong" style={{ marginBottom: 24 }}>
+          Database settings
+        </Text>
+
+        <Column style={{ gap: 34, maxWidth: 700 }}>
+          <Container
+            label="Revert database to a backup"
+            description="  Restore a backup from a certain moment in time. Backups get stored
+            every 15 minutes."
+            divider
+          >
+            <Row style={{ gap: 16 }}>
+              <Input type="select" options={[]} />
+              <Button size="small">Revert to Backup</Button>
+            </Row>
+          </Container>
+
+          <Container
+            label="Backup data"
+            description="This will create a remote snapshot of the current state of the database"
+            divider
+          >
+            <Button size="small">Backup data</Button>
+          </Container>
+
+          <Container
+            label="Download database backup"
+            description="Download a specific backup file"
+            divider
+          >
+            <Row style={{ gap: 16 }}>
+              <Input type="select" options={[]} />
+              <Button size="small">Download Backup</Button>
+            </Row>
+          </Container>
+
+          <Container
+            label="Flush the database data"
+            description="Flushing the database means all data will be deleted. This action cannot be undone."
+            divider
+          >
+            <Modal.Root>
+              <Modal.Trigger>
+                <Button size="small" color="alert">
+                  Flush database
+                </Button>
+              </Modal.Trigger>
+              <Modal.Content>
+                {({ close }) => (
+                  <>
+                    <Modal.Title>Flush Database</Modal.Title>
+                    <Modal.Body>
+                      <Text>
+                        Are you sure you want to delete all the data in this
+                        database?
+                      </Text>
+                      <Modal.Warning type="alert">
+                        You are about to flush the database and delete all it's
+                        content. Type <b>Flush DB</b> in the input field.
+                      </Modal.Warning>
+                      <Input
+                        type="text"
+                        value={modalWarningInput}
+                        onChange={(v) => {
+                          setModalWarningInput(v)
+                        }}
+                      />
+                    </Modal.Body>
+                    <Modal.Actions>
+                      <Button onClick={close} color="system">
+                        Cancel
+                      </Button>
+                      <Button
+                        onClick={() => {
+                          setModalWarningInput('')
+                          close()
+                        }}
+                        color="alert"
+                        disabled={modalWarningInput !== 'Flush DB'}
+                      >
+                        Flush
+                      </Button>
+                    </Modal.Actions>
+                  </>
+                )}
+              </Modal.Content>
+            </Modal.Root>
+          </Container>
+        </Column>
+      </div>
+    </styled.div>
+  )
+}

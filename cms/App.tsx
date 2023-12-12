@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import ReactDOM from 'react-dom/client'
 import { useAuthState, useQuery } from '@based/react'
 import based from '@based/client'
@@ -15,7 +15,7 @@ import { Provider, color } from '@based/ui'
 import { TopBar } from './Components/TopBar'
 import { Profile } from './Settings/UserManagement/Profile'
 import { Dashboard } from './Components/Dashboard'
-import { Backups } from './Settings/Backups'
+import { DatabaseSettings } from './Settings/Database'
 
 export const client = based(basedConfig)
 
@@ -30,6 +30,12 @@ export const App = () => {
   })
   if (!authState.userId) return <Login />
 
+  const { data: schema, loading: loadingSchema } = useQuery('db:schema')
+
+  const [selectedLang, setSelectedLang] = useState(schema?.languages[0])
+
+  console.log(schema, '👽')
+
   return (
     <styled.div
       style={{
@@ -39,8 +45,15 @@ export const App = () => {
         backgroundColor: color('background', 'default'),
       }}
     >
-      <TopBar data={data} client={client} />
+      <TopBar
+        data={data}
+        client={client}
+        languages={schema?.languages}
+        selectedLang={selectedLang || schema?.languages[0]}
+        setSelectedLang={setSelectedLang}
+      />
       <styled.div style={{ display: 'flex', flexDirection: 'row' }}>
+        {selectedLang}
         <SideBar />
         <div style={{ marginTop: 65, width: '100%' }}>
           {section === 'file-library' ? (
@@ -51,12 +64,12 @@ export const App = () => {
             <Profile />
           ) : section === 'user-management' ? (
             <Management />
-          ) : section === 'back-ups' ? (
-            <Backups />
+          ) : section === 'db-settings' ? (
+            <DatabaseSettings />
           ) : !section ? (
             <Dashboard />
           ) : (
-            <Content />
+            <Content selectedLang={selectedLang || schema?.languages[0]} />
           )}
         </div>
       </styled.div>

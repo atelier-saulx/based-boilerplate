@@ -3,7 +3,7 @@ import { ContentOverview } from './ContentOverview'
 import { ContentEditor } from './ContentEditor'
 import { useRoute } from 'kabouter'
 
-export const Content = () => {
+export const Content = ({ selectedLang }) => {
   const route = useRoute('[section][id]')
   const section = route.query.section
   const routeId = route.query.id as string
@@ -13,7 +13,7 @@ export const Content = () => {
       {section && routeId ? (
         <ContentEditor id={routeId} section={section} />
       ) : section ? (
-        <ContentOverview />
+        <ContentOverview selectedLang={selectedLang} />
       ) : (
         ''
       )}

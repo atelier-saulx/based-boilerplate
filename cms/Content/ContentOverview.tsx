@@ -5,7 +5,7 @@ import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
 import { CmsTable } from '../Components/CmsTable'
 
-export const ContentOverview = () => {
+export const ContentOverview = ({ selectedLang }) => {
   const client = useClient()
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
@@ -105,6 +105,7 @@ export const ContentOverview = () => {
           onRowClick={(row) => route.setQuery({ id: row.id })}
           onCellClick={(e) => console.log('on cell click -> ', e)}
           columnNamesInRightOrder={arr}
+          selectedLang={selectedLang}
         />
       </styled.div>
     </styled.div>

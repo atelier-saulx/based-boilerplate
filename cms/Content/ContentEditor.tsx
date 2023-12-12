@@ -9,6 +9,7 @@ import {
   scrollAreaStyle,
   IconArrowLeft,
   color,
+  ScrollArea,
 } from '@based/ui'
 import { PublishSideBar } from './PublishSideBar'
 import { useRoute } from 'kabouter'
@@ -46,11 +47,10 @@ export const ContentEditor = ({ id, section }) => {
       style={{
         width: '100%',
         display: 'flex',
-        //  ...scrollAreaStyle,
-        // maxHeight: 'calc(40% - 90px)',
+        height: 'calc(100vh - 67px)',
       }}
     >
-      <styled.div style={{ padding: '24px 48px', width: '100%' }}>
+      <ScrollArea style={{ padding: '24px 48px', width: '100%' }}>
         <Row
           style={{
             cursor: 'pointer',
@@ -86,7 +86,7 @@ export const ContentEditor = ({ id, section }) => {
             values={{ ...data, ...formFieldChanges }}
           />
         )}
-      </styled.div>
+      </ScrollArea>
       <PublishSideBar
         someThingChanged={someThingChanged}
         setSomeThingChanged={setSomeThingChanged}
