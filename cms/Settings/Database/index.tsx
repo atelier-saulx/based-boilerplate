@@ -1,6 +1,18 @@
 import React, { useEffect, useState } from 'react'
 import { styled } from 'inlines'
-import { Row, Text, Button, Container, Column, Input, Modal } from '@based/ui'
+import {
+  Row,
+  Text,
+  Button,
+  Container,
+  Column,
+  Input,
+  Modal,
+  IconUndo,
+  IconDelete,
+  IconDownload,
+  IconCamera,
+} from '@based/ui'
 import { useClient } from '@based/react'
 
 export const DatabaseSettings = () => {
@@ -50,7 +62,9 @@ export const DatabaseSettings = () => {
           >
             <Row style={{ gap: 16 }}>
               <Input type="select" options={[]} />
-              <Button size="small">Revert to Backup</Button>
+              <Button size="small" icon={<IconUndo />} disabled>
+                Revert to Backup
+              </Button>
             </Row>
           </Container>
 
@@ -59,7 +73,9 @@ export const DatabaseSettings = () => {
             description="This will create a remote snapshot of the current state of the database"
             divider
           >
-            <Button size="small">Backup data</Button>
+            <Button size="small" icon={<IconCamera />}>
+              Backup data
+            </Button>
           </Container>
 
           <Container
@@ -69,7 +85,9 @@ export const DatabaseSettings = () => {
           >
             <Row style={{ gap: 16 }}>
               <Input type="select" options={[]} />
-              <Button size="small">Download Backup</Button>
+              <Button size="small" icon={<IconDownload />} disabled>
+                Download Backup
+              </Button>
             </Row>
           </Container>
 
@@ -80,7 +98,7 @@ export const DatabaseSettings = () => {
           >
             <Modal.Root>
               <Modal.Trigger>
-                <Button size="small" color="alert">
+                <Button size="small" color="alert" icon={<IconDelete />}>
                   Flush database
                 </Button>
               </Modal.Trigger>

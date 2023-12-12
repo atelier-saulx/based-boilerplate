@@ -33,8 +33,6 @@ export const TopBar = ({
     label: allLangs[lang],
   }))
 
-  console.log(langOptions, selectedLang, ' BONJOEUR')
-
   return (
     <TopNavigation>
       <Logo
