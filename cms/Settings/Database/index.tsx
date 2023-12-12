@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { styled } from 'inlines'
 import {
   Row,
@@ -13,7 +13,7 @@ import {
   IconDownload,
   IconCamera,
 } from '@based/ui'
-import { useClient } from '@based/react'
+import { useClient, Provider } from '@based/react'
 
 export const DatabaseSettings = () => {
   const [backups, setBackups] = useState()
@@ -21,24 +21,7 @@ export const DatabaseSettings = () => {
 
   const client = useClient()
 
-  useEffect(() => {
-    let killed
-
-    client.call('based:backups-list').then((data) => {
-      if (!killed) {
-        setBackups(data.backups)
-      }
-      console.log(data)
-    })
-
-    return () => {
-      killed = true
-    }
-  }, [])
-
-  console.log(backups)
-
-  // client.call('db:get', {})
+  // useQeury
 
   return (
     <styled.div style={{ padding: '24px 48px', width: '100%' }}>
@@ -52,7 +35,7 @@ export const DatabaseSettings = () => {
         <Text size={24} weight="strong" style={{ marginBottom: 24 }}>
           Database settings
         </Text>
-
+        // TODO: Connect these
         <Column style={{ gap: 34, maxWidth: 700 }}>
           <Container
             label="Revert database to a backup"
@@ -128,7 +111,11 @@ export const DatabaseSettings = () => {
                         Cancel
                       </Button>
                       <Button
-                        onClick={() => {
+                        onClick={async () => {
+                          // @ts-ignore
+                          const data = await client.call('based:db-flush', {
+                            db: 'default',
+                          })
                           setModalWarningInput('')
                           close()
                         }}
