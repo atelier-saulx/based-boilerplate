@@ -23,7 +23,6 @@ import {
   Toggle,
   IconEdit,
   Tooltip,
-  IconError,
   IconAlertFill,
 } from '@based/ui'
 import deepCopy from '../utils/deepCopy'
@@ -152,8 +151,8 @@ export const CmsTable: FC<CmsTableProps> = ({
     setEnableInlineEditModus(false)
     setErrorMessage('')
   }, [queryId])
-  // console.log(result, 'Result>?')
-  // console.log(parsedData, 'ParsedDAta?')
+  console.log(result, 'Result>?')
+  console.log(parsedData, 'ParsedDAta?')
   // console.log(schemaFields)
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
@@ -203,9 +202,16 @@ export const CmsTable: FC<CmsTableProps> = ({
       // console.log('this changed -->', inputState)
 
       if (parsedData[rowIndex][hiddenColumnNames[columnIndex]] !== inputState) {
+        // if (cellFieldTypeOf === 'text') {
+        //   shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
+        //   shadowData[rowIndex][hiddenColumnNames[columnIndex]] = {
+        //     language: selectedLang,
+        //   }
+        // } else {
         shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
+        // }
 
-        // console.log('this row changed -->', shadowData[rowIndex])
+        console.log('this row changed -->', shadowData[rowIndex])
         changedRows[shadowData[rowIndex].id] = shadowData[rowIndex]
 
         console.log(changedRows, 'changed rows🤌')
@@ -281,11 +287,16 @@ export const CmsTable: FC<CmsTableProps> = ({
             value={inputState}
             onChange={(v) => setInputState(v)}
           />
-        ) : (cellFieldTypeOf === 'string' || cellFieldTypeOf === 'text') &&
-          enableInlineEditModus ? (
+        ) : cellFieldTypeOf === 'string' && enableInlineEditModus ? (
           <Input
             type="text"
             value={inputState}
+            onChange={(v) => setInputState(v)}
+          />
+        ) : cellFieldTypeOf === 'text' && enableInlineEditModus ? (
+          <Input
+            type="text"
+            value={inputState && inputState[selectedLang]}
             onChange={(v) => setInputState(v)}
           />
         ) : cellFieldTypeOf === 'number' && enableInlineEditModus ? (
@@ -298,6 +309,8 @@ export const CmsTable: FC<CmsTableProps> = ({
           <RenderAs
             input={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
             colName={hiddenColumnNames[columnIndex]}
+            cellFieldTypeOf={cellFieldTypeOf}
+            selectedLang={selectedLang}
           />
         )}
       </styled.div>
@@ -642,6 +655,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                     await client
                       .call('db:set', {
                         $id: key,
+                        $language: selectedLang,
                         ...changedRows[key],
                       })
                       .catch((err) => {

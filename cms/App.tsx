@@ -15,7 +15,7 @@ import { Provider, color } from '@based/ui'
 import { TopBar } from './Components/TopBar'
 import { Profile } from './Settings/UserManagement/Profile'
 import { Dashboard } from './Components/Dashboard'
-import { Backups } from './Settings/Backups'
+import { DatabaseSettings } from './Settings/Database'
 
 export const client = based(basedConfig)
 
@@ -64,12 +64,12 @@ export const App = () => {
             <Profile />
           ) : section === 'user-management' ? (
             <Management />
-          ) : section === 'back-ups' ? (
-            <Backups />
+          ) : section === 'db-settings' ? (
+            <DatabaseSettings />
           ) : !section ? (
             <Dashboard />
           ) : (
-            <Content />
+            <Content selectedLang={selectedLang || schema?.languages[0]} />
           )}
         </div>
       </styled.div>

@@ -63,9 +63,9 @@ export const SideBar = () => {
             label: 'Users',
             icon: <IconUsers />,
           },
-          ['backups']: {
-            value: 'back-ups',
-            label: 'Back Ups',
+          ['database']: {
+            value: 'db-settings',
+            label: 'Database',
             icon: <IconTimeClock />,
           },
         },

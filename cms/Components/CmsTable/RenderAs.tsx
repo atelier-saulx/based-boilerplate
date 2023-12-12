@@ -11,7 +11,7 @@ import {
   Avatar,
 } from '@based/ui'
 
-export const RenderAs = ({ colName, input }) => {
+export const RenderAs = ({ colName, input, cellFieldTypeOf, selectedLang }) => {
   let cName = colName.toLowerCase()
 
   if (cName === 'id') {
@@ -20,6 +20,8 @@ export const RenderAs = ({ colName, input }) => {
         {input}
       </Badge>
     )
+  } else if (cellFieldTypeOf === 'text') {
+    return <Text>{input && input[selectedLang]}</Text>
   } else if (cName === 'createdat' || cName === 'updatedat') {
     return <Text light>{prettyDate(input, 'date-time-human')}</Text>
   } else if (cName === 'size') {

@@ -8,12 +8,12 @@ import {
   IconEye,
   IconLogOut,
   useTheme,
+  Input,
 } from '@based/ui'
 import { Logo } from '../Sidebar/Logo'
 import { useRoute } from 'kabouter'
 import { styled } from '@based/ui'
 import { useAuthState } from '@based/react'
-import { SelectInput } from '@based/ui/dist/components/Input/SelectInput'
 import { languages as allLangs } from './languages'
 
 export const TopBar = ({
@@ -47,7 +47,8 @@ export const TopBar = ({
 
       <Row style={{ marginLeft: 'auto' }}>
         <styled.div style={{ width: 154, marginLeft: 'auto', marginRight: 12 }}>
-          <SelectInput
+          <Input
+            type="select"
             style={{ overflow: 'hidden' }}
             value={selectedLang}
             options={langOptions || []}
