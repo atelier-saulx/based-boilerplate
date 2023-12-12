@@ -3,6 +3,11 @@ export default {
   types: {
     file: {
       prefix: 'fi',
+      fields: {
+        index: {
+          type: 'number',
+        },
+      },
     },
     folder: {
       fields: {
