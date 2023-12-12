@@ -93,9 +93,6 @@ export const CmsTable: FC<CmsTableProps> = ({
 
   const [enableInlineEditModus, setEnableInlineEditModus] = useState(false)
 
-  // let w = width
-  // let h = height
-
   let COLUMN_WIDTH = 124
   let ROW_HEIGHT = 60
 
@@ -126,8 +123,6 @@ export const CmsTable: FC<CmsTableProps> = ({
       : null
   )
 
-  /// store the difference ??
-
   const client = useClient()
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
@@ -151,8 +146,8 @@ export const CmsTable: FC<CmsTableProps> = ({
     setEnableInlineEditModus(false)
     setErrorMessage('')
   }, [queryId])
-  console.log(result, 'Result>?')
-  console.log(parsedData, 'ParsedDAta?')
+  // console.log(result, 'Result>?')
+  // console.log(parsedData, 'ParsedDAta?')
   // console.log(schemaFields)
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
@@ -200,16 +195,8 @@ export const CmsTable: FC<CmsTableProps> = ({
 
     useEffect(() => {
       // console.log('this changed -->', inputState)
-
       if (parsedData[rowIndex][hiddenColumnNames[columnIndex]] !== inputState) {
-        // if (cellFieldTypeOf === 'text') {
-        //   shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
-        //   shadowData[rowIndex][hiddenColumnNames[columnIndex]] = {
-        //     language: selectedLang,
-        //   }
-        // } else {
         shadowData[rowIndex][hiddenColumnNames[columnIndex]] = inputState
-        // }
 
         console.log('this row changed -->', shadowData[rowIndex])
         changedRows[shadowData[rowIndex].id] = shadowData[rowIndex]
@@ -402,21 +389,7 @@ export const CmsTable: FC<CmsTableProps> = ({
             </Button>
             <Modal.Root>
               <Modal.Trigger>
-                <Button
-                  size="small"
-                  light
-                  color="alert"
-                  icon={<IconDelete />}
-                  // onClick={async () => {
-                  //   await selectedRowIndexes.map(async (idx) => {
-                  //     await client.call('db:delete', {
-                  //       $id: parsedData[idx].id,
-                  //     })
-                  //   })
-                  //   setSelectedRowIndexes([])
-                  //   setRenderCounter(renderCounter + 1)
-                  // }}
-                >
+                <Button size="small" light color="alert" icon={<IconDelete />}>
                   Delete
                 </Button>
               </Modal.Trigger>
@@ -464,7 +437,7 @@ export const CmsTable: FC<CmsTableProps> = ({
           return (
             <React.Fragment key={idx}>
               <Text color="brand" weight="strong" style={{ marginRight: 8 }}>
-                {itemKey}
+                {itemKey === '$and' ? 'AND' : 'OR'}
               </Text>
               <styled.div
                 style={{
@@ -498,7 +471,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                   <Modal.Title>Define your filter.</Modal.Title>
                   <Modal.Body>
                     <Input
-                      label={'$and or $or?'}
+                      // label={'$and or $or?'}
                       value={andOr}
                       type="select"
                       options={[
@@ -508,16 +481,26 @@ export const CmsTable: FC<CmsTableProps> = ({
                       onChange={(v) => setAndOr(v)}
                     />
                     <Input
-                      label="$field"
+                      label="Select a field"
                       value={fieldValue}
                       type="select"
                       options={columnNames?.map((item) => ({
                         value: item,
                       }))}
-                      onChange={(v) => setFieldValue(v)}
+                      onChange={(v) => {
+                        console.log('VVV', v)
+                        setFieldValue(v)
+                        if (schemaFields[v]?.type === 'string') {
+                          setTypeOfValue('string')
+                        } else if (schemaFields[v]?.type === 'number') {
+                          setTypeOfValue('number')
+                        } else if (schemaFields[v]?.type === 'boolean') {
+                          setTypeOfValue('boolean')
+                        }
+                      }}
                     />
                     <Input
-                      label="$operator"
+                      label="Select an operator"
                       value={operator}
                       type="select"
                       options={[
@@ -533,7 +516,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                       <div style={{ flex: '1  auto', alignItems: 'center' }}>
                         {typeOfValue === 'boolean' ? (
                           <>
-                            <Text weight="medium">$value</Text>
+                            <Text weight="medium">Value</Text>
                             <Toggle
                               value={filterValue as boolean}
                               onChange={(v) => setFilterValue(v)}
@@ -541,7 +524,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                           </>
                         ) : (
                           <Input
-                            label="$value"
+                            label="Value"
                             value={filterValue as any}
                             type={typeOfValue === 'number' ? 'number' : 'text'}
                             onChange={(v) =>
@@ -553,7 +536,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                       <div style={{ minWidth: 164 }}>
                         <Input
                           type="select"
-                          label="Typeof $value"
+                          label="Typeof Value"
                           value={typeOfValue}
                           options={[
                             { value: 'string' },

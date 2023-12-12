@@ -3,6 +3,7 @@ import { styled } from 'inlines'
 import { Text, Input, Button } from '@based/ui'
 import { languages as allLangs } from '../../Components/TopBar/languages'
 import { useClient } from '@based/react'
+// import { client } from '../../../client'
 
 export const GeneralSettings = ({ languages }) => {
   const langKeys = Object.keys(allLangs)
@@ -12,7 +13,6 @@ export const GeneralSettings = ({ languages }) => {
   }))
 
   const [tempLangs, setTempLangs] = useState('')
-  console.log('incoming lang', languages)
 
   useEffect(() => {
     setTempLangs(languages)
@@ -44,7 +44,6 @@ export const GeneralSettings = ({ languages }) => {
             label="Set your schema languages"
             onChange={(v) => {
               setTempLangs(v)
-              console.log(tempLangs)
             }}
             options={options}
           />
@@ -53,14 +52,35 @@ export const GeneralSettings = ({ languages }) => {
           size="small"
           style={{ marginTop: 12 }}
           onClick={async () => {
-            // await client.call('db:set', {
-            //   $language: tempLangs,
+            // const itemsToBeRemoved = languages.filter(
+            //   (item) => !tempLangs?.includes(item)
+            // )
+
+            // //  TODO : remove languages
+            // console.log('ITEMS to be removed', itemsToBeRemoved)
+
+            // remove items that need to be removed first
+            // await client.call('db:set-schema', {
+            //   mutate: true,
+            //   schema: {
+            //     languages: {
+            //       $delete: itemsToBeRemoved,
+            //     },
+            //   },
             // })
+
+            await client.call('db:set-schema', {
+              mutate: true,
+              schema: {
+                languages: tempLangs,
+              },
+            })
           }}
           disabled={languages === tempLangs}
         >
           Set Languages
         </Button>
+        {JSON.stringify(tempLangs)}
       </styled.div>
     </styled.div>
   )
