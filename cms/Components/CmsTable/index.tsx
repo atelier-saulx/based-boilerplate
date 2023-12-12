@@ -49,7 +49,7 @@ type CmsTableProps = {
   onCellClick?: (v, rIdx, cIdx) => void
   columnNamesInRightOrder?: string[]
   style?: CSSProperties | Style
-  routeId?: string
+  selectedLang?: string
 }
 
 export const changedRows = {}
@@ -66,7 +66,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   columnNamesInRightOrder,
   style,
   filter,
-  routeId,
+  selectedLang,
 }) => {
   const [hiddenColumns, setFilteredColumns] = useState<string[]>([
     'ancestors',

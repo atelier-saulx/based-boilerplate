@@ -14,12 +14,26 @@ import { useRoute } from 'kabouter'
 import { styled } from '@based/ui'
 import { useAuthState } from '@based/react'
 import { SelectInput } from '@based/ui/dist/components/Input/SelectInput'
+import { languages as allLangs } from './languages'
 
-export const TopBar = ({ data, client }) => {
+export const TopBar = ({
+  data,
+  client,
+  languages,
+  selectedLang,
+  setSelectedLang,
+}) => {
   const authState = useAuthState()
   const route = useRoute('[section]')
   const section = route.query.section
   const { theme, setTheme } = useTheme()
+
+  const langOptions = languages?.map((lang) => ({
+    value: lang,
+    label: allLangs[lang],
+  }))
+
+  console.log(langOptions, selectedLang, ' BONJOEUR')
 
   return (
     <TopNavigation>
@@ -32,8 +46,16 @@ export const TopBar = ({ data, client }) => {
       />
 
       <Row style={{ marginLeft: 'auto' }}>
-        <styled.div style={{ width: 124, marginLeft: 'auto', marginRight: 12 }}>
-          <SelectInput options={[{ value: 'en', label: 'English' }]} />
+        <styled.div style={{ width: 154, marginLeft: 'auto', marginRight: 12 }}>
+          <SelectInput
+            style={{ overflow: 'hidden' }}
+            value={selectedLang}
+            options={langOptions || []}
+            onChange={(v) => {
+              console.log(v)
+              setSelectedLang(v)
+            }}
+          />
         </styled.div>
 
         <Dropdown.Root>
