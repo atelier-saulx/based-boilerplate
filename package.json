@@ -27,6 +27,7 @@
   },
   "devDependencies": {
     "@based/cli": "5.12.2",
+    "@based/cli": "^5.12.2",
     "@based/functions": "^2.2.2",
     "@saulx/eslint-config": "^1.1.1",
     "@saulx/prettier-config": "^1.0.0",

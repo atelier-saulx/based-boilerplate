@@ -23,9 +23,10 @@ export const Tile = ({
   folder,
   setSelected,
   selected,
+  path,
+  setPath,
 }) => {
   const route = useRoute('[folder]')
-  console.log(folder)
 
   return (
     <styled.div
@@ -57,9 +58,14 @@ export const Tile = ({
           ? () => {
               setSelected(id)
             }
-          : folder
-          ? route.setQuery({ folder: 'di7e081f84' })
-          : () => setOpenSidebar(true)
+          : () => {
+              if (folder) {
+                route.setQuery({ folder: id })
+                setPath([...path, id])
+              } else {
+                setOpenSidebar(true)
+              }
+            }
       }
     >
       <styled.div

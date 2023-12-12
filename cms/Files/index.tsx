@@ -42,7 +42,7 @@ export const FileLibrary = () => {
           marginBottom: 32,
         }}
       >
-        <Text size={24} weight="strong">
+        <Text size={24} weight="strong" selectable="none">
           Files
           <Toggle value={!table} onChange={(v: any | string) => setTable(!v)} />
         </Text>

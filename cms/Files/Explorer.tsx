@@ -8,6 +8,10 @@ import {
   SidePanel,
   scrollAreaStyle,
   useInfiniteQuery,
+  Text,
+  Input,
+  Breadcrumbs,
+  color,
 } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { arrayMove } from '@dnd-kit/sortable'
@@ -18,23 +22,34 @@ const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
 const filterFolder = (data, rootId) => {
   if (data?.length < 1) return
   const newArr = [] as any
+  const indexed = [] as any
+  const unindexed = [] as any
   for (const i in data) {
-    if (
-      data[i].parents?.filter((j) => j[0] + j[1] === 'di').length === 1 &&
-      !data[i].parents.filter((i) => i !== 'root').includes(rootId)
-    ) {
-      console.log(data[i])
-    } else {
+    let bool = false
+    data[i].parents.map((v) => {
+      if (v.slice(0, 2) === 'di') {
+        bool = true
+      }
+      if (v !== 'root' && v === rootId) {
+        bool = false
+      }
+    })
+    if (!bool) {
       newArr.push(data[i])
     }
   }
-  return newArr
+  for (const i in newArr) {
+    if (newArr[i].index) {
+      indexed.push(newArr[i])
+    } else {
+      unindexed.push(newArr[i])
+    }
+  }
+  indexed.sort((a, b) => a?.index - b?.index)
+  return [...indexed, ...unindexed]
 }
 
 export const Explorer = ({}) => {
-  // const [dragOverItem, setDragOverItem] = useState()
-  // const dragItem = useRef()
-  // const [dragItem, setDragItem] = useState()
   const route = useRoute('[folder]')
   const section = route.query.folder
   const dragOverItem = useRef<string>()
@@ -43,11 +58,12 @@ export const Explorer = ({}) => {
   const { data, loading: dataLoading } = useQuery('db', {
     //@ts-ignore
     // $id: section.length > 0 ? section : 'root',
-    $id: 'root',
+    $id: section,
     files: {
       $all: true,
       parents: true,
       children: true,
+      order: true,
       $list: {
         //   $limit: 25,
         $find: {
@@ -66,9 +82,9 @@ export const Explorer = ({}) => {
     if (!dragOverItem.current || dragOverItem.current.length < 1) {
       return
     }
-    const prefix = dragOverItem.current.slice(0, 2)
+    const prefix = dragOverItem.current?.slice(0, 2)
     if (prefix === 'di' && id !== dragOverItem.current) {
-      console.log(dragOverItem.current)
+      // console.log(dragOverItem.current)
       const childData = await client.call('db:get', {
         $id: dragOverItem.current,
         children: true,
@@ -78,27 +94,33 @@ export const Explorer = ({}) => {
         children: [...childData.children, id],
       })
     } else {
-      setArray((items) => {
-        const activeIndex = items?.findIndex((item) => item.id === id) as number
-        const overIndex = items?.findIndex(
-          (item) => item.id === dragOverItem.current
-        ) as number
+      // setArray((items) => {
+      const items = filterFolder(data.files, section) as any
 
-        return arrayMove(items, activeIndex, overIndex)
+      const activeIndex = items?.findIndex((item) => item.id === id) as number
+      const overIndex = items?.findIndex(
+        (item) => item.id === dragOverItem.current
+      ) as number
+      // })
+
+      arrayMove(items, activeIndex, overIndex).map((v: any, i) => {
+        client.call('db:set', {
+          $id: v.id,
+          index: i,
+        })
       })
     }
   }
 
   const dragStart = (e, index) => {
     if (e.button !== 0) return
-    // setDragItem(index)
 
     const container = containerRef.current
     const items = [...container.childNodes]
     const otherItems = items.filter((_, i) => i !== index)
 
     const dragItem = items[index]
-    console.log(dragItem.id)
+    // console.log(dragItem.id)
 
     const dragBoundingRect = dragItem.getBoundingClientRect()
     items.forEach((item) => {
@@ -125,9 +147,7 @@ export const Explorer = ({}) => {
       setSelected('')
       const posX = e.clientX - x
       const posY = e.clientY - y
-      // if (posX < 50 || posY < 50) {
-      //   return
-      // }
+
       dragItem.style.transform = `translate(${posX}px, ${posY}px)`
 
       otherItems.forEach((item) => {
@@ -139,22 +159,16 @@ export const Explorer = ({}) => {
           upper.x < over.x + over.height / 2 &&
           upper.x + upper.height / 2 > over.x
         if (collision) {
-          // if (item.getAttribute('style')) {
-          //   item.style.transform = ''
-          //   // index++
-          // } else {
-          // item.style.transform = `translateY(${200}px)`
-          // item.style.background = 'green'
+          item.style.background = color('action', 'system', 'subtleActive')
           if (item.id) {
             dragOverItem.current = item.id
           }
           // }
+        } else {
+          item.style.background = ''
         }
       })
     }
-
-    // dragItem.style.right = dragBoundingRect.right + 'px'
-    // dragItem.style.bottom = dragBoundingRect.bottom + 'px'
 
     document.onpointerup = dragEnd
     function dragEnd() {
@@ -163,7 +177,9 @@ export const Explorer = ({}) => {
       otherItems.forEach((item) => {
         item.style.position = 'static'
       })
-      // setDragItem(undefined)
+      otherItems.forEach((item) => {
+        item.style.background = ''
+      })
       dragItem.style = ''
       handleDrop(dragItem.id)
     }
@@ -171,56 +187,56 @@ export const Explorer = ({}) => {
 
   const [openSidebar, setOpenSidebar] = useState(false)
   const [selected, setSelected] = useState('')
-
-  const [rootId, setRootId] = useState(['root'])
-
   const [formFieldChanges, setFormFieldChanges] = useState<any>({})
   const client = useClient()
 
   // console.log(section)
 
-  useEffect(() => {
-    setArray(filterFolder(data?.files, section))
-  }, [data])
-
   const { data: schema, loading } = useQuery('db:schema')
+
+  const [schemaData, setSchemaData] = useState()
+
   const { data: fileData, loading: loadingFile } = useQuery('db', {
     $id: selected,
     $all: true,
   })
-  const [array, setArray] = useState<any>(filterFolder(data, rootId))
 
-  let schemaFields = schema?.types.file.fields
-  let filteredSchemaFields = {}
-  if (schema) {
-    for (const [key, value] of Object.entries(schemaFields)) {
-      if (!FILTER_FIELDS.includes(key)) {
-        filteredSchemaFields[key] = value
-      }
-    }
-  }
+  // filterFolder(data?.files, section)
+  const [path, setPath] = useState(['root'])
+
+  // useEffect(() => {
+  //   console.log('change')
+  //   setArray(data)
+  // }, [data])
 
   return (
     <styled.div>
-      <Button
-        onClick={() => route.setQuery({ folder: 'root' })}
-        size="xsmall"
-        color="system"
-        icon={<IconArrowLeft />}
-      >
-        Back
-      </Button>
-
-      <Button
-        onClick={async () => {
-          // fetchMore()
+      <Breadcrumbs
+        data={Object.fromEntries(path.map((i) => [i, i]))}
+        onChange={(v) => {
+          route.setQuery({ folder: v })
+          setPath(() => {
+            const newArr = [] as string[]
+            for (const i in path) {
+              if (path[i] === v) {
+                newArr.push(path[i])
+                break
+              }
+              newArr.push(path[i])
+            }
+            // console.log(newArr)
+            return newArr
+          })
         }}
-      >
-        RERENDER
-      </Button>
+      />
+      <Text onClick={() => route.setQuery({ folder: 'root' })}>
+        {/* {section as string} */}
+
+        {/* {path.map((i) => [i, i])} */}
+      </Text>
+
       <styled.div
         ref={containerRef}
-        id={rootId}
         style={{
           display: 'grid',
           // flexWrap: 'wrap',
@@ -229,25 +245,26 @@ export const Explorer = ({}) => {
           gap: 15,
         }}
       >
-        {array?.length > 0 &&
-          array.map((item, i) => {
+        {data?.files?.length > 0 &&
+          //@ts-ignore
+          filterFolder(data?.files, section).map((item, i) => {
             return (
               <div
                 style={{
-                  // border: '1px solid red',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                 }}
                 key={item.id}
                 id={item.id}
-                // onMouseOver={() => console.log(item.name)}
                 onPointerDown={(e) => dragStart(e, i)}
               >
                 <Tile
-                  folder={item.id.slice(0, 2) === 'di'}
+                  folder={item.id?.slice(0, 2) === 'di'}
                   selected={item.id === selected}
                   item={item}
+                  path={path}
+                  setPath={setPath}
                   setOpenSidebar={setOpenSidebar}
                   setSelected={setSelected}
                 />
@@ -268,7 +285,7 @@ export const Explorer = ({}) => {
               }}
               values={{ ...fileData, ...formFieldChanges }}
               alwaysAccept
-              config={filteredSchemaFields}
+              config={schema}
             />
           </SidePanel.Body>
           <SidePanel.Actions>

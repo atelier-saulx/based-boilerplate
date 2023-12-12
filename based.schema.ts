@@ -1,13 +1,21 @@
 export default {
-  languages: ['en', 'nl'],
+  languages: ['en'],
   types: {
     file: {
       prefix: 'fi',
+      fields: {
+        index: {
+          type: 'number',
+        },
+      },
     },
     folder: {
       fields: {
         name: {
           type: 'string',
+        },
+        index: {
+          type: 'number',
         },
       },
       prefix: 'di',
