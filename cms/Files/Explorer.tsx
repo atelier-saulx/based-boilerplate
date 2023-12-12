@@ -103,6 +103,8 @@ export const Explorer = ({}) => {
           (item) => item.id === dragOverItem.current
         ) as number
         // })
+        //this is fine for going up, but going down needs to be different
+
         // console.log(activeIndex, overIndex)
         items.splice(overIndex, 0, items[activeIndex])
         items.splice(activeIndex + 1, 1)
@@ -227,6 +229,16 @@ export const Explorer = ({}) => {
 
   return (
     <styled.div>
+      <Button
+        onClick={async () => {
+          await client.call('db:set', {
+            $id: 'us3532c825',
+            profileImg: '',
+          })
+        }}
+      >
+        Lol
+      </Button>
       <Breadcrumbs
         data={Object.fromEntries(path.map((i) => [i, i]))}
         onChange={(v) => {
