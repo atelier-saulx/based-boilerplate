@@ -1,5 +1,12 @@
 import React from 'react'
-import { Menu, IconFolder, IconUsers, IconBolt, IconTimeClock } from '@based/ui'
+import {
+  Menu,
+  IconFolder,
+  IconUsers,
+  IconBolt,
+  IconTimeClock,
+  IconSettings,
+} from '@based/ui'
 import { useRoute } from 'kabouter'
 import { useQuery } from '@based/react'
 
@@ -67,6 +74,11 @@ export const SideBar = () => {
             value: 'db-settings',
             label: 'Database',
             icon: <IconTimeClock />,
+          },
+          ['general']: {
+            value: 'general-settings',
+            label: 'General',
+            icon: <IconSettings />,
           },
         },
       }}

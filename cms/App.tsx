@@ -16,6 +16,7 @@ import { TopBar } from './Components/TopBar'
 import { Profile } from './Settings/UserManagement/Profile'
 import { Dashboard } from './Components/Dashboard'
 import { DatabaseSettings } from './Settings/Database'
+import { GeneralSettings } from './Settings/General'
 
 export const client = based(basedConfig)
 
@@ -34,7 +35,7 @@ export const App = () => {
 
   const [selectedLang, setSelectedLang] = useState(schema?.languages[0])
 
-  console.log(schema, '👽')
+  console.log(schema, 'Schema')
 
   return (
     <styled.div
@@ -66,6 +67,8 @@ export const App = () => {
             <Management />
           ) : section === 'db-settings' ? (
             <DatabaseSettings />
+          ) : section === 'general-settings' ? (
+            <GeneralSettings languages={schema?.languages} />
           ) : !section ? (
             <Dashboard />
           ) : (

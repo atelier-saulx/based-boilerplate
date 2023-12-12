@@ -296,7 +296,7 @@ export const CmsTable: FC<CmsTableProps> = ({
         ) : cellFieldTypeOf === 'text' && enableInlineEditModus ? (
           <Input
             type="text"
-            value={inputState && inputState[selectedLang]}
+            value={inputState && inputState[selectedLang as string]}
             onChange={(v) => setInputState(v)}
           />
         ) : cellFieldTypeOf === 'number' && enableInlineEditModus ? (
