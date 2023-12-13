@@ -137,12 +137,15 @@ export const SchemaField = ({
 
       {item.type === 'object' &&
         Object.keys(item.properties).map((key) => {
-          // console.log('🚒', item.properties[key])
+          console.log('🚒', item.properties[key])
 
           let objItem = item.properties[key]
 
           return (
             <NestedSchemaField
+              objPath={[
+                item.meta.name || item.meta?.displayName?.toLowerCase(),
+              ]}
               objItem={objItem}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
@@ -164,19 +167,25 @@ export const SchemaField = ({
   )
 }
 
-const NestedSchemaField = ({ objItem, ALL_FIELDS }) => {
-  // console.log('🚑', objItem)
+const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath }) => {
+  console.log('🚑', objItem)
   // console.log(ALL_FIELDS)
+
+  let path = objPath
+  path.push(objItem.meta.name || objItem?.meta.displayName)
+  console.log('object path 🚀', path)
 
   const labels = ALL_FIELDS.map((item) => item.label.toLowerCase())
   const index = labels.indexOf(objItem.type)
   // console.log(index)
 
+  // TODO NESTED OBJ PATH string[]
+
   return (
     <div style={{ position: 'relative' }}>
       {objItem.type === 'object' && (
         <styled.div style={{ position: 'absolute', right: 46, top: 10 }}>
-          <AddField nestedObjectPath={[objItem.name]} />
+          <AddField nestedObjectPath={path} />
         </styled.div>
       )}
 
@@ -187,7 +196,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS }) => {
           backgroundColor: genColor('background', 'default'),
           borderRadius: 8,
           gap: 16,
-          width: '94%',
+          width: `calc(100% - ${path.length * 3}%`,
           marginLeft: 'auto',
           marginBottom: 8,
           display: 'flex',
@@ -245,6 +254,21 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS }) => {
           </Dropdown.Items>
         </Dropdown.Root>
       </styled.div>
+      {objItem.type === 'object' &&
+        Object.keys(objItem.properties).map((key) => {
+          console.log('🚒', objItem.properties[key])
+
+          let x = objItem.properties[key]
+
+          return (
+            <NestedSchemaField
+              objPath={path}
+              objItem={x}
+              key={key}
+              ALL_FIELDS={ALL_FIELDS}
+            />
+          )
+        })}
     </div>
   )
 }
