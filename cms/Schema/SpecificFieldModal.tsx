@@ -212,6 +212,10 @@ export const SpecificFieldModal = ({
                         fields: {
                           [meta.name || meta.displayName.toLowerCase()]: {
                             type: fieldType.toLowerCase(),
+                            // label: meta.name || meta.displayName.toLowerCase(),
+                            // id: meta.name || meta.displayName.toLowerCase(),
+                            properties:
+                              fieldType.toLowerCase() === 'object' ? {} : null,
                             values:
                               fieldType.toLowerCase() === 'record' ? [] : null,
                             index: +thisSpecificField?.index || +newIndex,
@@ -224,6 +228,9 @@ export const SpecificFieldModal = ({
                     },
                   },
                 })
+              }
+
+              name: {
               }
 
               setOpenSpecificFieldModal(false)
