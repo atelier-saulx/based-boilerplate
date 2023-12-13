@@ -95,20 +95,38 @@ export const Explorer = ({}) => {
       })
     } else {
       // setArray((items) => {
-      const items = filterFolder(data.files, section) as any
+      if (id !== dragOverItem.current) {
+        const items = filterFolder(data.files, section) as any
 
-      const activeIndex = items?.findIndex((item) => item.id === id) as number
-      const overIndex = items?.findIndex(
-        (item) => item.id === dragOverItem.current
-      ) as number
+        const activeIndex = items?.findIndex((item) => item.id === id) as number
+        const overIndex = items?.findIndex(
+          (item) => item.id === dragOverItem.current
+        ) as number
+        // })
+        //this is fine for going up, but going down needs to be different
+
+        // console.log(activeIndex, overIndex)
+        items.splice(overIndex, 0, items[activeIndex])
+        items.splice(activeIndex + 1, 1)
+        for (const i in items) {
+          items[i].index = i
+        }
+        // console.log(items)
+        // for (const i in items) {
+        //   client.call('db:set', {
+        //     $id: items[i].id,
+        //     index: parseInt(items[i].index),
+        //   })
+        // }
+      } else return
+
+      // console.log(items)
+      // arrayMove(items, activeIndex, overIndex).map((v: any, i) => {
+      //   client.call('db:set', {
+      //     $id: v.id,
+      //     index: i,
+      //   })
       // })
-
-      arrayMove(items, activeIndex, overIndex).map((v: any, i) => {
-        client.call('db:set', {
-          $id: v.id,
-          index: i,
-        })
-      })
     }
   }
 
@@ -211,6 +229,16 @@ export const Explorer = ({}) => {
 
   return (
     <styled.div>
+      <Button
+        onClick={async () => {
+          await client.call('db:set', {
+            $id: 'us3532c825',
+            profileImg: '',
+          })
+        }}
+      >
+        Lol
+      </Button>
       <Breadcrumbs
         data={Object.fromEntries(path.map((i) => [i, i]))}
         onChange={(v) => {
