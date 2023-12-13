@@ -44,6 +44,11 @@ export const SchemaField = ({
       }}
     >
       <Dropdown.Root>
+        {item.type === 'object' && (
+          <styled.div style={{ position: 'absolute', right: 46, top: 11 }}>
+            <AddField nestedObjectPath={[item.name]} />
+          </styled.div>
+        )}
         <styled.div
           ref={setNodeRef}
           {...attributes}
@@ -73,11 +78,6 @@ export const SchemaField = ({
             },
           }}
         >
-          {item.type === 'object' && (
-            <styled.div style={{ position: 'absolute', right: 46, top: 11 }}>
-              <AddField nestedObjectPath={[item.name]} />
-            </styled.div>
-          )}
           <Row style={{ gap: 16 }}>
             {item.type === 'object' && (
               <Button
