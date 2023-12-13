@@ -207,6 +207,7 @@ export const SpecificFieldModal = ({
                         },
                       },
                     })
+                    // do some check here as welll
                   } else if (newArr[idx] !== 'properties') {
                     return (o[s] = {
                       type: 'object',
