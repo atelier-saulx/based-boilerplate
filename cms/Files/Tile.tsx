@@ -23,10 +23,9 @@ export const Tile = ({
   folder,
   setSelected,
   selected,
-  path,
-  setPath,
 }) => {
   const route = useRoute('[folder]')
+  const section = route.query.folder as string
 
   return (
     <styled.div
@@ -60,8 +59,9 @@ export const Tile = ({
             }
           : () => {
               if (folder) {
-                route.setQuery({ folder: id })
-                setPath([...path, id])
+                route.setQuery({
+                  folder: [...section.split('/'), id].join('/'),
+                })
               } else {
                 setOpenSidebar(true)
               }
