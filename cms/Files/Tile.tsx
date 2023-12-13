@@ -144,7 +144,7 @@ export const Tile = ({
             display: '-webkit-box',
           }}
         >
-          {name}
+          {name ?? id}
         </styled.div>
       )}
     </styled.div>
