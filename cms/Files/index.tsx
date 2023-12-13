@@ -8,6 +8,8 @@ import {
   useWindowResize,
   Toggle,
   useInfiniteQuery,
+  Modal,
+  Input,
 } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { Tile } from './Tile'
@@ -35,59 +37,83 @@ export const FileLibrary = () => {
 
   return (
     <styled.div style={{ padding: '24px 48px', width: '100%' }}>
-      <Row
-        style={{
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 32,
-        }}
-      >
-        <Text size={24} weight="strong" selectable="none">
-          Files
-          <Toggle value={!table} onChange={(v: any | string) => setTable(!v)} />
-        </Text>
-        <Button icon={<IconPlus />} ghost color="primary" size="small">
-          Add File
-        </Button>
-      </Row>
-      <styled.div>
-        {table ? (
-          <CmsTable
-            width={tableWidth}
-            height={tableHeight}
-            query={(offset, limit, sortOptions, filter) => {
-              return client.query('db', {
-                $id: 'root',
-                children: {
-                  $all: true,
-                  $list: {
-                    $sort: sortOptions,
-                    $offset: offset,
-                    $limit: 25,
-                    $find: {
-                      $filter: filter,
+      <Modal.Root>
+        <Row
+          style={{
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            marginBottom: 32,
+          }}
+        >
+          <Text size={24} weight="strong" selectable="none">
+            Files
+            <Toggle
+              value={!table}
+              onChange={(v: any | string) => setTable(!v)}
+            />
+          </Text>
+          <Modal.Trigger>
+            <Button icon={<IconPlus />} ghost color="primary" size="small">
+              Add File
+            </Button>
+          </Modal.Trigger>
+          <Modal.Content>
+            {({ close }) => {
+              return (
+                <>
+                  <Modal.Title>Upload File</Modal.Title>
+                  <Modal.Body>
+                    <Input type="file" onChange={close} />
+                  </Modal.Body>
+                  <Modal.Actions>
+                    <Button color="system" onClick={close}>
+                      Close
+                    </Button>
+                  </Modal.Actions>
+                </>
+              )
+            }}
+          </Modal.Content>
+        </Row>
+        <styled.div>
+          {table ? (
+            <CmsTable
+              width={tableWidth}
+              height={tableHeight}
+              query={(offset, limit, sortOptions, filter) => {
+                return client.query('db', {
+                  $id: 'root',
+                  children: {
+                    $all: true,
+                    $list: {
+                      $sort: sortOptions,
+                      $offset: offset,
+                      $limit: 25,
+                      $find: {
+                        $filter: filter,
+                      },
                     },
                   },
-                },
-              })
-            }}
-            getQueryItems={(d) => {
-              return d.children
-            }}
-            filter={{
-              $operator: '=',
-              $field: 'type',
-              $value: 'file',
-            }}
-            // queryId forces a rerender // subscription
-            queryId={'file' as string}
-            //  onRowClick={(row) => route.setQuery({ id: row.id })}
-            //  columnNamesInRightOrder={arr}
-          />
-        ) : (
-          <Explorer />
-        )}
-      </styled.div>
+                })
+              }}
+              getQueryItems={(d) => {
+                return d.children
+              }}
+              filter={{
+                $operator: '=',
+                $field: 'type',
+                $value: 'file',
+              }}
+              // queryId forces a rerender // subscription
+              queryId={'file' as string}
+              //  onRowClick={(row) => route.setQuery({ id: row.id })}
+              //  columnNamesInRightOrder={arr}
+            />
+          ) : (
+            <Explorer />
+          )}
+        </styled.div>
+      </Modal.Root>
     </styled.div>
   )
 }

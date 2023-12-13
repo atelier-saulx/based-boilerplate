@@ -39,19 +39,26 @@ const filterFolder = (data, rootId) => {
     }
   }
   for (const i in newArr) {
-    if (newArr[i].index) {
+    if (newArr[i].tempOrder) {
       indexed.push(newArr[i])
     } else {
       unindexed.push(newArr[i])
     }
   }
-  indexed.sort((a, b) => a?.index - b?.index)
+  indexed.sort(function (a, b) {
+    return a.tempOrder - b.tempOrder
+  })
+  console.log(indexed)
+
   return [...indexed, ...unindexed]
 }
 
 export const Explorer = ({}) => {
   const route = useRoute('[folder]')
   const path = route.query.folder as string
+  if (!path) {
+    route.setQuery({ folder: 'root' })
+  }
   const [section, setSection] = useState(path.split('/').slice(-1)[0])
 
   useEffect(() => {
@@ -69,7 +76,6 @@ export const Explorer = ({}) => {
       $all: true,
       parents: true,
       children: true,
-      order: true,
       $list: {
         //   $limit: 25,
         $find: {
@@ -90,7 +96,6 @@ export const Explorer = ({}) => {
     }
     const prefix = dragOverItem.current?.slice(0, 2)
     if (prefix === 'di' && id !== dragOverItem.current) {
-      // console.log(dragOverItem.current)
       const childData = await client.call('db:get', {
         $id: dragOverItem.current,
         children: true,
@@ -100,7 +105,6 @@ export const Explorer = ({}) => {
         children: [...childData.children, id],
       })
     } else {
-      // setArray((items) => {
       if (id !== dragOverItem.current) {
         const items = filterFolder(data.files, section) as any
 
@@ -112,30 +116,23 @@ export const Explorer = ({}) => {
         if (activeIndex > overIndex) {
           items.splice(overIndex, 0, items[activeIndex])
           items.splice(activeIndex + 1, 1)
-        }
-        if (activeIndex < overIndex) {
+        } else if (activeIndex < overIndex) {
           items.splice(overIndex + 1, 0, items[activeIndex])
         }
-        for (const i in items) {
-          items[i].index = i
-        }
-        // console.log(items)
-        // for (const i in items) {
-        //   client.call('db:set', {
-        //     $id: items[i].id,
-        //     index: parseInt(items[i].index),
-        //   })
-        // }
-      } else return
 
-      // console.log(items)
-      // arrayMove(items, activeIndex, overIndex).map((v: any, i) => {
-      //   client.call('db:set', {
-      //     $id: v.id,
-      //     index: i,
-      //   })
-      // })
+        for (const i in items) {
+          items[i].tempOrder = i
+        }
+
+        for (const i in items) {
+          client.call('db:set', {
+            $id: items[i].id,
+            tempOrder: items[i].tempOrder,
+          })
+        }
+      }
     }
+    dragOverItem.current = ''
   }
 
   const dragStart = (e, index) => {
@@ -146,7 +143,6 @@ export const Explorer = ({}) => {
     const otherItems = items.filter((_, i) => i !== index)
 
     const dragItem = items[index]
-    // console.log(dragItem.id)
 
     const dragBoundingRect = dragItem.getBoundingClientRect()
     items.forEach((item) => {
@@ -156,9 +152,7 @@ export const Explorer = ({}) => {
       item.style.position = 'aboslute'
     })
 
-    // dragItem.style.position = 'fixed'
     dragItem.style.width = dragBoundingRect.width + 'px'
-
     dragItem.style.height = dragBoundingRect.height + 'px'
     dragItem.style.top = dragBoundingRect.top + 'px'
     dragItem.style.left = dragBoundingRect.left + 'px'
@@ -216,11 +210,17 @@ export const Explorer = ({}) => {
   const [formFieldChanges, setFormFieldChanges] = useState<any>({})
   const client = useClient()
 
-  // console.log(section)
-
   const { data: schema, loading } = useQuery('db:schema')
 
-  const [schemaData, setSchemaData] = useState()
+  let schemaFields = schema?.types.file.fields
+  let filteredSchemaFields = {}
+  if (schema) {
+    for (const [key, value] of Object.entries(schemaFields)) {
+      if (!FILTER_FIELDS.includes(key)) {
+        filteredSchemaFields[key] = value
+      }
+    }
+  }
 
   const { data: fileData, loading: loadingFile } = useQuery('db', {
     $id: selected,
@@ -229,16 +229,6 @@ export const Explorer = ({}) => {
 
   return (
     <styled.div>
-      <Button
-        onClick={async () => {
-          await client.call('db:set', {
-            $id: 'us3532c825',
-            profileImg: '',
-          })
-        }}
-      >
-        Lol
-      </Button>
       <Breadcrumbs
         data={Object.fromEntries(path.split('/').map((i) => [i, i]))}
         onChange={(v) => {
@@ -306,7 +296,7 @@ export const Explorer = ({}) => {
               }}
               values={{ ...fileData, ...formFieldChanges }}
               alwaysAccept
-              config={schemaData}
+              config={schemaFields}
             />
           </SidePanel.Body>
           <SidePanel.Actions>

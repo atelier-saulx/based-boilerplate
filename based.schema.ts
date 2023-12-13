@@ -7,10 +7,16 @@ export default {
         index: {
           type: 'number',
         },
+        tempOrder: {
+          type: 'string',
+        },
       },
     },
     folder: {
       fields: {
+        tempOrder: {
+          type: 'string',
+        },
         name: {
           type: 'string',
         },
