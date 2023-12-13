@@ -30,6 +30,7 @@ export const Tile = ({
   return (
     <styled.div
       style={{
+        cursor: 'pointer',
         height: '120px',
         width: '90px',
         display: 'flex',

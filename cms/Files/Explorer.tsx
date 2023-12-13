@@ -126,6 +126,7 @@ export const Explorer = ({}) => {
         for (const i in items) {
           client.call('db:set', {
             $id: items[i].id,
+            //temporder should be index type instead but for some reason this doenst want to cooperate if its a string???
             tempOrder: items[i].tempOrder,
           })
         }
@@ -200,6 +201,7 @@ export const Explorer = ({}) => {
         item.style.background = ''
       })
       dragItem.style = ''
+      dragItem.style.cursor = 'pointer'
       handleDrop(dragItem.id)
     }
   }
