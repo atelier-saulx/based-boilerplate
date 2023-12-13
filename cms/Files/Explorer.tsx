@@ -126,6 +126,7 @@ export const Explorer = ({}) => {
         for (const i in items) {
           client.call('db:set', {
             $id: items[i].id,
+            //temporder should be index type instead but for some reason this doenst want to cooperate if its a string???
             tempOrder: items[i].tempOrder,
           })
         }
@@ -200,6 +201,14 @@ export const Explorer = ({}) => {
         item.style.background = ''
       })
       dragItem.style = ''
+      dragItem.style.display = 'flex'
+      dragItem.style.alignitems = 'center'
+      dragItem.style.justifycontent = 'center'
+
+      // display: 'flex',
+      // alignItems: 'center',
+      // justifyContent: 'center',
+      dragItem.style.cursor = 'pointer'
       handleDrop(dragItem.id)
     }
   }
@@ -253,7 +262,7 @@ export const Explorer = ({}) => {
           // flexWrap: 'wrap',
           gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 100px))',
           height: '100%',
-          gap: 15,
+          gap: 30,
         }}
       >
         {data?.files?.length > 0 &&

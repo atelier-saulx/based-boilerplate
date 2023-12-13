@@ -30,10 +30,13 @@ export const Tile = ({
   return (
     <styled.div
       style={{
-        height: '120px',
-        width: '90px',
+        cursor: 'pointer',
+        height: '130px',
+        maxHeight: '130px',
+        width: '120px',
         display: 'flex',
         alignItems: 'center',
+        // overflow: 'hidden',
         // justifyContent: 'center',
         flexDirection: 'column',
         padding: 8,
@@ -76,7 +79,7 @@ export const Tile = ({
           height: 80,
           width: '100%',
           '& svg': {
-            width: '80px',
+            width: '100px',
             height: '80px',
             background: `center center no-repeat url("${src}")`,
             backgroundSize: 'contain',
@@ -91,7 +94,23 @@ export const Tile = ({
           <IconFile style={{ width: '100%', height: '100%' }} />
         )}
       </styled.div>
-      <Text selectable="none">{name}</Text>
+      <styled.div
+        selectable="none"
+        style={{
+          fontSize: 14,
+          textAlign: 'center',
+          // width: '100%',
+          overflow: 'hidden',
+          // flexShrink:
+          minHeight: '30px',
+          // border: '1px solid red',
+          WebkitBoxOrient: 'vertical',
+          WebkitLineClamp: 2,
+          display: '-webkit-box',
+        }}
+      >
+        {name}
+      </styled.div>
     </styled.div>
   )
 }
