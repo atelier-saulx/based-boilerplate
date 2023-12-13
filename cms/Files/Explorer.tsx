@@ -48,7 +48,6 @@ const filterFolder = (data, rootId) => {
   indexed.sort(function (a, b) {
     return a.tempOrder - b.tempOrder
   })
-  console.log(indexed)
 
   return [...indexed, ...unindexed]
 }
@@ -242,7 +241,6 @@ export const Explorer = ({}) => {
               newArr.push(pathArr[i])
             }
           }
-          console.log(newArr)
 
           route.setQuery({ folder: newArr.join('/') })
         }}
