@@ -9,6 +9,7 @@ type SpecificFieldModalProps = {
   field: string
   setOpenSpecificFieldModal: (v: boolean) => void
   editField?: boolean
+  nestedObjectPath?: string[]
 }
 
 const metaReducer = (state, action) => {
@@ -29,6 +30,7 @@ export const SpecificFieldModal = ({
   field,
   setOpenSpecificFieldModal,
   editField,
+  nestedObjectPath,
 }: SpecificFieldModalProps) => {
   const [meta, setMeta] = useReducer(metaReducer, {})
   const [fieldType, setFieldType] = useState(field)
@@ -230,14 +232,7 @@ export const SpecificFieldModal = ({
                 })
               }
 
-              name: {
-              }
-
               setOpenSpecificFieldModal(false)
-            }
-
-            // TODO Edit this in the schema db
-            if (meta.displayName) {
             }
           }}
           color="primary"
