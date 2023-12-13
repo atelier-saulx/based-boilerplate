@@ -52,11 +52,26 @@ export const FileLibrary = () => {
               onChange={(v: any | string) => setTable(!v)}
             />
           </Text>
-          <Modal.Trigger>
-            <Button icon={<IconPlus />} ghost color="primary" size="small">
-              Add File
+          <div>
+            <Button
+              onClick={async () => {
+                await client.call('db:set', {
+                  type: 'folder',
+                })
+              }}
+              icon={<IconPlus />}
+              ghost
+              color="primary"
+              size="small"
+            >
+              Add Folder
             </Button>
-          </Modal.Trigger>
+            <Modal.Trigger>
+              <Button icon={<IconPlus />} ghost color="primary" size="small">
+                Add File
+              </Button>
+            </Modal.Trigger>
+          </div>
           <Modal.Content>
             {({ close }) => {
               return (

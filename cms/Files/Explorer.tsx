@@ -205,9 +205,6 @@ export const Explorer = ({}) => {
       dragItem.style.alignitems = 'center'
       dragItem.style.justifycontent = 'center'
 
-      // display: 'flex',
-      // alignItems: 'center',
-      // justifyContent: 'center',
       dragItem.style.cursor = 'pointer'
       handleDrop(dragItem.id)
     }

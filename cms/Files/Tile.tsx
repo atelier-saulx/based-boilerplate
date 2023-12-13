@@ -1,9 +1,10 @@
 import React, { useState } from 'react'
 import { styled } from 'inlines'
-import { IconFile, IconFolder, Input, Text, color } from '@based/ui'
+import { Dropdown, IconFile, IconFolder, Input, Text, color } from '@based/ui'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useRoute } from 'kabouter'
+import { useClient } from '@based/react'
 
 const isImage = (src) => {
   if (!src) return
@@ -18,14 +19,17 @@ const isImage = (src) => {
 }
 
 export const Tile = ({
-  item: { name, src, id },
+  item: { name: propName, src, id },
   setOpenSidebar,
   folder,
   setSelected,
   selected,
 }) => {
+  const client = useClient()
   const route = useRoute('[folder]')
   const section = route.query.folder as string
+  const [name, setName] = useState(propName)
+  const [edit, setEdit] = useState(false)
 
   return (
     <styled.div
@@ -94,23 +98,55 @@ export const Tile = ({
           <IconFile style={{ width: '100%', height: '100%' }} />
         )}
       </styled.div>
-      <styled.div
-        selectable="none"
-        style={{
-          fontSize: 14,
-          textAlign: 'center',
-          // width: '100%',
-          overflow: 'hidden',
-          // flexShrink:
-          minHeight: '30px',
-          // border: '1px solid red',
-          WebkitBoxOrient: 'vertical',
-          WebkitLineClamp: 2,
-          display: '-webkit-box',
-        }}
-      >
-        {name}
-      </styled.div>
+      {edit ? (
+        <styled.textarea
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+          }}
+          onBlur={async () => {
+            await client.call('db:set', {
+              $id: id,
+              name: name,
+            })
+            setEdit(false)
+          }}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          style={{
+            all: 'unset',
+            cursor: 'text',
+            width: '120px',
+            fontSize: 14,
+            textAlign: 'center',
+            minHeight: '60px',
+          }}
+        />
+      ) : (
+        <styled.div
+          onClick={(e) => {
+            e.preventDefault()
+            e.stopPropagation()
+            setEdit(true)
+          }}
+          selectable="none"
+          style={{
+            minWidth: '100%',
+            fontSize: 14,
+            textAlign: 'center',
+            // width: '100%',
+            overflow: 'hidden',
+            // flexShrink:
+            minHeight: '30px',
+            // border: '1px solid red',
+            WebkitBoxOrient: 'vertical',
+            WebkitLineClamp: 2,
+            display: '-webkit-box',
+          }}
+        >
+          {name}
+        </styled.div>
+      )}
     </styled.div>
   )
 }
