@@ -35,7 +35,7 @@ export const App = () => {
 
   const [selectedLang, setSelectedLang] = useState(schema?.languages[0])
 
-  console.log(schema, 'Schema')
+  // console.log(schema, 'Schema')
 
   return (
     <styled.div

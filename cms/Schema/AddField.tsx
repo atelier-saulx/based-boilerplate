@@ -123,10 +123,13 @@ export const SCHEMA_FIELDS = [
   },
 ]
 
-const SelectField = ({ label, description, icon, color, onClick }) => {
+export const SelectField = ({ label, description, icon, color, onClick }) => {
   return (
     <styled.div
-      onClick={onClick}
+      onClick={() => {
+        console.log('XXX')
+        onClick()
+      }}
       style={{
         display: 'inline-block',
         width: '50%',
@@ -162,7 +165,11 @@ const SelectField = ({ label, description, icon, color, onClick }) => {
   )
 }
 
-export const AddField = () => {
+type AddFieldProps = {
+  nestedObjectPath?: string[]
+}
+
+export const AddField = ({ nestedObjectPath }: AddFieldProps) => {
   const [searchValue, setSearchValue] = useState('')
   const [openSpecificFieldModal, setOpenSpecificFieldModal] = useState(false)
   const [selectedItem, setSelectedItem] = useState<{
@@ -179,7 +186,11 @@ export const AddField = () => {
     <>
       <Modal.Root>
         <Modal.Trigger>
-          <Button icon={<IconPlus />} size="small">
+          <Button
+            icon={<IconPlus />}
+            size="small"
+            light={nestedObjectPath ? true : false}
+          >
             Add Field
           </Button>
         </Modal.Trigger>
@@ -187,7 +198,17 @@ export const AddField = () => {
           {({ close }) => {
             return (
               <>
-                <Modal.Title>Add a new field to your schema type.</Modal.Title>
+                {nestedObjectPath ? (
+                  <Modal.Title>
+                    Add a new field to{' '}
+                    {nestedObjectPath.map((item) => item + ' ')}
+                  </Modal.Title>
+                ) : (
+                  <Modal.Title>
+                    Add a new field to your schema type.
+                  </Modal.Title>
+                )}
+
                 <Input
                   type="search"
                   placeholder="Search for a field..."
@@ -208,6 +229,8 @@ export const AddField = () => {
                     ).map((item, idx) => (
                       <SelectField
                         onClick={() => {
+                          console.log('snupr 🚛')
+
                           close()
                           setSelectedItem({
                             label: item.label,
@@ -231,7 +254,7 @@ export const AddField = () => {
         </Modal.Content>
       </Modal.Root>
 
-      {/* Edit  Modal */}
+      {/* Adding field  Modal */}
       <Modal.Root
         open={openSpecificFieldModal}
         onOpenChange={setOpenSpecificFieldModal}
@@ -249,9 +272,11 @@ export const AddField = () => {
               Add new {selectedItem.label}
             </Row>
           </Modal.Title>
+          {/* get this modal */}
           <SpecificFieldModal
             field={selectedItem.label}
             setOpenSpecificFieldModal={setOpenSpecificFieldModal}
+            nestedObjectPath={nestedObjectPath}
           />
         </Modal.Content>
       </Modal.Root>

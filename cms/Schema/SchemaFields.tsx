@@ -53,6 +53,7 @@ type SchemaItem = {
   id: string
   label: string
   index: number
+  properties: {}
 }
 type unindexedSchemaItem = Omit<SchemaItem, 'index'>
 
@@ -70,6 +71,7 @@ const parseSchema = (schema, routeType) => {
         type: type[i].type,
         label: i,
         index: +type[i].index,
+        properties: type[i].properties,
       })
     } else {
       array.push({
@@ -78,6 +80,7 @@ const parseSchema = (schema, routeType) => {
         id: i,
         type: type[i].type,
         label: i,
+        properties: type[i].properties,
       })
     }
   }
@@ -134,7 +137,7 @@ export const SchemaFields = () => {
   }, [schema, routeType])
 
   return (
-    <div style={{}}>
+    <div style={{ maxWidth: 676 }}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -154,12 +157,12 @@ export const SchemaFields = () => {
             array
               ?.filter((item) =>
                 !showSystemFields
-                  ? !SYSTEM_FIELDS_LABELS.includes(item.name.toLowerCase())
+                  ? !SYSTEM_FIELDS_LABELS.includes(item?.name?.toLowerCase())
                   : item
               )
-              .map((item, i) => {
-                let index = ALL_FIELDS.findIndex(
-                  (x) => x.label?.toLowerCase() === item.type.toLowerCase()
+              ?.map((item, i) => {
+                let index = ALL_FIELDS?.findIndex(
+                  (x) => x?.label?.toLowerCase() === item?.type?.toLowerCase()
                 )
                 return (
                   <SchemaField
@@ -172,45 +175,6 @@ export const SchemaFields = () => {
                     setOpenEditModal={setOpenEditModal}
                     setOpenDeleteModal={setOpenDeleteModal}
                     key={item.id}
-                    onClick={async () => {
-                      const fields = schema?.types[routeType as string].fields
-
-                      // delete fields[item.name]
-
-                      // console.log('fields now --.', fields)
-
-                      // const path = field.split('.')
-                      // const currentFields =
-                      //   schema.types[routeType as string].fields
-                      // const fields = {}
-                      // let from = currentFields
-                      // let dest = fields
-                      // let i = 0
-                      // const l = path.length
-
-                      // while (i < l) {
-                      //   const key = path[i++]
-                      //   dest[key] = { ...from[key] }
-                      //   dest = dest[key]
-                      //   // @ts-ignore
-                      //   from = from[key]
-                      // }
-
-                      // // @ts-ignore
-                      // dest.$delete = true
-
-                      await client.call('db:set-schema', {
-                        mutate: true,
-                        schema: {
-                          types: {
-                            // @ts-ignore
-                            [routeType]: {
-                              fields,
-                            },
-                          },
-                        },
-                      })
-                    }}
                   />
                 )
               })}
