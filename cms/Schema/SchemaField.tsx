@@ -137,7 +137,7 @@ export const SchemaField = ({
 
       {item.type === 'object' &&
         Object.keys(item.properties).map((key) => {
-          console.log('🚒', item.properties[key])
+          // console.log('🚒', item.properties[key])
 
           let objItem = item.properties[key]
 
@@ -149,6 +149,7 @@ export const SchemaField = ({
               objItem={objItem}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
+              deepness={1}
             />
             // <SchemaField
             //   id={objItem?.id}
@@ -167,19 +168,20 @@ export const SchemaField = ({
   )
 }
 
-const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath }) => {
-  console.log('🚑', objItem)
+const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
+  // console.log('🚑', objItem)
   // console.log(ALL_FIELDS)
 
+  let deep = deepness + 1
+
   let path = objPath
-  path.push(objItem.meta.name || objItem?.meta.displayName)
-  console.log('object path 🚀', path)
+  objItem.type === 'object' &&
+    path.push(objItem.meta.name || objItem?.meta.displayName)
+
+  console.log('object path 🚀 from ', objItem.meta.name, path, path.length)
 
   const labels = ALL_FIELDS.map((item) => item.label.toLowerCase())
   const index = labels.indexOf(objItem.type)
-  // console.log(index)
-
-  // TODO NESTED OBJ PATH string[]
 
   return (
     <div style={{ position: 'relative' }}>
@@ -196,7 +198,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath }) => {
           backgroundColor: genColor('background', 'default'),
           borderRadius: 8,
           gap: 16,
-          width: `calc(100% - ${path.length * 3}%`,
+          width: `calc(100% - ${deep * 3}%`,
           marginLeft: 'auto',
           marginBottom: 8,
           display: 'flex',
@@ -256,7 +258,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath }) => {
       </styled.div>
       {objItem.type === 'object' &&
         Object.keys(objItem.properties).map((key) => {
-          console.log('🚒', objItem.properties[key])
+          // console.log('🚒', objItem.properties[key])
 
           let x = objItem.properties[key]
 
@@ -266,6 +268,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath }) => {
               objItem={x}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
+              deepness={deep}
             />
           )
         })}
