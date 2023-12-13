@@ -34,7 +34,7 @@ export const Tile = ({
         width: '90px',
         display: 'flex',
         alignItems: 'center',
-        justifyContent: 'center',
+        // justifyContent: 'center',
         flexDirection: 'column',
         padding: 8,
         borderRadius: 12,
