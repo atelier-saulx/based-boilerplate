@@ -51,13 +51,19 @@ const filterFolder = (data, rootId) => {
 
 export const Explorer = ({}) => {
   const route = useRoute('[folder]')
-  const section = route.query.folder
+  const path = route.query.folder as string
+  const [section, setSection] = useState(path.split('/').slice(-1)[0])
+
+  useEffect(() => {
+    setSection(path.split('/').slice(-1)[0])
+  }, [path])
+
   const dragOverItem = useRef<string>()
   const containerRef = useRef<any>()
 
   const { data, loading: dataLoading } = useQuery('db', {
-    //@ts-ignore
     // $id: section.length > 0 ? section : 'root',
+    //@ts-ignore
     $id: section,
     files: {
       $all: true,
@@ -219,14 +225,6 @@ export const Explorer = ({}) => {
     $all: true,
   })
 
-  // filterFolder(data?.files, section)
-  const [path, setPath] = useState(['root'])
-
-  // useEffect(() => {
-  //   console.log('change')
-  //   setArray(data)
-  // }, [data])
-
   return (
     <styled.div>
       <Button
@@ -240,28 +238,23 @@ export const Explorer = ({}) => {
         Lol
       </Button>
       <Breadcrumbs
-        data={Object.fromEntries(path.map((i) => [i, i]))}
+        data={Object.fromEntries(path.split('/').map((i) => [i, i]))}
         onChange={(v) => {
-          route.setQuery({ folder: v })
-          setPath(() => {
-            const newArr = [] as string[]
-            for (const i in path) {
-              if (path[i] === v) {
-                newArr.push(path[i])
-                break
-              }
-              newArr.push(path[i])
+          const pathArr = path.split('/')
+          const newArr = [] as string[]
+          for (const i in pathArr) {
+            if (pathArr[i] === v) {
+              newArr.push(pathArr[i])
+              break
+            } else {
+              newArr.push(pathArr[i])
             }
-            // console.log(newArr)
-            return newArr
-          })
+          }
+          console.log(newArr)
+
+          route.setQuery({ folder: newArr.join('/') })
         }}
       />
-      <Text onClick={() => route.setQuery({ folder: 'root' })}>
-        {/* {section as string} */}
-
-        {/* {path.map((i) => [i, i])} */}
-      </Text>
 
       <styled.div
         ref={containerRef}
@@ -291,8 +284,6 @@ export const Explorer = ({}) => {
                   folder={item.id?.slice(0, 2) === 'di'}
                   selected={item.id === selected}
                   item={item}
-                  path={path}
-                  setPath={setPath}
                   setOpenSidebar={setOpenSidebar}
                   setSelected={setSelected}
                 />
