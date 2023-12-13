@@ -143,25 +143,16 @@ export const SchemaField = ({
 
           return (
             <NestedSchemaField
-              objPath={[
-                item.meta.name || item.meta?.displayName?.toLowerCase(),
-              ]}
+              objPath={
+                objItem.type === 'object' && [
+                  item.meta.name || item.meta?.displayName?.toLowerCase(),
+                ]
+              }
               objItem={objItem}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
               deepness={1}
             />
-            // <SchemaField
-            //   id={objItem?.id}
-            //   ALL_FIELDS={ALL_FIELDS}
-            //   SYSTEM_FIELDS_LABELS={SYSTEM_FIELDS_LABELS}
-            //   index={index}
-            //   item={objItem}
-            //   setItemToEdit={setItemToEdit}
-            //   setOpenEditModal={setOpenEditModal}
-            //   setOpenDeleteModal={setOpenDeleteModal}
-            //   key={key}
-            // />
           )
         })}
     </div>
@@ -175,10 +166,12 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
   let deep = deepness + 1
 
   let path = objPath
-  objItem.type === 'object' &&
-    path.push(objItem.meta.name || objItem?.meta.displayName)
+  objItem.type === 'object'
+    ? path.push(objItem.meta.name || objItem?.meta.displayName)
+    : null
 
-  console.log('object path 🚀 from ', objItem.meta.name, path, path.length)
+  console.log(' 🚀 from ', objItem.meta.name, path, path.length)
+  console.log('deepness', deep)
 
   const labels = ALL_FIELDS.map((item) => item.label.toLowerCase())
   const index = labels.indexOf(objItem.type)
@@ -264,7 +257,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
 
           return (
             <NestedSchemaField
-              objPath={path}
+              objPath={[...path]}
               objItem={x}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
