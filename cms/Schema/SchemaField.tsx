@@ -9,6 +9,8 @@ import {
   Button,
   IconDragDropVertical,
   IconDragDropHorizontal,
+  IconPlus,
+  Row,
 } from '@based/ui'
 import { styled } from 'inlines'
 import { useSortable } from '@dnd-kit/sortable'
@@ -50,6 +52,7 @@ export const SchemaField = ({
           marginBottom: 8,
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'space-between',
           opacity: SYSTEM_FIELDS_LABELS.includes(item.name.toLowerCase())
             ? 0.56
             : 1,
@@ -60,44 +63,53 @@ export const SchemaField = ({
           },
         }}
       >
-        <IconDragDropHorizontal style={{ marginLeft: 8 }} />
-        <Thumbnail
-          size="small"
-          light
-          icon={ALL_FIELDS[index].icon}
-          color={ALL_FIELDS[index].color as any}
-        />
-        <Text weight="medium">{item.name}</Text>
-        {item?.description && <Text light>{item?.description}</Text>}
-        <Badge color={ALL_FIELDS[index].color as any} light>
-          {item.type}
-        </Badge>
-
-        {item?.meta?.format && <Badge light>{item.meta.format}</Badge>}
-        {item?.meta?.contentMediaEncoding && (
-          <Badge light color="blue">
-            {item.meta.contentMediaEncoding}
-          </Badge>
-        )}
-        {item?.meta?.display && (
-          <Badge light color="magenta">
-            {item.meta.display}
-          </Badge>
-        )}
-
-        <Dropdown.Trigger>
-          <Button
-            onClick={(e) => {
-              e.preventDefault()
-              e.stopPropagation()
-            }}
+        <Row style={{ gap: 12 }}>
+          <IconDragDropHorizontal style={{ marginLeft: 8 }} />
+          <Thumbnail
             size="small"
-            disabled={SYSTEM_FIELDS_LABELS.includes(item.name.toLowerCase())}
-            ghost
-            icon={<IconMoreHorizontal />}
-            style={{ marginLeft: 'auto' }}
+            light
+            icon={ALL_FIELDS[index].icon}
+            color={ALL_FIELDS[index].color as any}
           />
-        </Dropdown.Trigger>
+          <Text weight="medium">{item.name}</Text>
+          {item?.description && <Text light>{item?.description}</Text>}
+          <Badge color={ALL_FIELDS[index].color as any} light>
+            {item.type}
+          </Badge>
+
+          {item?.meta?.format && <Badge light>{item.meta.format}</Badge>}
+          {item?.meta?.contentMediaEncoding && (
+            <Badge light color="blue">
+              {item.meta.contentMediaEncoding}
+            </Badge>
+          )}
+          {item?.meta?.display && (
+            <Badge light color="magenta">
+              {item.meta.display}
+            </Badge>
+          )}
+        </Row>
+
+        <Row style={{ gap: 12 }}>
+          {item.type === 'object' && (
+            <Button size="small" light icon={<IconPlus />}>
+              Add Field
+            </Button>
+          )}
+
+          <Dropdown.Trigger>
+            <Button
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+              }}
+              size="small"
+              disabled={SYSTEM_FIELDS_LABELS.includes(item.name.toLowerCase())}
+              ghost
+              icon={<IconMoreHorizontal />}
+            />
+          </Dropdown.Trigger>
+        </Row>
       </styled.div>
       <Dropdown.Items>
         <Dropdown.Item

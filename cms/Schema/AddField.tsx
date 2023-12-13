@@ -231,7 +231,7 @@ export const AddField = () => {
         </Modal.Content>
       </Modal.Root>
 
-      {/* Edit  Modal */}
+      {/* Adding field  Modal */}
       <Modal.Root
         open={openSpecificFieldModal}
         onOpenChange={setOpenSpecificFieldModal}
@@ -249,6 +249,7 @@ export const AddField = () => {
               Add new {selectedItem.label}
             </Row>
           </Modal.Title>
+          {/* get this modal */}
           <SpecificFieldModal
             field={selectedItem.label}
             setOpenSpecificFieldModal={setOpenSpecificFieldModal}
