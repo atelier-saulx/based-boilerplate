@@ -255,7 +255,7 @@ export const Explorer = ({}) => {
           // flexWrap: 'wrap',
           gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 100px))',
           height: '100%',
-          gap: 15,
+          gap: 30,
         }}
       >
         {data?.files?.length > 0 &&
