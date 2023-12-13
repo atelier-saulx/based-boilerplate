@@ -200,7 +200,7 @@ export const SpecificFieldModal = ({
                           fieldType.toLowerCase() === 'object' ? {} : null,
                         values:
                           fieldType.toLowerCase() === 'record' ? [] : null,
-                        //  index: +thisSpecificField?.index || +newIndex,
+                        index: thisSpecificField?.index || newIndex,
                         meta: {
                           ...newMeta,
                           name: meta.name || meta.displayName.toLowerCase(),
@@ -211,11 +211,11 @@ export const SpecificFieldModal = ({
                   } else if (newArr[idx] !== 'properties') {
                     return (o[s] = {
                       type: 'object',
+                      index: thisSpecificField?.index || newIndex,
                     })
                   } else {
                     return (o[s] = {
-                      // meta: { name: s },
-                      // type: fieldType.toLowerCase(),
+                      index: thisSpecificField?.index || newIndex,
                     })
                   }
                 }, nestedFields)
@@ -236,7 +236,7 @@ export const SpecificFieldModal = ({
                   // id: meta.name || meta.displayName.toLowerCase(),
                   properties: fieldType.toLowerCase() === 'object' ? {} : null,
                   values: fieldType.toLowerCase() === 'record' ? [] : null,
-                  index: +thisSpecificField?.index || +newIndex,
+                  index: thisSpecificField?.index || newIndex,
                   meta: {
                     ...newMeta,
                     name: meta.name || meta.displayName.toLowerCase(),

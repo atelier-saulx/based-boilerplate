@@ -80,6 +80,7 @@ const parseSchema = (schema, routeType) => {
         id: i,
         type: type[i].type,
         label: i,
+        // index: +type[i].index || i,
         properties: type[i].properties,
       })
     }
@@ -94,6 +95,7 @@ const parseItems = (items, schema, routeType) => {
   const schemaType = schema.types[routeType as string].fields
   const object = {}
   for (const i in items) {
+    console.log('I', i, 'in items,', items)
     const type = items[i]
     object[type.name] = {
       ...schemaType[type.name],
@@ -137,7 +139,7 @@ export const SchemaFields = () => {
   }, [schema, routeType])
 
   return (
-    <div style={{ maxWidth: 676 }}>
+    <div style={{ maxWidth: 676, margin: '34px auto' }}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}

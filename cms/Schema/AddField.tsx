@@ -127,7 +127,6 @@ export const SelectField = ({ label, description, icon, color, onClick }) => {
   return (
     <styled.div
       onClick={() => {
-        console.log('XXX')
         onClick()
       }}
       style={{
