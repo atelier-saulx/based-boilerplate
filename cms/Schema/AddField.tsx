@@ -123,10 +123,13 @@ export const SCHEMA_FIELDS = [
   },
 ]
 
-const SelectField = ({ label, description, icon, color, onClick }) => {
+export const SelectField = ({ label, description, icon, color, onClick }) => {
   return (
     <styled.div
-      onClick={onClick}
+      onClick={() => {
+        console.log('XXX')
+        onClick()
+      }}
       style={{
         display: 'inline-block',
         width: '50%',
@@ -226,6 +229,8 @@ export const AddField = ({ nestedObjectPath }: AddFieldProps) => {
                     ).map((item, idx) => (
                       <SelectField
                         onClick={() => {
+                          console.log('snupr 🚛')
+
                           close()
                           setSelectedItem({
                             label: item.label,

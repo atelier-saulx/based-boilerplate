@@ -171,11 +171,78 @@ export const SpecificFieldModal = ({
 
             console.log('ORB', fieldType.toLowerCase())
 
-            //  routeType
             if (meta.displayName) {
               const newMeta = Object.fromEntries(
                 Object.entries(meta).filter(([_, v]) => v != false)
               )
+
+              // NESTED OBJECT USE nestedFields
+              let nestedFields = {}
+              if (nestedObjectPath) {
+                let newArr: string[] = []
+
+                nestedObjectPath.map((item) => {
+                  newArr.push(item)
+                  newArr.push('properties')
+                })
+                // build object path
+
+                newArr.reduce(function (o, s, idx) {
+                  console.log('IDX?', idx)
+                  if (idx === newArr.length - 1) {
+                    // add the fields to the last one
+                    return (o[s] = {
+                      [meta.name || meta.displayName?.toLowerCase()]: {
+                        type: fieldType.toLowerCase(),
+                        // label: meta.name || meta.displayName.toLowerCase(),
+                        // id: meta.name || meta.displayName.toLowerCase(),
+                        properties:
+                          fieldType.toLowerCase() === 'object' ? {} : null,
+                        values:
+                          fieldType.toLowerCase() === 'record' ? [] : null,
+                        //  index: +thisSpecificField?.index || +newIndex,
+                        meta: {
+                          ...newMeta,
+                          name: meta.name || meta.displayName.toLowerCase(),
+                        },
+                      },
+                    })
+                  } else if (newArr[idx] !== 'properties') {
+                    return (o[s] = {
+                      type: 'object',
+                    })
+                  } else {
+                    return (o[s] = {
+                      // meta: { name: s },
+                      // type: fieldType.toLowerCase(),
+                    })
+                  }
+                }, nestedFields)
+
+                console.log(nestedFields, '🚁')
+              }
+
+              // ELSE USE NORMAL FIELDS IN SCHEMA
+              let fields = {
+                // [nestedObjectPath[0]]: {
+                //    properties : {
+                //
+                //  }
+                // }
+                [meta.name || meta.displayName.toLowerCase()]: {
+                  type: fieldType.toLowerCase(),
+                  // label: meta.name || meta.displayName.toLowerCase(),
+                  // id: meta.name || meta.displayName.toLowerCase(),
+                  properties: fieldType.toLowerCase() === 'object' ? {} : null,
+                  values: fieldType.toLowerCase() === 'record' ? [] : null,
+                  index: +thisSpecificField?.index || +newIndex,
+                  meta: {
+                    ...newMeta,
+                    name: meta.name || meta.displayName.toLowerCase(),
+                  },
+                },
+              }
+
               if (fieldType === 'Rich Text') {
                 await client.call('db:set-schema', {
                   mutate: true,
@@ -211,21 +278,7 @@ export const SpecificFieldModal = ({
                   schema: {
                     types: {
                       [routeType]: {
-                        fields: {
-                          [meta.name || meta.displayName.toLowerCase()]: {
-                            type: fieldType.toLowerCase(),
-                            // label: meta.name || meta.displayName.toLowerCase(),
-                            // id: meta.name || meta.displayName.toLowerCase(),
-                            properties:
-                              fieldType.toLowerCase() === 'object' ? {} : null,
-                            values:
-                              fieldType.toLowerCase() === 'record' ? [] : null,
-                            index: +thisSpecificField?.index || +newIndex,
-                            meta: {
-                              ...newMeta,
-                            },
-                          },
-                        },
+                        fields: nestedObjectPath ? nestedFields : fields,
                       },
                     },
                   },

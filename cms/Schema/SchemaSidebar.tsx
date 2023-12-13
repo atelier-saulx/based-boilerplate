@@ -36,7 +36,7 @@ export const SchemaSidebar = () => {
       })
   }
 
-  console.log('SCHEMA', schema)
+  // console.log('SCHEMA', schema)
 
   return (
     <Menu

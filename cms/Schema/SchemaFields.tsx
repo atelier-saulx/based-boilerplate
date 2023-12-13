@@ -137,7 +137,7 @@ export const SchemaFields = () => {
   }, [schema, routeType])
 
   return (
-    <div style={{}}>
+    <div style={{ maxWidth: 676 }}>
       <DndContext
         sensors={sensors}
         collisionDetection={closestCenter}
@@ -157,12 +157,12 @@ export const SchemaFields = () => {
             array
               ?.filter((item) =>
                 !showSystemFields
-                  ? !SYSTEM_FIELDS_LABELS.includes(item.name.toLowerCase())
+                  ? !SYSTEM_FIELDS_LABELS.includes(item?.name?.toLowerCase())
                   : item
               )
-              .map((item, i) => {
-                let index = ALL_FIELDS.findIndex(
-                  (x) => x.label?.toLowerCase() === item.type.toLowerCase()
+              ?.map((item, i) => {
+                let index = ALL_FIELDS?.findIndex(
+                  (x) => x?.label?.toLowerCase() === item?.type?.toLowerCase()
                 )
                 return (
                   <SchemaField
