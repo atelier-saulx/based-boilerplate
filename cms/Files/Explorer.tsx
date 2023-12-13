@@ -108,12 +108,14 @@ export const Explorer = ({}) => {
         const overIndex = items?.findIndex(
           (item) => item.id === dragOverItem.current
         ) as number
-        // })
-        //this is fine for going up, but going down needs to be different
 
-        // console.log(activeIndex, overIndex)
-        items.splice(overIndex, 0, items[activeIndex])
-        items.splice(activeIndex + 1, 1)
+        if (activeIndex > overIndex) {
+          items.splice(overIndex, 0, items[activeIndex])
+          items.splice(activeIndex + 1, 1)
+        }
+        if (activeIndex < overIndex) {
+          items.splice(overIndex + 1, 0, items[activeIndex])
+        }
         for (const i in items) {
           items[i].index = i
         }
@@ -304,7 +306,7 @@ export const Explorer = ({}) => {
               }}
               values={{ ...fileData, ...formFieldChanges }}
               alwaysAccept
-              config={schema}
+              config={schemaData}
             />
           </SidePanel.Body>
           <SidePanel.Actions>
