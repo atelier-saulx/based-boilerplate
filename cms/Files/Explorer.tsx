@@ -43,9 +43,7 @@ const filterFolder = (data, rootId) => {
 export const Explorer = ({}) => {
   const route = useRoute('[folder]')
   const path = route.query.folder as string
-  if (!path) {
-    route.setQuery({ folder: 'root' })
-  }
+
   const [section, setSection] = useState(path.split('/').slice(-1)[0])
 
   useEffect(() => {
@@ -102,9 +100,12 @@ export const Explorer = ({}) => {
         const items = filterFolder(data.files, section) as any
 
         const activeIndex = items?.findIndex((item) => item.id === id) as number
-        const overIndex = items?.findIndex(
-          (item) => item.id === dragOverItem.current
-        ) as number
+        const overIndex =
+          dragOverItem.current !== 'last'
+            ? (items?.findIndex(
+                (item) => item.id === dragOverItem.current
+              ) as number)
+            : items.length
 
         if (activeIndex > overIndex) {
           items.splice(overIndex, 0, items[activeIndex])
@@ -164,24 +165,32 @@ export const Explorer = ({}) => {
 
       dragItem.style.transform = `translate(${posX}px, ${posY}px)`
 
-      otherItems.forEach((item) => {
+      for (const item of otherItems) {
         const upper = dragItem.getBoundingClientRect()
         const over = item.getBoundingClientRect()
+
         let collision =
-          upper.y < over.y + over.height / 2 &&
-          upper.y + upper.height / 2 > over.y &&
-          upper.x < over.x + over.height / 2 &&
-          upper.x + upper.height / 2 > over.x
+          item.id !== 'last'
+            ? upper.y < over.y + over.height / 2 &&
+              upper.y + upper.height / 2 > over.y &&
+              upper.x < over.x + over.width / 2 &&
+              upper.x + upper.width / 2 > over.x
+            : upper.y < over.y + over.height / 2 &&
+              upper.y + upper.height / 2 > over.y &&
+              upper.x < over.x + over.width &&
+              upper.x + upper.width > over.x
+
         if (collision) {
-          item.style.background = color('action', 'system', 'subtleActive')
-          if (item.id) {
-            dragOverItem.current = item.id
+          if (item.id !== 'last') {
+            item.style.background = color('action', 'system', 'subtleActive')
           }
-          // }
+          dragOverItem.current = item.id
+          break
         } else {
           item.style.background = ''
+          dragOverItem.current = ''
         }
-      })
+      }
     }
 
     document.onpointerup = dragEnd
@@ -195,6 +204,7 @@ export const Explorer = ({}) => {
         item.style.background = ''
       })
       dragItem.style = ''
+      dragItem.maxHeight = '130px'
 
       dragItem.style.cursor = 'pointer'
       handleDrop(dragItem.id)
@@ -248,9 +258,9 @@ export const Explorer = ({}) => {
       <styled.div
         ref={containerRef}
         style={{
-          display: 'grid',
-          // flexWrap: 'wrap',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 100px))',
+          display: 'flex',
+          flexWrap: 'wrap',
+          // gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 100px))',
           height: '100%',
           gap: 30,
         }}
@@ -263,6 +273,7 @@ export const Explorer = ({}) => {
                 key={item.id}
                 id={item.id}
                 onPointerDown={(e) => dragStart(e, i)}
+                style={{ maxHeight: 130 }}
               >
                 <div
                   style={{
@@ -282,6 +293,7 @@ export const Explorer = ({}) => {
               </div>
             )
           })}
+        <div id="last" style={{ flexGrow: 1 }} />
       </styled.div>
       <SidePanel.Root open={openSidebar}>
         <SidePanel.Content>

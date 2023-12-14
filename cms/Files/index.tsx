@@ -15,10 +15,16 @@ import { useClient, useQuery } from '@based/react'
 import { Tile } from './Tile'
 import { Explorer } from './Explorer'
 import { CmsTable } from '../Components/CmsTable'
+import { useRoute } from 'kabouter'
 
 export const FileLibrary = () => {
   const client = useClient()
   const [table, setTable] = useState(false)
+  const route = useRoute('[folder]')
+  const path = route.query.folder as string
+  if (!path) {
+    route.setQuery({ folder: 'root' })
+  }
 
   const { width, height } = useWindowResize()
   const [tableWidth, setTableWidth] = useState<number>(600)
@@ -28,12 +34,6 @@ export const FileLibrary = () => {
     setTableWidth(width - 324)
     setTableHeight(height - 296)
   }, [width, height])
-
-  const [filter, setFilter] = useState({
-    operator: '=',
-    field: 'type',
-    value: 'file',
-  })
 
   return (
     <styled.div style={{ padding: '24px 48px', width: '100%' }}>
@@ -57,6 +57,7 @@ export const FileLibrary = () => {
               onClick={async () => {
                 await client.call('db:set', {
                   type: 'folder',
+                  parents: ['root', path.split('/').slice(-1)[0]],
                 })
               }}
               icon={<IconPlus />}
