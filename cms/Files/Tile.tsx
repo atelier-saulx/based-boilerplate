@@ -3,6 +3,7 @@ import { styled } from 'inlines'
 import {
   Button,
   Dropdown,
+  IconDelete,
   IconFile,
   IconFolder,
   IconMoreHorizontal,
@@ -137,31 +138,44 @@ export const Tile = ({
               <Dropdown.SubItems>
                 {section
                   .split('/')
-                  .filter(
-                    (i) =>
-                      i !== section.split('/')[section.split('/').length - 1]
-                  )
-                  .map((j) => (
-                    <Dropdown.Item
-                      onClick={async () => {
-                        const newArr = parents.filter(
-                          (i) => i.slice(0, 2) !== 'di'
-                        )
-                        newArr.push(j)
+                  .filter((_, idx) => idx !== section.split('/').length - 1)
+                  .map((j, index) => (
+                    <>
+                      <Dropdown.Item
+                        onClick={async () => {
+                          const newArr = parents.filter(
+                            (i) => i.slice(0, 2) !== 'di'
+                          )
+                          newArr.push(j)
 
-                        client.call('db:set', {
-                          $id: id,
-                          parents: newArr,
-                        })
-                        setMoving(true)
-                      }}
-                    >
-                      {j}
-                    </Dropdown.Item>
+                          client.call('db:set', {
+                            $id: id,
+                            parents: newArr,
+                          })
+                          setMoving(true)
+                        }}
+                      >
+                        {j}
+                      </Dropdown.Item>
+                      {index !== section.split('/').length - 2 && (
+                        <Dropdown.Separator />
+                      )}
+                    </>
                   ))}
               </Dropdown.SubItems>
             </Dropdown.SubTrigger>
           </Dropdown.Sub>
+          <Dropdown.Separator />
+          <Dropdown.Item
+            icon={<IconDelete color="negative" />}
+            onClick={async () => {
+              await client.call('db:delete', {
+                $id: id,
+              })
+            }}
+          >
+            Delete {name}
+          </Dropdown.Item>
         </Dropdown.Items>
       </Dropdown.Root>
 

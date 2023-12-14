@@ -1,20 +1,8 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { styled } from 'inlines'
 import { Tile } from './Tile'
-import {
-  Button,
-  FormGroup,
-  IconArrowLeft,
-  SidePanel,
-  scrollAreaStyle,
-  useInfiniteQuery,
-  Text,
-  Input,
-  Breadcrumbs,
-  color,
-} from '@based/ui'
+import { Button, FormGroup, SidePanel, Breadcrumbs, color } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
-import { arrayMove } from '@dnd-kit/sortable'
 import { useRoute } from 'kabouter'
 
 const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
@@ -207,9 +195,6 @@ export const Explorer = ({}) => {
         item.style.background = ''
       })
       dragItem.style = ''
-      dragItem.style.display = 'flex'
-      dragItem.style.alignitems = 'center'
-      dragItem.style.justifycontent = 'center'
 
       dragItem.style.cursor = 'pointer'
       handleDrop(dragItem.id)
@@ -237,18 +222,10 @@ export const Explorer = ({}) => {
     $id: selected,
     $all: true,
   })
-  console.log(filterFolder(data?.files, section))
+
   return (
     <styled.div>
-      <styled.div
-        style={
-          {
-            // '& div': {
-            //   border: '1px solid red',
-            // },
-          }
-        }
-      >
+      <styled.div>
         <Breadcrumbs
           data={Object.fromEntries(path.split('/').map((i) => [i, i]))}
           onChange={(v) => {
@@ -283,22 +260,25 @@ export const Explorer = ({}) => {
           filterFolder(data?.files, section).map((item, i) => {
             return (
               <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
                 key={item.id}
                 id={item.id}
                 onPointerDown={(e) => dragStart(e, i)}
               >
-                <Tile
-                  folder={item.id?.slice(0, 2) === 'di'}
-                  selected={item.id === selected}
-                  item={item}
-                  setOpenSidebar={setOpenSidebar}
-                  setSelected={setSelected}
-                />
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <Tile
+                    folder={item.id?.slice(0, 2) === 'di'}
+                    selected={item.id === selected}
+                    item={item}
+                    setOpenSidebar={setOpenSidebar}
+                    setSelected={setSelected}
+                  />
+                </div>
               </div>
             )
           })}
