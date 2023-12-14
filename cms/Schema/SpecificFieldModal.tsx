@@ -12,6 +12,25 @@ type SpecificFieldModalProps = {
   nestedObjectPath?: string[]
 }
 
+function setDeep(obj, path, value, setrecursively = false) {
+  path.reduce((a, b, level) => {
+    if (
+      setrecursively &&
+      typeof a[b] === 'undefined' &&
+      level !== path.length
+    ) {
+      a[b] = {}
+      return a[b]
+    }
+
+    if (level === path.length - 1) {
+      a[b] = value
+      return value
+    }
+    return a[b]
+  }, obj)
+}
+
 const metaReducer = (state, action) => {
   if (action.type === 'prune') {
     const newMeta = Object.fromEntries(
@@ -169,16 +188,8 @@ export const SpecificFieldModal = ({
             // TODO set meta fields if there are also description
             // let metaFields
 
-            console.log('ORB', fieldType.toLowerCase())
-            console.log(nestedObjectPath, 'NESTED 🦜')
-
-            // see if you can get this meta data in correct place
-            // if (nestedObjectPath) {
-            //   console.log(
-            //     '🔴',
-            //     schema?.types[routeType]?.fields[nestedObjectPath[0]].meta
-            //   )
-            // }
+            // console.log('ORB', fieldType.toLowerCase())
+            // console.log(nestedObjectPath, 'NESTED 🦜')
 
             if (meta.displayName) {
               const newMeta = Object.fromEntries(
@@ -187,38 +198,8 @@ export const SpecificFieldModal = ({
 
               console.log(newMeta, 'NEW')
 
-              // flap: {
-              //   meta: whatever,
-              //   index: 1
-              //   name: whatever
-              //   properties: {
-              //     flip : {
-              //       meta: whatever,
-              //       index: 1
-              //       name: whatever
-              //       properties: {
-              //         flop: {
-              //           meta: whatever,
-              //           index: 1
-              //           name: whatever
-              //         }
-
-              //       }
-              //     }
-              //   }
-              // }
-
               // NESTED OBJ LOGIC
               let nestedFields = {}
-
-              // if (nestedObjectPath) {
-              //   let newArr: string[] = []
-              //   nestedObjectPath.map((item) => {
-              //     newArr.push(item)
-              //     newArr.push('properties')
-              //   })
-              //   console.log(newArr)
-              // }
 
               //NestedObjectPath length is de diepte waar het gezet moet worden
               if (nestedObjectPath) {
@@ -228,115 +209,33 @@ export const SpecificFieldModal = ({
                   },
                 }
 
+                let newArr: string[] = []
+                nestedObjectPath.map((item) => {
+                  newArr.push(item)
+                  newArr.push('properties')
+                })
+                console.log('NEW ARR', newArr)
+
                 console.log('TEST --> ', nestedFields)
 
-                for (let i = 0; i < nestedObjectPath.length; i++) {
-                  console.log('I', i)
-                  // if is the first
-                  if (i === 0) {
-                    console.log(nestedFields, 'NESTEND FIELDSM?')
-                    nestedFields[nestedObjectPath[0]].properties = {
-                      [meta.name || meta.displayName.toLowerCase()]: {
-                        type: fieldType.toLowerCase(),
-                        meta: {
-                          name: meta.name || meta.displayName.toLowerCase(),
-                          index: thisSpecificField?.meta.index || newIndex,
-                        },
-                        properties:
-                          fieldType.toLowerCase() === 'object' ? {} : null,
+                setDeep(
+                  nestedFields,
+                  newArr,
+                  {
+                    [meta.name || meta.displayName.toLowerCase()]: {
+                      type: fieldType.toLowerCase(),
+                      meta: {
+                        ...newMeta,
+                        name: meta.name || meta.displayName.toLowerCase(),
+                        index: thisSpecificField?.meta.index || newIndex,
                       },
-                    }
-                  } else {
-                    // we must go deeper
-                  }
-                }
-
-                console.log(
-                  '🟥 🟢',
-                  schema?.types[routeType]?.fields[nestedObjectPath[0]],
-                  nestedObjectPath
+                      properties:
+                        fieldType.toLowerCase() === 'object' ? {} : null,
+                    },
+                  },
+                  true
                 )
-
-                console.log(nestedFields, 'NESTEND FIELDSM?')
               }
-
-              // lets get the proper object first
-
-              // NESTED OBJECT LOGIC USE --> nestedFields
-              // let nestedFields = {}
-              // if (nestedObjectPath) {
-              //   let newArr: string[] = []
-
-              //   nestedObjectPath.map((item) => {
-              //     newArr.push(item)
-              //     newArr.push('properties')
-              //   })
-              //   // build object path
-
-              //   newArr.reduce(function (o, s, idx) {
-              //     if (idx === newArr.length - 1) {
-              //       // add the fields to the last one
-              //       console.log(
-              //         '🟠',
-              //         schema?.types[routeType]?.fields[newArr[idx]]?.meta
-              //       )
-              //       return (o[s] = {
-              //         [meta.name || meta.displayName?.toLowerCase()]: {
-              //           type: fieldType.toLowerCase(),
-              //           // label: meta.name || meta.displayName.toLowerCase(),
-              //           // id: meta.name || meta.displayName.toLowerCase(),
-              //           properties:
-              //             fieldType.toLowerCase() === 'object' ? {} : null,
-              //           values:
-              //             fieldType.toLowerCase() === 'record' ? [] : null,
-              //           index: thisSpecificField?.index || newIndex,
-              //           meta: {
-              //             ...newMeta,
-              //             name: meta.name || meta.displayName.toLowerCase(),
-              //             index: thisSpecificField?.meta.index || newIndex,
-              //           },
-              //         },
-              //       })
-              //       // do some check here as welll
-              //     } else if (newArr[idx] !== 'properties') {
-              //       console.log(
-              //         '🔴',
-              //         schema?.types[routeType]?.fields[newArr[idx]]?.meta,
-              //         o,
-              //         s
-              //       )
-              //       return (o[s] = {
-              //         ...o[s].meta,
-              //       })
-
-              //       //   meta: {
-              //       //     ...schema?.types[routeType]?.fields[newArr[idx]].meta,
-              //       //     //   //    ...newMeta,
-              //       //     //   //   name: meta.name || meta.displayName.toLowerCase(),
-              //       //     //   //    index: thisSpecificField?.meta.index || newIndex,
-              //       //     wtf: 'WTF, ',
-              //       //     //   idXXXx: idx,
-              //       //   },
-              //     } else {
-              //       console.log(
-              //         '🟢',
-              //         schema?.types[routeType]?.fields[newArr[idx]].meta
-              //       )
-              //       return (o[s] = {
-              //         //   index: thisSpecificField?.index || newIndex,
-              //         meta: {
-              //           hallo: 'hallow',
-              //           // ...newMeta,
-              //           //    ...schema?.types[routeType]?.fields[newArr[idx]].meta,
-              //           //    name: meta.name || meta.displayName.toLowerCase(),
-              //           //    index: thisSpecificField?.meta.index || newIndex,
-              //         },
-              //       })
-              //     }
-              //   }, nestedFields)
-
-              //   console.log(nestedFields, '🚁')
-              // }
 
               // ELSE USE NORMAL FIELDS LOGIC IN SCHEMA
               let fields = {
