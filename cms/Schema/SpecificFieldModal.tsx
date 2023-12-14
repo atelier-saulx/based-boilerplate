@@ -176,7 +176,7 @@ export const SpecificFieldModal = ({
                 Object.entries(meta).filter(([_, v]) => v != false)
               )
 
-              // NESTED OBJECT USE nestedFields
+              // NESTED OBJECT LOGIC USE --> nestedFields
               let nestedFields = {}
               if (nestedObjectPath) {
                 let newArr: string[] = []
@@ -188,22 +188,22 @@ export const SpecificFieldModal = ({
                 // build object path
 
                 newArr.reduce(function (o, s, idx) {
-                  console.log('IDX?', idx)
                   if (idx === newArr.length - 1) {
                     // add the fields to the last one
                     return (o[s] = {
                       [meta.name || meta.displayName?.toLowerCase()]: {
                         type: fieldType.toLowerCase(),
-                        // label: meta.name || meta.displayName.toLowerCase(),
-                        // id: meta.name || meta.displayName.toLowerCase(),
+                        label: meta.name || meta.displayName.toLowerCase(),
+                        id: meta.name || meta.displayName.toLowerCase(),
                         properties:
                           fieldType.toLowerCase() === 'object' ? {} : null,
                         values:
                           fieldType.toLowerCase() === 'record' ? [] : null,
-                        //  index: +thisSpecificField?.index || +newIndex,
+                        index: thisSpecificField?.index || newIndex,
                         meta: {
                           ...newMeta,
                           name: meta.name || meta.displayName.toLowerCase(),
+                          index: thisSpecificField?.meta.index || newIndex,
                         },
                       },
                     })
@@ -211,11 +211,21 @@ export const SpecificFieldModal = ({
                   } else if (newArr[idx] !== 'properties') {
                     return (o[s] = {
                       type: 'object',
+                      index: thisSpecificField?.index || newIndex,
+                      meta: {
+                        ...newMeta,
+                        name: meta.name || meta.displayName.toLowerCase(),
+                        index: thisSpecificField?.meta.index || newIndex,
+                      },
                     })
                   } else {
                     return (o[s] = {
-                      // meta: { name: s },
-                      // type: fieldType.toLowerCase(),
+                      index: thisSpecificField?.index || newIndex,
+                      meta: {
+                        ...newMeta,
+                        name: meta.name || meta.displayName.toLowerCase(),
+                        index: thisSpecificField?.meta.index || newIndex,
+                      },
                     })
                   }
                 }, nestedFields)
@@ -223,23 +233,19 @@ export const SpecificFieldModal = ({
                 console.log(nestedFields, '🚁')
               }
 
-              // ELSE USE NORMAL FIELDS IN SCHEMA
+              // ELSE USE NORMAL FIELDS LOGIC IN SCHEMA
               let fields = {
-                // [nestedObjectPath[0]]: {
-                //    properties : {
-                //
-                //  }
-                // }
                 [meta.name || meta.displayName.toLowerCase()]: {
                   type: fieldType.toLowerCase(),
-                  // label: meta.name || meta.displayName.toLowerCase(),
-                  // id: meta.name || meta.displayName.toLowerCase(),
+                  label: meta.name || meta.displayName.toLowerCase(),
+                  id: meta.name || meta.displayName.toLowerCase(),
                   properties: fieldType.toLowerCase() === 'object' ? {} : null,
                   values: fieldType.toLowerCase() === 'record' ? [] : null,
-                  index: +thisSpecificField?.index || +newIndex,
+                  index: thisSpecificField?.index || newIndex,
                   meta: {
                     ...newMeta,
                     name: meta.name || meta.displayName.toLowerCase(),
+                    index: thisSpecificField?.meta.index || newIndex,
                   },
                 },
               }
@@ -253,6 +259,7 @@ export const SpecificFieldModal = ({
                         fields: {
                           [meta.name || meta.displayName.toLowerCase()]: {
                             type: 'json',
+                            // TODO
                             index: +thisSpecificField?.index || +newIndex,
                             meta: {
                               ...newMeta,
@@ -260,13 +267,19 @@ export const SpecificFieldModal = ({
                                 meta.field || meta.displayName.toLowerCase()
                               }HTML`,
                               format: 'rich-text',
+                              index:
+                                +thisSpecificField?.meta.index || +newIndex,
                             },
                           },
                           [`${
                             meta.field || meta.displayName.toLowerCase()
                           }HTML`]: {
                             type: 'string',
-                            meta: { isLinkedField: true },
+                            meta: {
+                              isLinkedField: true,
+                              index:
+                                +thisSpecificField?.meta.index || +newIndex,
+                            },
                           },
                         },
                       },

@@ -304,6 +304,7 @@ export const SchemaBuilder = () => {
             <Button
               onClick={() => {
                 setOpenDeleteModal(false)
+                setDeleteString('')
               }}
               color="system"
               displayShortcut
@@ -334,6 +335,7 @@ export const SchemaBuilder = () => {
               color="alert"
               displayShortcut
               keyboardShortcut="Enter"
+              disabled={deleteString !== routeType}
             >
               Delete
             </Button>

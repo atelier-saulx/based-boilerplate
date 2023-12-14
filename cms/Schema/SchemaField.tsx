@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {
   Dropdown,
   color as genColor,
@@ -9,6 +9,8 @@ import {
   Button,
   IconDragDropHorizontal,
   Row,
+  IconChevronDown,
+  IconChevronTop,
 } from '@based/ui'
 import { styled } from 'inlines'
 import { useSortable } from '@dnd-kit/sortable'
@@ -24,20 +26,30 @@ export const SchemaField = ({
   setOpenDeleteModal,
   setItemToEdit,
   id,
+  metaIndex,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: id })
 
+  const [collapsed, setCollapsed] = useState(false)
+
   // console.log(item, '??')
 
   return (
-    <div style={{ position: 'relative', width: '100%' }}>
-      {item.type === 'object' && (
-        <styled.div style={{ position: 'absolute', right: 46, top: 10 }}>
-          <AddField nestedObjectPath={[item.name]} />
-        </styled.div>
-      )}
+    <div
+      style={{
+        position: 'relative',
+        maxWidth: 676,
+        width: '100%',
+        marginLeft: 'auto',
+      }}
+    >
       <Dropdown.Root>
+        {item.type === 'object' && (
+          <styled.div style={{ position: 'absolute', right: 46, top: 11 }}>
+            <AddField nestedObjectPath={[item.name]} />
+          </styled.div>
+        )}
         <styled.div
           ref={setNodeRef}
           {...attributes}
@@ -52,7 +64,7 @@ export const SchemaField = ({
             // margin: '4px auto',
             cursor: 'grab',
             marginLeft: 'auto',
-            marginRight: 'auto',
+            // marginRight: 'auto',
             marginBottom: 8,
             display: 'flex',
             alignItems: 'center',
@@ -67,7 +79,15 @@ export const SchemaField = ({
             },
           }}
         >
-          <Row style={{ gap: 12 }}>
+          <Row style={{ gap: 16 }}>
+            {item.type === 'object' && (
+              <Button
+                style={{ marginRight: '-20px' }}
+                ghost
+                icon={collapsed ? <IconChevronTop /> : <IconChevronDown />}
+                onClick={() => setCollapsed(!collapsed)}
+              />
+            )}
             <IconDragDropHorizontal style={{ marginLeft: 8 }} />
             <Thumbnail
               size="small"
@@ -80,7 +100,7 @@ export const SchemaField = ({
             <Badge color={ALL_FIELDS[index]?.color as any} light>
               {item.type}
             </Badge>
-
+            meta index: {metaIndex} --
             {item?.meta?.format && <Badge light>{item.meta.format}</Badge>}
             {item?.meta?.contentMediaEncoding && (
               <Badge light color="blue">
@@ -95,9 +115,6 @@ export const SchemaField = ({
           </Row>
 
           <Row style={{ gap: 12 }}>
-            {/* modal in here doesnt work?? */}
-            {/* {item.type === 'object' && <AddField />} */}
-
             <Dropdown.Trigger>
               <Button
                 onClick={(e) => {
@@ -136,6 +153,7 @@ export const SchemaField = ({
       </Dropdown.Root>
 
       {item.type === 'object' &&
+        !collapsed &&
         Object.keys(item.properties).map((key) => {
           // console.log('🚒', item.properties[key])
 
@@ -143,25 +161,16 @@ export const SchemaField = ({
 
           return (
             <NestedSchemaField
-              objPath={[
-                item.meta.name || item.meta?.displayName?.toLowerCase(),
-              ]}
+              objPath={
+                objItem.type === 'object' && [
+                  item.meta.name || item.meta?.displayName?.toLowerCase(),
+                ]
+              }
               objItem={objItem}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
               deepness={1}
             />
-            // <SchemaField
-            //   id={objItem?.id}
-            //   ALL_FIELDS={ALL_FIELDS}
-            //   SYSTEM_FIELDS_LABELS={SYSTEM_FIELDS_LABELS}
-            //   index={index}
-            //   item={objItem}
-            //   setItemToEdit={setItemToEdit}
-            //   setOpenEditModal={setOpenEditModal}
-            //   setOpenDeleteModal={setOpenDeleteModal}
-            //   key={key}
-            // />
           )
         })}
     </div>
@@ -171,14 +180,17 @@ export const SchemaField = ({
 const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
   // console.log('🚑', objItem)
   // console.log(ALL_FIELDS)
+  const [collapsed, setCollapsed] = useState(false)
 
   let deep = deepness + 1
 
   let path = objPath
-  objItem.type === 'object' &&
-    path.push(objItem.meta.name || objItem?.meta.displayName)
+  objItem.type === 'object'
+    ? path.push(objItem.meta.name || objItem?.meta.displayName)
+    : null
 
-  console.log('object path 🚀 from ', objItem.meta.name, path, path.length)
+  console.log(' 🚀 from ', objItem.meta.name, path, path.length)
+  // console.log('deepness', deep)
 
   const labels = ALL_FIELDS.map((item) => item.label.toLowerCase())
   const index = labels.indexOf(objItem.type)
@@ -186,7 +198,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
   return (
     <div style={{ position: 'relative' }}>
       {objItem.type === 'object' && (
-        <styled.div style={{ position: 'absolute', right: 46, top: 10 }}>
+        <styled.div style={{ position: 'absolute', right: 46, top: 11 }}>
           <AddField nestedObjectPath={path} />
         </styled.div>
       )}
@@ -207,6 +219,14 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
         }}
       >
         <Row style={{ gap: 16 }}>
+          {objItem.type === 'object' && (
+            <Button
+              style={{ marginRight: '-10px' }}
+              ghost
+              icon={collapsed ? <IconChevronTop /> : <IconChevronDown />}
+              onClick={() => setCollapsed(!collapsed)}
+            />
+          )}
           <Thumbnail
             size="small"
             light
@@ -257,6 +277,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
         </Dropdown.Root>
       </styled.div>
       {objItem.type === 'object' &&
+        !collapsed &&
         Object.keys(objItem.properties).map((key) => {
           // console.log('🚒', objItem.properties[key])
 
@@ -264,7 +285,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
 
           return (
             <NestedSchemaField
-              objPath={path}
+              objPath={[...path]}
               objItem={x}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
