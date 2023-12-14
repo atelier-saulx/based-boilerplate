@@ -210,8 +210,8 @@ export const Tile = ({
             e.stopPropagation()
             setEdit(true)
           }}
-          selectable="none"
           style={{
+            userSelect: 'none',
             minWidth: '100%',
             fontSize: 14,
             textAlign: 'center',
