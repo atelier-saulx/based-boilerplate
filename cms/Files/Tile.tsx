@@ -140,7 +140,7 @@ export const Tile = ({
                   .split('/')
                   .filter((_, idx) => idx !== section.split('/').length - 1)
                   .map((j, index) => (
-                    <>
+                    <span key={index}>
                       <Dropdown.Item
                         onClick={async () => {
                           const newArr = parents.filter(
@@ -160,7 +160,7 @@ export const Tile = ({
                       {index !== section.split('/').length - 2 && (
                         <Dropdown.Separator />
                       )}
-                    </>
+                    </span>
                   ))}
               </Dropdown.SubItems>
             </Dropdown.SubTrigger>
