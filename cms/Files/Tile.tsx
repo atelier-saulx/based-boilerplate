@@ -1,6 +1,15 @@
 import React, { useState } from 'react'
 import { styled } from 'inlines'
-import { Dropdown, IconFile, IconFolder, Input, Text, color } from '@based/ui'
+import {
+  Button,
+  Dropdown,
+  IconFile,
+  IconFolder,
+  IconMoreHorizontal,
+  Input,
+  Text,
+  color,
+} from '@based/ui'
 import { useSortable } from '@dnd-kit/sortable'
 import { CSS } from '@dnd-kit/utilities'
 import { useRoute } from 'kabouter'
@@ -19,7 +28,7 @@ const isImage = (src) => {
 }
 
 export const Tile = ({
-  item: { name: propName, src, id },
+  item: { name: propName, src, id, parents },
   setOpenSidebar,
   folder,
   setSelected,
@@ -30,6 +39,9 @@ export const Tile = ({
   const section = route.query.folder as string
   const [name, setName] = useState(propName)
   const [edit, setEdit] = useState(false)
+  const [moving, setMoving] = useState(false)
+
+  if (moving) return
 
   return (
     <styled.div
@@ -50,7 +62,7 @@ export const Tile = ({
         // background: selected
         //   ? color('action', 'system', 'subtleSelected')
         //   : 'inital',
-
+        position: 'relative',
         '&:hover': {
           background: color('action', 'system', 'subtleHover'),
         },
@@ -98,6 +110,61 @@ export const Tile = ({
           <IconFile style={{ width: '100%', height: '100%' }} />
         )}
       </styled.div>
+      <Dropdown.Root>
+        <Dropdown.Trigger>
+          <Button
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+            }}
+            size="xsmall"
+            ghost
+            icon={<IconMoreHorizontal />}
+            style={{ position: 'absolute', top: 0, right: 0 }}
+          />
+        </Dropdown.Trigger>
+        <Dropdown.Items>
+          <Dropdown.Sub>
+            <Dropdown.SubTrigger
+              //@ts-ignore
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                console.log('red')
+              }}
+            >
+              Move {folder ? 'folder' : 'file'} to
+              <Dropdown.SubItems>
+                {section
+                  .split('/')
+                  .filter(
+                    (i) =>
+                      i !== section.split('/')[section.split('/').length - 1]
+                  )
+                  .map((j) => (
+                    <Dropdown.Item
+                      onClick={async () => {
+                        const newArr = parents.filter(
+                          (i) => i.slice(0, 2) !== 'di'
+                        )
+                        newArr.push(j)
+
+                        client.call('db:set', {
+                          $id: id,
+                          parents: newArr,
+                        })
+                        setMoving(true)
+                      }}
+                    >
+                      {j}
+                    </Dropdown.Item>
+                  ))}
+              </Dropdown.SubItems>
+            </Dropdown.SubTrigger>
+          </Dropdown.Sub>
+        </Dropdown.Items>
+      </Dropdown.Root>
+
       {edit ? (
         <styled.textarea
           onClick={(e) => {
