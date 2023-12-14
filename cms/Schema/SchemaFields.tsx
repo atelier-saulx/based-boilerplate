@@ -62,34 +62,46 @@ const parseSchema = (schema, routeType) => {
   const indexedArray = [] as SchemaItem[]
   const array = [] as unindexedSchemaItem[]
   const type = schema.types[routeType as string]?.fields
+
+  console.log('indexed array ---->', indexedArray)
+  console.log('unindex', array)
+
   for (const i in type) {
-    console.log('🔫 meta', type[i].meta, 'index', type[i].index)
-    if (type[i].index || type[i].meta.index) {
+    // console.log('🔫 meta', type[i]?.meta, 'index', type[i]?.index, type[i])
+    if (type[i].hasOwnProperty('meta')) {
+      // console.log('REACh 🔥')
       indexedArray.push({
         name: i,
         meta: type[i].meta,
         id: i,
         type: type[i].type,
         label: i,
-        //  index: +type[i].index || type[i].meta.index,
-        index: type[i].meta.index,
+        index: type[i]?.meta.index || +i,
+        // index: type[i].meta.index,
         properties: type[i].properties,
       })
-    } else {
+    } else if (!type[i].index) {
+      console.log('REACh 🐧')
       array.push({
         name: i,
         meta: type[i].meta,
         id: i,
         type: type[i].type,
         label: i,
-        // index: +type[i].index || i,
+        //  index: i,
         properties: type[i].properties,
       })
     }
+    // else {
+    //   console.log('REACH THIS>>> 🫔')
+    //   array.push({ ...type })
+    // }
   }
+
   indexedArray.sort((a, b) => a.meta.index - b.meta.index)
 
   console.log('indexed array ---->', indexedArray)
+  console.log('unindex', array)
 
   return [...indexedArray, ...array]
 }
@@ -102,7 +114,7 @@ const parseItems = (items, schema, routeType) => {
     const type = items[i]
     object[type.name] = {
       ...schemaType[type.name],
-      //  index: +i, // TODO yves: if index works on all fields turn on
+      index: +i, // TODO yves: if index works on all fields turn on
       meta: { ...type.meta, index: +i },
     }
   }
@@ -180,7 +192,6 @@ export const SchemaFields = () => {
                     setOpenEditModal={setOpenEditModal}
                     setOpenDeleteModal={setOpenDeleteModal}
                     key={item.id}
-                    metaIndex={item.meta.index}
                   />
                 )
               })}
