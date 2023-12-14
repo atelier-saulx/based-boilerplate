@@ -52,7 +52,7 @@ type SchemaItem = {
   meta: any
   id: string
   label: string
-  index: number
+  index?: number
   properties: {}
 }
 type unindexedSchemaItem = Omit<SchemaItem, 'index'>
@@ -63,14 +63,16 @@ const parseSchema = (schema, routeType) => {
   const array = [] as unindexedSchemaItem[]
   const type = schema.types[routeType as string]?.fields
   for (const i in type) {
-    if (type[i].index) {
+    console.log('🔫 meta', type[i].meta, 'index', type[i].index)
+    if (type[i].index || type[i].meta.index) {
       indexedArray.push({
         name: i,
         meta: type[i].meta,
         id: i,
         type: type[i].type,
         label: i,
-        index: +type[i].index,
+        //  index: +type[i].index || type[i].meta.index,
+        index: type[i].meta.index,
         properties: type[i].properties,
       })
     } else {
@@ -85,7 +87,9 @@ const parseSchema = (schema, routeType) => {
       })
     }
   }
-  indexedArray.sort((a, b) => a?.index - b?.index)
+  indexedArray.sort((a, b) => a.meta.index - b.meta.index)
+
+  console.log('indexed array ---->', indexedArray)
 
   return [...indexedArray, ...array]
 }
@@ -95,12 +99,11 @@ const parseItems = (items, schema, routeType) => {
   const schemaType = schema.types[routeType as string].fields
   const object = {}
   for (const i in items) {
-    console.log('I', i, 'in items,', items)
     const type = items[i]
     object[type.name] = {
       ...schemaType[type.name],
-      index: i,
-      meta: { ...type.meta },
+      //  index: +i, // TODO yves: if index works on all fields turn on
+      meta: { ...type.meta, index: +i },
     }
   }
   return object
@@ -177,6 +180,7 @@ export const SchemaFields = () => {
                     setOpenEditModal={setOpenEditModal}
                     setOpenDeleteModal={setOpenDeleteModal}
                     key={item.id}
+                    metaIndex={item.meta.index}
                   />
                 )
               })}
@@ -276,6 +280,7 @@ export const SchemaFields = () => {
         const oldIndex = items?.findIndex(
           (item) => item.id === active.id
         ) as number
+        console.log('olds index', oldIndex)
         const newIndex = items?.findIndex(
           (item) => item.id === over.id
         ) as number

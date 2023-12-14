@@ -26,6 +26,7 @@ export const SchemaField = ({
   setOpenDeleteModal,
   setItemToEdit,
   id,
+  metaIndex,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
     useSortable({ id: id })
@@ -99,7 +100,7 @@ export const SchemaField = ({
             <Badge color={ALL_FIELDS[index]?.color as any} light>
               {item.type}
             </Badge>
-
+            meta index: {metaIndex} --
             {item?.meta?.format && <Badge light>{item.meta.format}</Badge>}
             {item?.meta?.contentMediaEncoding && (
               <Badge light color="blue">
