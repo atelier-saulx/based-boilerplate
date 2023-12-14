@@ -193,8 +193,8 @@ export const SpecificFieldModal = ({
                     return (o[s] = {
                       [meta.name || meta.displayName?.toLowerCase()]: {
                         type: fieldType.toLowerCase(),
-                        label: meta.name || meta.displayName.toLowerCase(),
-                        id: meta.name || meta.displayName.toLowerCase(),
+                        // label: meta.name || meta.displayName.toLowerCase(),
+                        // id: meta.name || meta.displayName.toLowerCase(),
                         properties:
                           fieldType.toLowerCase() === 'object' ? {} : null,
                         values:
@@ -211,20 +211,20 @@ export const SpecificFieldModal = ({
                   } else if (newArr[idx] !== 'properties') {
                     return (o[s] = {
                       type: 'object',
-                      index: thisSpecificField?.index || newIndex,
+                      //     index: thisSpecificField?.index || newIndex,
                       meta: {
                         ...newMeta,
-                        name: meta.name || meta.displayName.toLowerCase(),
-                        index: thisSpecificField?.meta.index || newIndex,
+                        //   name: meta.name || meta.displayName.toLowerCase(),
+                        //    index: thisSpecificField?.meta.index || newIndex,
                       },
                     })
                   } else {
                     return (o[s] = {
-                      index: thisSpecificField?.index || newIndex,
+                      //   index: thisSpecificField?.index || newIndex,
                       meta: {
-                        ...newMeta,
-                        name: meta.name || meta.displayName.toLowerCase(),
-                        index: thisSpecificField?.meta.index || newIndex,
+                        // ...newMeta,
+                        //   name: meta.name || meta.displayName.toLowerCase(),
+                        //    index: thisSpecificField?.meta.index || newIndex,
                       },
                     })
                   }

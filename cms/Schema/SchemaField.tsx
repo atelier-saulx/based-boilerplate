@@ -32,7 +32,7 @@ export const SchemaField = ({
 
   const [collapsed, setCollapsed] = useState(false)
 
-  // console.log(item, '??')
+  console.log(item, '??')
 
   return (
     <div
@@ -158,11 +158,7 @@ export const SchemaField = ({
 
           return (
             <NestedSchemaField
-              objPath={
-                objItem.type === 'object' && [
-                  item.meta.name || item.meta?.displayName?.toLowerCase(),
-                ]
-              }
+              objPath={objItem.type === 'object' && [item.name]}
               objItem={objItem}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
@@ -175,18 +171,16 @@ export const SchemaField = ({
 }
 
 const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
-  // console.log('🚑', objItem)
+  console.log('🚑', objItem)
   // console.log(ALL_FIELDS)
   const [collapsed, setCollapsed] = useState(false)
 
   let deep = deepness + 1
 
   let path = objPath
-  objItem.type === 'object'
-    ? path.push(objItem.meta.name || objItem?.meta.displayName)
-    : null
+  objItem.type === 'object' ? path.push(objItem?.meta.name) : null
 
-  console.log(' 🚀 from ', objItem.meta.name, path, path.length)
+  console.log('NEW PATH =', path)
   // console.log('deepness', deep)
 
   const labels = ALL_FIELDS.map((item) => item.label.toLowerCase())
@@ -227,12 +221,12 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
           <Thumbnail
             size="small"
             light
-            icon={ALL_FIELDS[index].icon}
-            color={ALL_FIELDS[index].color as any}
+            icon={ALL_FIELDS[index]?.icon}
+            color={ALL_FIELDS[index]?.color as any}
           />
-          <Text weight="medium">{objItem.name || objItem.meta.name}</Text>
+          <Text weight="medium">{objItem?.name || objItem?.meta?.name}</Text>
           {objItem?.description && <Text light>{objItem?.description}</Text>}
-          <Badge color={ALL_FIELDS[index].color as any} light>
+          <Badge color={ALL_FIELDS[index]?.color as any} light>
             {objItem.type}
           </Badge>
         </Row>
@@ -256,16 +250,16 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
             <Dropdown.Item
               //@ts-ignore
               onClick={(e) => {
-                setOpenEditModal(true)
-                setItemToEdit(item.name)
+                // setOpenEditModal(true)
+                // setItemToEdit(item.name)
               }}
             >
               Edit
             </Dropdown.Item>
             <Dropdown.Item
               onClick={() => {
-                setItemToEdit(item.name)
-                setOpenDeleteModal(true)
+                // setItemToEdit(item.name)
+                // setOpenDeleteModal(true)
               }}
             >
               Delete
