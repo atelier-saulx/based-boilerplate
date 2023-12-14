@@ -181,8 +181,9 @@ export const Explorer = ({}) => {
               upper.x + upper.width > over.x
 
         if (collision) {
-          console.log(over.width)
-          item.style.background = color('action', 'system', 'subtleActive')
+          if (item.id !== 'last') {
+            item.style.background = color('action', 'system', 'subtleActive')
+          }
           dragOverItem.current = item.id
           break
         } else {
@@ -190,25 +191,6 @@ export const Explorer = ({}) => {
           dragOverItem.current = ''
         }
       }
-
-      // otherItems.forEach((item) => {
-      // const upper = dragItem.getBoundingClientRect()
-      // const over = item.getBoundingClientRect()
-      // let collision =
-      //   upper.y < over.y + over.height / 2 &&
-      //   upper.y + upper.height / 2 > over.y &&
-      //   upper.x < over.x + over.height / 2 &&
-      //   upper.x + upper.height / 2 > over.x
-      //   if (collision) {
-      //     item.style.background = color('action', 'system', 'subtleActive')
-      //     if (item.id) {
-      //       dragOverItem.current = item.id
-      //     }
-      //     // }
-      //   } else {
-      //     item.style.background = ''
-      //   }
-      // })
     }
 
     document.onpointerup = dragEnd
@@ -222,6 +204,7 @@ export const Explorer = ({}) => {
         item.style.background = ''
       })
       dragItem.style = ''
+      dragItem.maxHeight = '130px'
 
       dragItem.style.cursor = 'pointer'
       handleDrop(dragItem.id)
@@ -280,7 +263,6 @@ export const Explorer = ({}) => {
           // gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 100px))',
           height: '100%',
           gap: 30,
-          border: '1px solid red',
         }}
       >
         {data?.files?.length > 0 &&
@@ -291,6 +273,7 @@ export const Explorer = ({}) => {
                 key={item.id}
                 id={item.id}
                 onPointerDown={(e) => dragStart(e, i)}
+                style={{ maxHeight: 130 }}
               >
                 <div
                   style={{
@@ -310,7 +293,7 @@ export const Explorer = ({}) => {
               </div>
             )
           })}
-        <div id="last" style={{ border: '1px solid red', flexGrow: 1 }} />
+        <div id="last" style={{ flexGrow: 1 }} />
       </styled.div>
       <SidePanel.Root open={openSidebar}>
         <SidePanel.Content>
