@@ -63,8 +63,8 @@ const parseSchema = (schema, routeType) => {
   const array = [] as unindexedSchemaItem[]
   const type = schema.types[routeType as string]?.fields
 
-  console.log('indexed array ---->', indexedArray)
-  console.log('unindex', array)
+  // console.log('indexed array ---->', indexedArray)
+  // console.log('unindex', array)
 
   for (const i in type) {
     // console.log('🔫 meta', type[i]?.meta, 'index', type[i]?.index, type[i])
@@ -100,8 +100,8 @@ const parseSchema = (schema, routeType) => {
 
   indexedArray.sort((a, b) => a.meta.index - b.meta.index)
 
-  console.log('indexed array ---->', indexedArray)
-  console.log('unindex', array)
+  // console.log('indexed array ---->', indexedArray)
+  // console.log('unindex', array)
 
   return [...indexedArray, ...array]
 }
