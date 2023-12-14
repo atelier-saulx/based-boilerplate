@@ -13,16 +13,10 @@ const filterFolder = (data, rootId) => {
   const indexed = [] as any
   const unindexed = [] as any
   for (const i in data) {
-    let bool = false
-    data[i].parents.map((v) => {
-      if (v.slice(0, 2) === 'di') {
-        bool = true
-      }
-      if (v !== 'root' && v === rootId) {
-        bool = false
-      }
-    })
-    if (!bool) {
+    const parents = data[i].parents.filter(
+      (i) => i === 'root' || i.slice(0, 2) === 'di'
+    )
+    if (parents[0] === rootId) {
       newArr.push(data[i])
     }
   }
@@ -54,8 +48,6 @@ export const Explorer = ({}) => {
   const containerRef = useRef<any>()
 
   const { data, loading: dataLoading } = useQuery('db', {
-    // $id: section.length > 0 ? section : 'root',
-    //@ts-ignore
     $id: section,
     files: {
       $all: true,
@@ -81,20 +73,20 @@ export const Explorer = ({}) => {
     }
     const prefix = dragOverItem.current?.slice(0, 2)
     if (prefix === 'di' && id !== dragOverItem.current) {
-      const childData = await client
+      await client
         .query('db', {
           $id: dragOverItem.current,
           children: true,
         })
         .get()
-
-      await client
-        .call('db:set', {
-          $id: dragOverItem.current,
-          children: [...childData.children, id],
-        })
+        .then(
+          async (res) =>
+            await client.call('db:set', {
+              $id: dragOverItem.current,
+              children: [...res.children, id],
+            })
+        )
         .catch((e) => console.log('error', e))
-      console.log('YEPYEP')
     } else {
       if (id !== dragOverItem.current) {
         const items = filterFolder(data.files, section) as any
