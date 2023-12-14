@@ -95,14 +95,20 @@ export const Explorer = ({}) => {
     }
     const prefix = dragOverItem.current?.slice(0, 2)
     if (prefix === 'di' && id !== dragOverItem.current) {
-      const childData = await client.call('db:get', {
-        $id: dragOverItem.current,
-        children: true,
-      })
-      await client.call('db:set', {
-        $id: dragOverItem.current,
-        children: [...childData.children, id],
-      })
+      const childData = await client
+        .query('db', {
+          $id: dragOverItem.current,
+          children: true,
+        })
+        .get()
+
+      await client
+        .call('db:set', {
+          $id: dragOverItem.current,
+          children: [...childData.children, id],
+        })
+        .catch((e) => console.log('error', e))
+      console.log('YEPYEP')
     } else {
       if (id !== dragOverItem.current) {
         const items = filterFolder(data.files, section) as any
@@ -231,26 +237,36 @@ export const Explorer = ({}) => {
     $id: selected,
     $all: true,
   })
-
+  console.log(filterFolder(data?.files, section))
   return (
     <styled.div>
-      <Breadcrumbs
-        data={Object.fromEntries(path.split('/').map((i) => [i, i]))}
-        onChange={(v) => {
-          const pathArr = path.split('/')
-          const newArr = [] as string[]
-          for (const i in pathArr) {
-            if (pathArr[i] === v) {
-              newArr.push(pathArr[i])
-              break
-            } else {
-              newArr.push(pathArr[i])
-            }
+      <styled.div
+        style={
+          {
+            // '& div': {
+            //   border: '1px solid red',
+            // },
           }
+        }
+      >
+        <Breadcrumbs
+          data={Object.fromEntries(path.split('/').map((i) => [i, i]))}
+          onChange={(v) => {
+            const pathArr = path.split('/')
+            const newArr = [] as string[]
+            for (const i in pathArr) {
+              if (pathArr[i] === v) {
+                newArr.push(pathArr[i])
+                break
+              } else {
+                newArr.push(pathArr[i])
+              }
+            }
 
-          route.setQuery({ folder: newArr.join('/') })
-        }}
-      />
+            route.setQuery({ folder: newArr.join('/') })
+          }}
+        />
+      </styled.div>
 
       <styled.div
         ref={containerRef}
