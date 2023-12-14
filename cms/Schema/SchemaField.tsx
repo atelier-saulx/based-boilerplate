@@ -171,7 +171,7 @@ export const SchemaField = ({
 }
 
 const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
-  console.log('🚑', objItem)
+  // console.log('🚑', objItem)
   // console.log(ALL_FIELDS)
   const [collapsed, setCollapsed] = useState(false)
 
@@ -180,7 +180,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
   let path = objPath
   objItem.type === 'object' ? path.push(objItem?.meta.name) : null
 
-  console.log('NEW PATH =', path)
+  // console.log('NEW PATH =', path)
   // console.log('deepness', deep)
 
   const labels = ALL_FIELDS.map((item) => item.label.toLowerCase())
