@@ -32,7 +32,7 @@ export const SchemaField = ({
 
   const [collapsed, setCollapsed] = useState(false)
 
-  console.log(item, '??')
+  // console.log(item, '??')
 
   return (
     <div
