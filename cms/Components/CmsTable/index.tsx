@@ -186,6 +186,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   // Cell Component
   const Cell = ({ columnIndex, rowIndex, style }) => {
     let cellFieldTypeOf = schemaFields[hiddenColumnNames[columnIndex]]?.type
+    let displayAs = schemaFields[hiddenColumnNames[columnIndex]]?.meta.display
 
     const [inputState, setInputState] = useState(
       Object.keys(changedRows)?.includes(parsedData[rowIndex]?.id)
@@ -298,6 +299,7 @@ export const CmsTable: FC<CmsTableProps> = ({
             input={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
             colName={hiddenColumnNames[columnIndex]}
             cellFieldTypeOf={cellFieldTypeOf}
+            displayAs={displayAs}
             selectedLang={selectedLang}
           />
         )}

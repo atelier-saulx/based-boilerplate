@@ -11,8 +11,16 @@ import {
   Avatar,
 } from '@based/ui'
 
-export const RenderAs = ({ colName, input, cellFieldTypeOf, selectedLang }) => {
+export const RenderAs = ({
+  colName,
+  input,
+  cellFieldTypeOf,
+  selectedLang,
+  displayAs,
+}) => {
   let cName = colName.toLowerCase()
+
+  // map displayAs to pretty number date and types
 
   if (cName === 'id') {
     return (

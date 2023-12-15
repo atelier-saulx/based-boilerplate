@@ -154,121 +154,123 @@ export const SchemaFields = () => {
   }, [schema, routeType])
 
   return (
-    <div style={{ maxWidth: 676, margin: '34px auto' }}>
-      <DndContext
-        sensors={sensors}
-        collisionDetection={closestCenter}
-        onDragEnd={handleDragEnd}
-      >
-        <CheckboxInput
-          title="Show system fields"
-          value={showSystemFields}
-          onChange={(v) => setShowSystemFields(v)}
-          style={{ marginBottom: 32, width: 'fit-content' }}
-        />
-        <SortableContext
-          items={array?.length > 0 ? array : [0, 1]}
-          strategy={verticalListSortingStrategy}
+    <>
+      <CheckboxInput
+        title="Show system fields"
+        value={showSystemFields}
+        onChange={(v) => setShowSystemFields(v)}
+        style={{ marginBottom: 32, width: 'fit-content' }}
+      />
+      <div style={{ maxWidth: 676, margin: '34px auto' }}>
+        <DndContext
+          sensors={sensors}
+          collisionDetection={closestCenter}
+          onDragEnd={handleDragEnd}
         >
-          {schema &&
-            array
-              ?.filter((item) =>
-                !showSystemFields
-                  ? !SYSTEM_FIELDS_LABELS.includes(item?.name?.toLowerCase())
-                  : item
-              )
-              ?.map((item, i) => {
-                let index = ALL_FIELDS?.findIndex(
-                  (x) => x?.label?.toLowerCase() === item?.type?.toLowerCase()
+          <SortableContext
+            items={array?.length > 0 ? array : [0, 1]}
+            strategy={verticalListSortingStrategy}
+          >
+            {schema &&
+              array
+                ?.filter((item) =>
+                  !showSystemFields
+                    ? !SYSTEM_FIELDS_LABELS.includes(item?.name?.toLowerCase())
+                    : item
                 )
-                return (
-                  <SchemaField
-                    id={item.id}
-                    ALL_FIELDS={ALL_FIELDS}
-                    SYSTEM_FIELDS_LABELS={SYSTEM_FIELDS_LABELS}
-                    index={index}
-                    item={item}
-                    setItemToEdit={setItemToEdit}
-                    setOpenEditModal={setOpenEditModal}
-                    setOpenDeleteModal={setOpenDeleteModal}
-                    key={item.id}
-                  />
-                )
-              })}
-        </SortableContext>
-        {/* Edit  Modal */}
-        <Modal.Root open={openEditModal} onOpenChange={setOpenEditModal}>
-          <Modal.Content>
-            <Modal.Title>
-              <Row>
-                {/* <Thumbnail
+                ?.map((item, i) => {
+                  let index = ALL_FIELDS?.findIndex(
+                    (x) => x?.label?.toLowerCase() === item?.type?.toLowerCase()
+                  )
+                  return (
+                    <SchemaField
+                      id={item.id}
+                      ALL_FIELDS={ALL_FIELDS}
+                      SYSTEM_FIELDS_LABELS={SYSTEM_FIELDS_LABELS}
+                      index={index}
+                      item={item}
+                      setItemToEdit={setItemToEdit}
+                      setOpenEditModal={setOpenEditModal}
+                      setOpenDeleteModal={setOpenDeleteModal}
+                      key={item.id}
+                    />
+                  )
+                })}
+          </SortableContext>
+          {/* Edit  Modal */}
+          <Modal.Root open={openEditModal} onOpenChange={setOpenEditModal}>
+            <Modal.Content>
+              <Modal.Title>
+                <Row>
+                  {/* <Thumbnail
                 size="small"
                 icon={item.icon}
                 light
                 color={selectedItem.color}
                 style={{ marginRight: 12 }}
               /> */}
-                {/* Edit {item.name} */}
-              </Row>
-            </Modal.Title>
-            <SpecificFieldModal
-              field={itemToEdit}
-              setOpenSpecificFieldModal={setOpenEditModal}
-              editField
-            />
-          </Modal.Content>
-        </Modal.Root>
-        {/* Delete modal */}
-        <Modal.Root open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
-          <Modal.Content>
-            {({ close }) => (
-              <>
-                <Modal.Title>Delete field</Modal.Title>
-                <Modal.Body>
-                  <Text>
-                    Are you sure you want to delete the field{' '}
-                    <b>{itemToEdit}</b>
-                  </Text>
-                  <Modal.Warning type="alert">
-                    You are about to delete the field <b>{itemToEdit}</b> for
-                    all users.
-                  </Modal.Warning>
-                </Modal.Body>
-                <Modal.Actions>
-                  <Button onClick={close} color="system">
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={async () => {
-                      await client.call('db:set-schema', {
-                        mutate: true,
-                        schema: {
-                          types: {
-                            [routeType as string]: {
-                              fields: {
-                                [itemToEdit]: { $delete: true },
+                  {/* Edit {item.name} */}
+                </Row>
+              </Modal.Title>
+              <SpecificFieldModal
+                field={itemToEdit}
+                setOpenSpecificFieldModal={setOpenEditModal}
+                editField
+              />
+            </Modal.Content>
+          </Modal.Root>
+          {/* Delete modal */}
+          <Modal.Root open={openDeleteModal} onOpenChange={setOpenDeleteModal}>
+            <Modal.Content>
+              {({ close }) => (
+                <>
+                  <Modal.Title>Delete field</Modal.Title>
+                  <Modal.Body>
+                    <Text>
+                      Are you sure you want to delete the field{' '}
+                      <b>{itemToEdit}</b>
+                    </Text>
+                    <Modal.Warning type="alert">
+                      You are about to delete the field <b>{itemToEdit}</b> for
+                      all users.
+                    </Modal.Warning>
+                  </Modal.Body>
+                  <Modal.Actions>
+                    <Button onClick={close} color="system">
+                      Cancel
+                    </Button>
+                    <Button
+                      onClick={async () => {
+                        await client.call('db:set-schema', {
+                          mutate: true,
+                          schema: {
+                            types: {
+                              [routeType as string]: {
+                                fields: {
+                                  [itemToEdit]: { $delete: true },
+                                },
                               },
                             },
                           },
-                        },
-                      })
-                      close()
-                    }}
-                    color="alert"
-                    icon={<IconDelete />}
-                    displayShortcut
-                    keyboardShortcut="Enter"
-                  >
-                    Delete
-                  </Button>
-                </Modal.Actions>
-              </>
-            )}
-          </Modal.Content>
-        </Modal.Root>
-      </DndContext>
-      <div style={{ height: 20 }} />
-    </div>
+                        })
+                        close()
+                      }}
+                      color="alert"
+                      icon={<IconDelete />}
+                      displayShortcut
+                      keyboardShortcut="Enter"
+                    >
+                      Delete
+                    </Button>
+                  </Modal.Actions>
+                </>
+              )}
+            </Modal.Content>
+          </Modal.Root>
+        </DndContext>
+        <div style={{ height: 20 }} />
+      </div>
+    </>
   )
 
   async function handleDragEnd(event) {
