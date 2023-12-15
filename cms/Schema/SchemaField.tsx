@@ -95,7 +95,7 @@ export const SchemaField = ({
               icon={ALL_FIELDS[index]?.icon}
               color={ALL_FIELDS[index]?.color as any}
             />
-            <Text weight="medium">{item?.meta.displayName || item.name}</Text>
+            <Text weight="medium">{item?.meta?.displayName || item?.name}</Text>
             {item?.description && <Text light>{item?.description}</Text>}
             <Badge color={ALL_FIELDS[index]?.color as any} light>
               {item.type}
@@ -192,7 +192,7 @@ const NestedSchemaField = ({
   let deep = deepness + 1
 
   let path = objPath
-  path.push(objItem?.meta.name || objItem?.meta.displayName)
+  path.push(objItem?.meta?.name || objItem?.meta?.displayName)
 
   // console.log('NEW PATH =', path)
   // console.log('deepness', deep)
@@ -239,7 +239,7 @@ const NestedSchemaField = ({
             color={ALL_FIELDS[index]?.color as any}
           />
           <Text weight="medium">
-            {objItem?.meta.displayName || objItem?.meta?.name}
+            {objItem?.meta?.displayName || objItem?.meta?.name}
           </Text>
           {objItem?.description && <Text light>{objItem?.description}</Text>}
           <Badge color={ALL_FIELDS[index]?.color as any} light>
