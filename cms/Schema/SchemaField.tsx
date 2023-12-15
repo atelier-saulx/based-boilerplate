@@ -25,6 +25,7 @@ export const SchemaField = ({
   setOpenEditModal,
   setOpenDeleteModal,
   setItemToEdit,
+  setPathToEdit,
   id,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -158,11 +159,14 @@ export const SchemaField = ({
 
           return (
             <NestedSchemaField
-              objPath={objItem.type === 'object' && [item.name]}
+              objPath={[item.name]}
               objItem={objItem}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
               deepness={1}
+              setItemToEdit={setItemToEdit}
+              setOpenEditModal={setOpenEditModal}
+              setPathToEdit={setPathToEdit}
             />
           )
         })}
@@ -170,7 +174,15 @@ export const SchemaField = ({
   )
 }
 
-const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
+const NestedSchemaField = ({
+  objItem,
+  ALL_FIELDS,
+  objPath,
+  deepness,
+  setItemToEdit,
+  setOpenEditModal,
+  setPathToEdit,
+}) => {
   // console.log('🚑', objItem)
   // console.log(ALL_FIELDS)
   const [collapsed, setCollapsed] = useState(false)
@@ -178,7 +190,7 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
   let deep = deepness + 1
 
   let path = objPath
-  objItem.type === 'object' ? path.push(objItem?.meta.name) : null
+  path.push(objItem?.meta.name)
 
   // console.log('NEW PATH =', path)
   // console.log('deepness', deep)
@@ -261,8 +273,9 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
             <Dropdown.Item
               //@ts-ignore
               onClick={(e) => {
-                // setOpenEditModal(true)
-                // setItemToEdit(item.name)
+                setOpenEditModal(true)
+                setItemToEdit(objItem.meta.name)
+                setPathToEdit(path)
               }}
             >
               Edit
@@ -292,6 +305,9 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
               key={key}
               ALL_FIELDS={ALL_FIELDS}
               deepness={deep}
+              setItemToEdit={setItemToEdit}
+              setOpenEditModal={setOpenEditModal}
+              setPathToEdit={setPathToEdit}
             />
           )
         })}

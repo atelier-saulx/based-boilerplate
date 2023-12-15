@@ -10,6 +10,7 @@ type SpecificFieldModalProps = {
   setOpenSpecificFieldModal: (v: boolean) => void
   editField?: boolean
   nestedObjectPath?: string[]
+  pathToEdit?: string[]
 }
 
 function setDeep(obj, path, value, setrecursively = false) {
@@ -50,6 +51,7 @@ export const SpecificFieldModal = ({
   setOpenSpecificFieldModal,
   editField,
   nestedObjectPath,
+  pathToEdit,
 }: SpecificFieldModalProps) => {
   const [meta, setMeta] = useReducer(metaReducer, {})
   const [fieldType, setFieldType] = useState(field)
@@ -61,7 +63,26 @@ export const SpecificFieldModal = ({
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
-  let thisSpecificField = schema.types[routeType].fields[field]
+  let editPathArr: string[] = []
+  if (pathToEdit) {
+    pathToEdit.map((item, idx) => {
+      editPathArr.push(item)
+      idx !== pathToEdit.length - 1 && editPathArr.push('properties')
+    })
+  }
+
+  let thisSpecificField
+
+  if (pathToEdit) {
+    console.log('THER IS PATH.', pathToEdit)
+    console.log('New 🐐 path', editPathArr)
+
+    thisSpecificField = editPathArr.reduce(function (obj, prop) {
+      return obj && obj[prop]
+    }, schema.types[routeType].fields)
+  } else {
+    thisSpecificField = schema.types[routeType].fields[field]
+  }
 
   let newIndex = Object.keys(schema.types[routeType].fields).length + 1
   // console.log(
@@ -69,7 +90,7 @@ export const SpecificFieldModal = ({
   //   'current length'
   // )
 
-  console.log('FIELD??', schema?.types[routeType]?.fields[field])
+  // console.log('FIELD??', schema?.types[routeType]?.fields[field])
   // console.log(meta, 'meta')
 
   useEffect(() => {
@@ -80,9 +101,11 @@ export const SpecificFieldModal = ({
     }
     if (thisSpecificField?.type) {
       setFieldType(thisSpecificField.type)
-      console.log('🐧', field)
+      console.log('🐧', field, thisSpecificField)
     }
   }, [])
+
+  console.log('PATH??', pathToEdit)
 
   return (
     <>
@@ -193,19 +216,19 @@ export const SpecificFieldModal = ({
               // NESTED OBJ LOGIC
               let nestedFields = {}
 
+              let newArr: string[] = []
               //NestedObjectPath length is de diepte waar het gezet moet worden
               if (nestedObjectPath) {
+                nestedObjectPath.map((item) => {
+                  newArr.push(item)
+                  newArr.push('properties')
+                })
+
                 nestedFields = {
                   [nestedObjectPath[0]]: {
                     ...schema?.types[routeType]?.fields[nestedObjectPath[0]],
                   },
                 }
-
-                let newArr: string[] = []
-                nestedObjectPath.map((item) => {
-                  newArr.push(item)
-                  newArr.push('properties')
-                })
 
                 console.log('NEW ARR', newArr)
                 console.log('TEST --> ', nestedFields)

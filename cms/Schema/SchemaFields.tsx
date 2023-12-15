@@ -131,10 +131,13 @@ export const SchemaFields = () => {
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [itemToEdit, setItemToEdit] = useState('')
+  const [pathToEdit, setPathToEdit] = useState()
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
   // console.log('Schema?? 🐸', schema)
+  // console.log('item to edit? 🤢', itemToEdit)
+  // console.log('path to edit 🤡', pathToEdit)
 
   const SYSTEM_FIELDS_LABELS = SYSTEM_FIELDS.map((item) => item.label)
   // console.log(schema?.types[routeType as string].fields)
@@ -192,6 +195,7 @@ export const SchemaFields = () => {
                       setItemToEdit={setItemToEdit}
                       setOpenEditModal={setOpenEditModal}
                       setOpenDeleteModal={setOpenDeleteModal}
+                      setPathToEdit={setPathToEdit}
                       key={item.id}
                     />
                   )
@@ -209,11 +213,12 @@ export const SchemaFields = () => {
                 color={selectedItem.color}
                 style={{ marginRight: 12 }}
               /> */}
-                  {/* Edit {item.name} */}
+                  Edit {itemToEdit}
                 </Row>
               </Modal.Title>
               <SpecificFieldModal
                 field={itemToEdit}
+                pathToEdit={pathToEdit}
                 setOpenSpecificFieldModal={setOpenEditModal}
                 editField
               />
