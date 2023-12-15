@@ -229,6 +229,17 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
           <Badge color={ALL_FIELDS[index]?.color as any} light>
             {objItem.type}
           </Badge>
+          {objItem?.meta?.format && <Badge light>{objItem.meta.format}</Badge>}
+          {objItem?.meta?.contentMediaEncoding && (
+            <Badge light color="blue">
+              {objItem.meta.contentMediaEncoding}
+            </Badge>
+          )}
+          {objItem?.meta?.display && (
+            <Badge light color="magenta">
+              {objItem.meta.display}
+            </Badge>
+          )}
         </Row>
 
         <Dropdown.Root>

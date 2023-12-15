@@ -22,7 +22,11 @@ export const RenderAs = ({ colName, input, cellFieldTypeOf, selectedLang }) => {
     )
   } else if (cellFieldTypeOf === 'text') {
     return <Text>{input && input[selectedLang]}</Text>
-  } else if (cName === 'createdat' || cName === 'updatedat') {
+  } else if (
+    cName === 'createdat' ||
+    cName === 'updatedat' ||
+    cellFieldTypeOf === 'timestamp'
+  ) {
     return <Text light>{prettyDate(input, 'date-time-human')}</Text>
   } else if (cName === 'size') {
     return <Text>{prettyNumber(input, 'number-bytes')}</Text>
