@@ -167,6 +167,7 @@ export const SchemaField = ({
               setItemToEdit={setItemToEdit}
               setOpenEditModal={setOpenEditModal}
               setPathToEdit={setPathToEdit}
+              setOpenDeleteModal={setOpenDeleteModal}
             />
           )
         })}
@@ -182,6 +183,7 @@ const NestedSchemaField = ({
   setItemToEdit,
   setOpenEditModal,
   setPathToEdit,
+  setOpenDeleteModal,
 }) => {
   console.log('🚑', objItem)
   // console.log(ALL_FIELDS)
@@ -264,9 +266,6 @@ const NestedSchemaField = ({
                 e.stopPropagation()
               }}
               size="small"
-              // disabled={SYSTEM_FIELDS_LABELS.includes(
-              //   item.name.toLowerCase()
-              // )}
               ghost
               icon={<IconMoreHorizontal />}
             />
@@ -284,8 +283,9 @@ const NestedSchemaField = ({
             </Dropdown.Item>
             <Dropdown.Item
               onClick={() => {
-                // setItemToEdit(item.name)
-                // setOpenDeleteModal(true)
+                setItemToEdit(objItem?.name || objItem?.meta?.name)
+                setOpenDeleteModal(true)
+                setPathToEdit(path)
               }}
             >
               Delete
@@ -310,6 +310,7 @@ const NestedSchemaField = ({
               setItemToEdit={setItemToEdit}
               setOpenEditModal={setOpenEditModal}
               setPathToEdit={setPathToEdit}
+              setOpenDeleteModal={setOpenDeleteModal}
             />
           )
         })}

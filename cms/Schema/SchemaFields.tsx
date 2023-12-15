@@ -7,7 +7,6 @@ import {
   IconStar,
   Modal,
   Row,
-  Confirmation,
   Text,
   Button,
   IconDelete,
@@ -30,6 +29,7 @@ import {
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable'
 import { SchemaField } from './SchemaField'
+import { setDeep } from './utils/setDeep'
 
 const SYSTEM_FIELDS = [
   { label: 'type', icon: <IconExtension />, color: 'grey' },
@@ -131,7 +131,7 @@ export const SchemaFields = () => {
   const [openEditModal, setOpenEditModal] = useState(false)
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [itemToEdit, setItemToEdit] = useState('')
-  const [pathToEdit, setPathToEdit] = useState()
+  const [pathToEdit, setPathToEdit] = useState<string[] | undefined>()
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
@@ -247,14 +247,43 @@ export const SchemaFields = () => {
                     </Button>
                     <Button
                       onClick={async () => {
+                        let nestedPathFields = {}
+                        let editPathArr: string[] = []
+                        if (pathToEdit) {
+                          pathToEdit.map((item, idx) => {
+                            editPathArr.push(item)
+                            idx !== pathToEdit.length - 1 &&
+                              editPathArr.push('properties')
+                          })
+
+                          nestedPathFields = {
+                            [editPathArr[0]]: {
+                              ...schema?.types[routeType as string]?.fields[
+                                editPathArr[0]
+                              ],
+                            },
+                          }
+
+                          setDeep(
+                            nestedPathFields,
+                            editPathArr,
+                            { $delete: true },
+                            true
+                          )
+                        }
+
+                        console.log('DELETE THIS 😾🔫', nestedPathFields)
+
                         await client.call('db:set-schema', {
                           mutate: true,
                           schema: {
                             types: {
                               [routeType as string]: {
-                                fields: {
-                                  [itemToEdit]: { $delete: true },
-                                },
+                                fields: pathToEdit
+                                  ? nestedPathFields
+                                  : {
+                                      [itemToEdit]: { $delete: true },
+                                    },
                               },
                             },
                           },

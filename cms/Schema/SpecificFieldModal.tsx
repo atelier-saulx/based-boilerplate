@@ -4,6 +4,7 @@ import { useRoute } from 'kabouter'
 import { Modal, Button, Input, Tab, Tabs, getPluralName } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { SpecificFieldSettings } from './SpecificFieldSettings'
+import { setDeep } from './utils/setDeep'
 
 type SpecificFieldModalProps = {
   field: string
@@ -12,25 +13,6 @@ type SpecificFieldModalProps = {
   nestedObjectPath?: string[]
   pathToEdit?: string[]
   setPathToEdit?: (v: string | string[]) => void
-}
-
-function setDeep(obj, path, value, setrecursively = false) {
-  path.reduce((a, b, level) => {
-    if (
-      setrecursively &&
-      typeof a[b] === 'undefined' &&
-      level !== path.length
-    ) {
-      a[b] = {}
-      return a[b]
-    }
-
-    if (level === path.length - 1) {
-      a[b] = value
-      return value
-    }
-    return a[b]
-  }, obj)
 }
 
 const metaReducer = (state, action) => {
