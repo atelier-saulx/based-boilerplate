@@ -146,8 +146,8 @@ export const CmsTable: FC<CmsTableProps> = ({
     setEnableInlineEditModus(false)
     setErrorMessage('')
   }, [queryId])
-  // console.log(result, 'Result>?')
-  // console.log(parsedData, 'ParsedDAta?')
+  console.log(result, 'Result>?')
+  console.log(parsedData, 'ParsedDAta?')
   // console.log(schemaFields)
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')
@@ -186,7 +186,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   // Cell Component
   const Cell = ({ columnIndex, rowIndex, style }) => {
     let cellFieldTypeOf = schemaFields[hiddenColumnNames[columnIndex]]?.type
-    let displayAs = schemaFields[hiddenColumnNames[columnIndex]]?.meta.display
+    let displayAs = schemaFields[hiddenColumnNames[columnIndex]]?.meta?.display
 
     const [inputState, setInputState] = useState(
       Object.keys(changedRows)?.includes(parsedData[rowIndex]?.id)
@@ -285,7 +285,7 @@ export const CmsTable: FC<CmsTableProps> = ({
           <Input
             type="text"
             value={inputState && inputState[selectedLang as string]}
-            onChange={(v) => setInputState(v)}
+            onChange={(v) => setInputState({ [selectedLang as string]: v })}
           />
         ) : (cellFieldTypeOf === 'number' && enableInlineEditModus) ||
           (cellFieldTypeOf === 'int' && enableInlineEditModus) ? (
@@ -379,7 +379,7 @@ export const CmsTable: FC<CmsTableProps> = ({
 
                   await client.call('db:set', {
                     // TODO check this language
-                    $language: 'en',
+                    $language: selectedLang,
                     type: parsedData[idx].type,
                     ...parsedData[idx],
                   })
@@ -641,7 +641,7 @@ export const CmsTable: FC<CmsTableProps> = ({
                     await client
                       .call('db:set', {
                         $id: key,
-                        $language: selectedLang,
+                        //  $language: selectedLang,
                         ...changedRows[key],
                       })
                       .catch((err) => {

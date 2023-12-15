@@ -11,6 +11,16 @@ import {
   Avatar,
 } from '@based/ui'
 
+type NumberFormat =
+  | 'short'
+  | 'human'
+  | 'ratio'
+  | 'bytes'
+  | 'euro'
+  | 'dollar'
+  | 'pound'
+  | `round-${number}`
+
 export const RenderAs = ({
   colName,
   input,
@@ -30,6 +40,14 @@ export const RenderAs = ({
     )
   } else if (cellFieldTypeOf === 'text') {
     return <Text>{input && input[selectedLang]}</Text>
+  } else if (cellFieldTypeOf === 'number' || cellFieldTypeOf === 'int') {
+    return (
+      <Text>
+        {displayAs
+          ? prettyNumber(input, `number-${displayAs as NumberFormat}`)
+          : input}
+      </Text>
+    )
   } else if (
     cName === 'createdat' ||
     cName === 'updatedat' ||
