@@ -11,6 +11,7 @@ type SpecificFieldModalProps = {
   editField?: boolean
   nestedObjectPath?: string[]
   pathToEdit?: string[]
+  setPathToEdit?: (v: string | string[]) => void
 }
 
 function setDeep(obj, path, value, setrecursively = false) {
@@ -52,6 +53,7 @@ export const SpecificFieldModal = ({
   editField,
   nestedObjectPath,
   pathToEdit,
+  setPathToEdit,
 }: SpecificFieldModalProps) => {
   const [meta, setMeta] = useReducer(metaReducer, {})
   const [fieldType, setFieldType] = useState(field)
@@ -71,10 +73,11 @@ export const SpecificFieldModal = ({
     })
   }
 
+  console.log('THER IS NESTED PATH.????', nestedObjectPath)
+
   let thisSpecificField
 
   if (pathToEdit) {
-    console.log('THER IS PATH.', pathToEdit)
     console.log('New 🐐 path', editPathArr)
 
     thisSpecificField = editPathArr.reduce(function (obj, prop) {
@@ -101,11 +104,11 @@ export const SpecificFieldModal = ({
     }
     if (thisSpecificField?.type) {
       setFieldType(thisSpecificField.type)
-      console.log('🐧', field, thisSpecificField)
+      console.log('🐧', field, thisSpecificField, thisSpecificField.type)
     }
   }, [])
 
-  console.log('PATH??', pathToEdit)
+  // console.log('PATH??', pathToEdit)
 
   return (
     <>
@@ -199,6 +202,9 @@ export const SpecificFieldModal = ({
         <Button
           onClick={() => {
             setOpenSpecificFieldModal(false)
+            if (setPathToEdit) {
+              setPathToEdit('')
+            }
           }}
           color="system"
           displayShortcut
@@ -213,7 +219,40 @@ export const SpecificFieldModal = ({
                 Object.entries(meta).filter(([_, v]) => v != false)
               )
 
-              // NESTED OBJ LOGIC
+              let nestedPathFields = {}
+              if (pathToEdit) {
+                //////////////////////////////
+                // TO EDIT NESTED TYPES
+                //////////////////////////////
+
+                nestedPathFields = {
+                  [editPathArr[0]]: {
+                    ...schema?.types[routeType]?.fields[editPathArr[0]],
+                  },
+                }
+
+                setDeep(
+                  nestedPathFields,
+                  editPathArr,
+                  {
+                    type: fieldType.toLowerCase(),
+                    meta: {
+                      ...newMeta,
+                      name: meta.name || meta.displayName.toLowerCase(),
+                      //   index: thisSpecificField?.meta.index || newIndex,
+                    },
+                    properties:
+                      fieldType.toLowerCase() === 'object' ? {} : undefined,
+                    values:
+                      fieldType.toLowerCase() === 'record' ? [] : undefined,
+                  },
+                  true
+                )
+              }
+
+              //////////////////////////////
+              // SETTING NESTED OBJECTS LOGIC
+              //////////////////////////////
               let nestedFields = {}
 
               let newArr: string[] = []
@@ -254,7 +293,9 @@ export const SpecificFieldModal = ({
                 )
               }
 
-              // ELSE FIELDS WILL BE THIS DEPENDING ON TYPE
+              //////////////////////////////
+              // ELSE SET NORMAL TYPES
+              //////////////////////////////
               let fields = {
                 [meta.name || meta.displayName.toLowerCase()]: {
                   type: fieldType.toLowerCase(),
@@ -315,13 +356,23 @@ export const SpecificFieldModal = ({
                   },
                 })
               } else {
-                // SET FIELDS OR NESTED FIELDS
+                //////////////////////////////
+                // // SET/UPDATE FIELDS OR NESTED FIELDS
+                //////////////////////////////
+
+                // console.log('/NEW META', newMeta)
+                // console.log('BBBBBBBB', nestedPathFields)
+
                 await client.call('db:set-schema', {
                   mutate: true,
                   schema: {
                     types: {
                       [routeType]: {
-                        fields: nestedObjectPath ? nestedFields : fields,
+                        fields: pathToEdit
+                          ? nestedPathFields
+                          : nestedObjectPath
+                          ? nestedFields
+                          : fields,
                       },
                     },
                   },

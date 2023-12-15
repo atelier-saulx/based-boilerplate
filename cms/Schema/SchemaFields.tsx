@@ -220,6 +220,7 @@ export const SchemaFields = () => {
                 field={itemToEdit}
                 pathToEdit={pathToEdit}
                 setOpenSpecificFieldModal={setOpenEditModal}
+                setPathToEdit={setPathToEdit as any}
                 editField
               />
             </Modal.Content>

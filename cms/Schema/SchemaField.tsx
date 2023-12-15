@@ -95,7 +95,7 @@ export const SchemaField = ({
               icon={ALL_FIELDS[index]?.icon}
               color={ALL_FIELDS[index]?.color as any}
             />
-            <Text weight="medium">{item.name}</Text>
+            <Text weight="medium">{item?.meta.displayName || item.name}</Text>
             {item?.description && <Text light>{item?.description}</Text>}
             <Badge color={ALL_FIELDS[index]?.color as any} light>
               {item.type}
@@ -183,20 +183,20 @@ const NestedSchemaField = ({
   setOpenEditModal,
   setPathToEdit,
 }) => {
-  // console.log('🚑', objItem)
+  console.log('🚑', objItem)
   // console.log(ALL_FIELDS)
   const [collapsed, setCollapsed] = useState(false)
 
   let deep = deepness + 1
 
   let path = objPath
-  path.push(objItem?.meta.name)
+  path.push(objItem?.meta.name || objItem?.meta.displayName)
 
   // console.log('NEW PATH =', path)
   // console.log('deepness', deep)
 
-  const labels = ALL_FIELDS.map((item) => item.label.toLowerCase())
-  const index = labels.indexOf(objItem.type)
+  const labels = ALL_FIELDS.map((item) => item?.label?.toLowerCase())
+  const index = labels.indexOf(objItem?.type)
 
   return (
     <div style={{ position: 'relative' }}>
@@ -236,7 +236,9 @@ const NestedSchemaField = ({
             icon={ALL_FIELDS[index]?.icon}
             color={ALL_FIELDS[index]?.color as any}
           />
-          <Text weight="medium">{objItem?.name || objItem?.meta?.name}</Text>
+          <Text weight="medium">
+            {objItem?.meta.displayName || objItem?.meta?.name}
+          </Text>
           {objItem?.description && <Text light>{objItem?.description}</Text>}
           <Badge color={ALL_FIELDS[index]?.color as any} light>
             {objItem.type}
@@ -274,7 +276,7 @@ const NestedSchemaField = ({
               //@ts-ignore
               onClick={(e) => {
                 setOpenEditModal(true)
-                setItemToEdit(objItem.meta.name)
+                setItemToEdit(objItem?.meta?.name || objItem?.name)
                 setPathToEdit(path)
               }}
             >
