@@ -185,18 +185,10 @@ export const SpecificFieldModal = ({
         </Button>
         <Button
           onClick={async () => {
-            // TODO set meta fields if there are also description
-            // let metaFields
-
-            // console.log('ORB', fieldType.toLowerCase())
-            // console.log(nestedObjectPath, 'NESTED 🦜')
-
             if (meta.displayName) {
               const newMeta = Object.fromEntries(
                 Object.entries(meta).filter(([_, v]) => v != false)
               )
-
-              console.log(newMeta, 'NEW')
 
               // NESTED OBJ LOGIC
               let nestedFields = {}
@@ -214,8 +206,8 @@ export const SpecificFieldModal = ({
                   newArr.push(item)
                   newArr.push('properties')
                 })
-                console.log('NEW ARR', newArr)
 
+                console.log('NEW ARR', newArr)
                 console.log('TEST --> ', nestedFields)
 
                 setDeep(
@@ -230,22 +222,31 @@ export const SpecificFieldModal = ({
                         index: thisSpecificField?.meta.index || newIndex,
                       },
                       properties:
-                        fieldType.toLowerCase() === 'object' ? {} : null,
+                        fieldType.toLowerCase() === 'object' ? {} : undefined,
+                      values:
+                        fieldType.toLowerCase() === 'record' ? [] : undefined,
                     },
                   },
                   true
                 )
               }
 
-              // ELSE USE NORMAL FIELDS LOGIC IN SCHEMA
+              // ELSE FIELDS WILL BE THIS DEPENDING ON TYPE
               let fields = {
                 [meta.name || meta.displayName.toLowerCase()]: {
                   type: fieldType.toLowerCase(),
-                  label: meta.name || meta.displayName.toLowerCase(),
-                  id: meta.name || meta.displayName.toLowerCase(),
-                  properties: fieldType.toLowerCase() === 'object' ? {} : null,
-                  values: fieldType.toLowerCase() === 'record' ? [] : null,
-                  index: thisSpecificField?.index || newIndex,
+                  //      label: meta.name || meta.displayName.toLowerCase(),
+                  id:
+                    fieldType.toLowerCase() === 'array'
+                      ? undefined
+                      : meta.name || meta.displayName.toLowerCase(),
+                  properties:
+                    fieldType.toLowerCase() === 'object' ? {} : undefined,
+                  values: fieldType.toLowerCase() === 'record' ? [] : undefined,
+                  index:
+                    fieldType.toLowerCase() === 'array'
+                      ? undefined
+                      : thisSpecificField?.index || newIndex,
                   meta: {
                     ...newMeta,
                     name: meta.name || meta.displayName.toLowerCase(),
@@ -291,6 +292,7 @@ export const SpecificFieldModal = ({
                   },
                 })
               } else {
+                // SET FIELDS OR NESTED FIELDS
                 await client.call('db:set-schema', {
                   mutate: true,
                   schema: {
