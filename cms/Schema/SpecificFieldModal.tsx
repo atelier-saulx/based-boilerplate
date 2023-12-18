@@ -300,7 +300,7 @@ export const SpecificFieldModal = ({
                   },
                 },
               }
-
+              /// TODO rich text field will be one field object {arg1: json, arg2: html}
               if (fieldType === 'Rich Text') {
                 await client.call('db:set-schema', {
                   mutate: true,
