@@ -3,9 +3,9 @@ import {
   Menu,
   IconFolder,
   IconUsers,
-  IconBolt,
   IconTimeClock,
   IconSettings,
+  IconLayerThree,
 } from '@based/ui'
 import { useRoute } from 'kabouter'
 import { useQuery } from '@based/react'
@@ -54,7 +54,7 @@ export const SideBar = () => {
             // @ts-ignore
             value: 'schema-builder',
             label: 'Schema Builder',
-            icon: <IconBolt />,
+            icon: <IconLayerThree />,
           },
         },
         files: {

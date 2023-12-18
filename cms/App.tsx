@@ -17,6 +17,7 @@ import { Profile } from './Settings/UserManagement/Profile'
 import { Dashboard } from './Components/Dashboard'
 import { DatabaseSettings } from './Settings/Database'
 import { GeneralSettings } from './Settings/General'
+import { Docs } from './Docs'
 
 export const client = based(basedConfig)
 
@@ -69,6 +70,8 @@ export const App = () => {
             <DatabaseSettings />
           ) : section === 'general-settings' ? (
             <GeneralSettings languages={schema?.languages} />
+          ) : section === 'docs' ? (
+            <Docs />
           ) : !section ? (
             <Dashboard />
           ) : (

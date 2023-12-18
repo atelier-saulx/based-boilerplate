@@ -7,10 +7,10 @@ export const ShowEnvWidget = () => {
   return (
     <styled.div
       style={{
-        padding: '12px 24px',
+        padding: '0px 12px',
         borderRadius: 8,
         border: `1px solid ${color('inputBorder', 'neutralNormal', 'default')}`,
-        marginBottom: 24,
+        width: 324,
       }}
     >
       <Code language="json" value={JSON.stringify(Env, null, 2)} />
