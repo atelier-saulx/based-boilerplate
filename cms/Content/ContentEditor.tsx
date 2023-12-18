@@ -6,7 +6,6 @@ import {
   Badge,
   Row,
   FormGroup,
-  scrollAreaStyle,
   IconArrowLeft,
   color,
   ScrollArea,
@@ -14,12 +13,28 @@ import {
 import { PublishSideBar } from './PublishSideBar'
 import { useRoute } from 'kabouter'
 
-const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'id', 'aliases']
+const FILTER_FIELDS = [
+  'type',
+  'ancestors',
+  'descendants',
+  'id',
+  'aliases',
+  'createdAt',
+  'parents',
+  'updatedBy',
+  'updatedAt',
+  'children',
+]
 
 export const ContentEditor = ({ id, section }) => {
   const [formFieldChanges, setFormFieldChanges] = useState({})
   const [someThingChanged, setSomeThingChanged] = useState(false)
   const client = useClient()
+
+  const { data: userData } = useQuery('db', {
+    $id: client.authState.userId,
+    name: true,
+  })
 
   const { data, loading } = useQuery('db', {
     $id: id,
@@ -27,7 +42,8 @@ export const ContentEditor = ({ id, section }) => {
   })
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
-  console.log(data)
+
+  // console.log(data, '🐸', userData)
 
   const route = useRoute('[section][id]')
 
@@ -41,6 +57,8 @@ export const ContentEditor = ({ id, section }) => {
       }
     }
   }
+
+  // console.log('schema fields', schemaFields)
 
   return (
     <styled.div
@@ -91,15 +109,31 @@ export const ContentEditor = ({ id, section }) => {
         someThingChanged={someThingChanged}
         setSomeThingChanged={setSomeThingChanged}
         updatedAt={data?.updatedAt}
+        updatedBy={data?.updatedBy}
         onClick={async () => {
-          console.log('asdfasdf', { ...data, ...formFieldChanges })
-          await client
-            .call('db:set', {
-              $id: id,
-              ...data,
-              ...formFieldChanges,
-            })
-            .catch((err) => console.log(err))
+          // console.log('asdfasdf 🐝', {
+          //   ...data,
+          //   ...formFieldChanges,
+          //   updatedBy: userData.name,
+          // })
+          if (Object.keys(schemaFields).includes('updatedBy')) {
+            await client
+              .call('db:set', {
+                $id: id,
+                ...data,
+                ...formFieldChanges,
+                updatedBy: userData.name,
+              })
+              .catch((err) => console.log(err))
+          } else {
+            await client
+              .call('db:set', {
+                $id: id,
+                ...data,
+                ...formFieldChanges,
+              })
+              .catch((err) => console.log(err))
+          }
         }}
       />
     </styled.div>

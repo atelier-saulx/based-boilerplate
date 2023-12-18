@@ -41,6 +41,7 @@ const SYSTEM_FIELDS = [
   { label: 'aliases' },
   { label: 'descendants' },
   { label: 'ancestors' },
+  { label: 'updatedby' },
 ]
 
 const ALL_FIELDS = SYSTEM_FIELDS.concat(SCHEMA_FIELDS)
@@ -141,6 +142,7 @@ export const SchemaFields = () => {
 
   const SYSTEM_FIELDS_LABELS = SYSTEM_FIELDS.map((item) => item.label)
   // console.log(schema?.types[routeType as string].fields)
+  console.log(SYSTEM_FIELDS_LABELS)
 
   const sensors = useSensors(
     useSensor(PointerSensor),

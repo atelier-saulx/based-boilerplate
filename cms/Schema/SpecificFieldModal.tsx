@@ -60,7 +60,7 @@ export const SpecificFieldModal = ({
   let thisSpecificField
 
   if (pathToEdit) {
-    console.log('New 🐐 path', editPathArr)
+    // console.log('New 🐐 path', editPathArr)
 
     thisSpecificField = editPathArr.reduce(function (obj, prop) {
       return obj && obj[prop]
@@ -251,8 +251,8 @@ export const SpecificFieldModal = ({
                   },
                 }
 
-                console.log('NEW ARR', newArr)
-                console.log('TEST --> ', nestedFields)
+                // console.log('NEW ARR', newArr)
+                // console.log('TEST --> ', nestedFields)
 
                 setDeep(
                   nestedFields,

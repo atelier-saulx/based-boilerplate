@@ -14,9 +14,9 @@ export const Dashboard = () => {
         marginTop: 16,
       }}
     >
-      <StarterWidget />
-      <ShowEnvWidget />
+      {/* <StarterWidget /> */}
       <ConnectionsWidget />
+      <ShowEnvWidget />
     </styled.div>
   )
 }

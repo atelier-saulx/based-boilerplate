@@ -73,6 +73,7 @@ export const CmsTable: FC<CmsTableProps> = ({
     'aliases',
     'parents',
     'children',
+    'updatedby',
   ])
   const [sortOptions, setSortOptions] = useState<SortOptions>({
     $field: 'updatedAt',
@@ -146,8 +147,8 @@ export const CmsTable: FC<CmsTableProps> = ({
     setEnableInlineEditModus(false)
     setErrorMessage('')
   }, [queryId])
-  console.log(result, 'Result>?')
-  console.log(parsedData, 'ParsedDAta?')
+  // console.log(result, 'Result>?')
+  // console.log(parsedData, 'ParsedDAta?')
   // console.log(schemaFields)
   //  console.log(query, 'the query?')
   //   console.log(filter, 'What the filter man')

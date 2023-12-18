@@ -13,7 +13,7 @@ export const ShowEnvWidget = () => {
         marginBottom: 24,
       }}
     >
-      <Code language="json" value={JSON.stringify(Env)} />
+      <Code language="json" value={JSON.stringify(Env, null, 2)} />
     </styled.div>
   )
 }
