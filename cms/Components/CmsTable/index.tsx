@@ -49,6 +49,7 @@ type CmsTableProps = {
   columnNamesInRightOrder?: string[]
   style?: CSSProperties | Style
   selectedLang?: string
+  updatedBy?: string
 }
 
 export const changedRows = {}
@@ -66,6 +67,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   style,
   filter,
   selectedLang,
+  updatedBy,
 }) => {
   const [hiddenColumns, setFilteredColumns] = useState<string[]>([
     'ancestors',
@@ -637,8 +639,27 @@ export const CmsTable: FC<CmsTableProps> = ({
                 // console.log(shadowData, 'shadow data')
 
                 // save the rows that are changed,
-                Object.keys(changedRows).forEach(
-                  async (key) =>
+                Object.keys(changedRows).forEach(async (key) => {
+                  console.log({
+                    $id: key,
+                    //  $language: selectedLang,
+                    ...changedRows[key],
+                    updatedBy: updatedBy,
+                  })
+                  if (Object.keys(changedRows[key]).includes('updatedBy')) {
+                    console.log('SNURP??')
+                    await client
+                      .call('db:set', {
+                        $id: key,
+                        //  $language: selectedLang,
+                        ...changedRows[key],
+                        updatedBy: updatedBy,
+                      })
+                      .catch((err) => {
+                        console.error(err)
+                        setErrorMessage(err.message)
+                      })
+                  } else {
                     await client
                       .call('db:set', {
                         $id: key,
@@ -649,7 +670,8 @@ export const CmsTable: FC<CmsTableProps> = ({
                         console.error(err)
                         setErrorMessage(err.message)
                       })
-                )
+                  }
+                })
 
                 // clear the rowChanges
                 setEnableInlineEditModus(!enableInlineEditModus)
