@@ -10,7 +10,7 @@ export const ConnectionsWidget = () => {
   console.log(uniqueUsers)
 
   return (
-    <Column style={{ marginBottom: 24, gap: 12 }}>
+    <Column style={{ marginBottom: 42, gap: 12 }}>
       <styled.div
         style={{
           padding: '12px 24px',

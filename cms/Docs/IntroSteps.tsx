@@ -11,7 +11,14 @@ import {
 
 export const IntroSteps = () => {
   return (
-    <Row style={{ justifyContent: 'space-between', gap: 24, marginBottom: 42 }}>
+    <Row
+      style={{
+        justifyContent: 'space-between',
+        gap: 24,
+        marginBottom: 42,
+        maxWidth: 1280,
+      }}
+    >
       <Column
         style={{ justifyContent: 'center', alignItems: 'center', gap: 12 }}
       >

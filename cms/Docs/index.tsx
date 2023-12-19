@@ -8,18 +8,26 @@ import {
   color,
   IconLayerThree,
   IconFileEdit,
+  IconDevices,
+  IconUsers,
+  IconFunction,
 } from '@based/ui'
 import { SchemaDocs } from './SchemaDocs'
+import { StartingDocs } from './StartingDocs'
+import { ContentDocs } from './ContentDocs'
 
 const StyledCard = styled('div', {
-  padding: '12px',
-  borderRadius: 8,
-  cursor: 'pointer ',
-  display: 'flex',
-  flexDirection: 'column',
-  width: '25%',
   alignItems: 'center',
   border: `1px solid ${color('inputBorder', 'neutralNormal', 'default')}`,
+  // border: '1px solid transparent',
+  borderRadius: 8,
+  cursor: 'pointer ',
+  display: 'inline-flex',
+  flexDirection: 'column',
+  margin: '1%',
+  marginBottom: 12,
+  padding: '12px',
+  width: '23%',
   '&:hover': {
     border: `1px solid ${color('content', 'brand')}`,
     backgroundColor: color('background', 'brand', 'surface'),
@@ -32,20 +40,24 @@ export const Docs = () => {
   const id = route.query.id
 
   return section === 'docs' && id === 'start-here' ? (
-    <div>start</div>
+    <StartingDocs />
   ) : section === 'docs' && id === 'schema' ? (
     <SchemaDocs />
   ) : section === 'docs' && id === 'content' ? (
-    <div>content</div>
+    <ContentDocs />
   ) : (
-    <styled.div style={{ display: 'flex', gap: 16, padding: '48px 48px' }}>
+    <styled.div style={{ gap: 16, padding: '48px 48px' }}>
       <StyledCard onClick={() => route.setQuery({ id: 'start-here' })}>
         <Thumbnail
           color="green"
           light
           outline
           icon={<IconHome />}
-          style={{ marginBottom: 12, cursor: 'pointer !important' }}
+          style={{
+            marginBottom: 12,
+            cursor: 'pointer !important',
+            borderRadius: '50%',
+          }}
         />
         <Text size={16} weight="strong">
           Start here
@@ -58,7 +70,11 @@ export const Docs = () => {
           outline
           color="orange"
           icon={<IconLayerThree />}
-          style={{ marginBottom: 12, cursor: 'pointer !important' }}
+          style={{
+            marginBottom: 12,
+            cursor: 'pointer !important',
+            borderRadius: '50%',
+          }}
         />
         <Text size={16} weight="strong">
           Schema Fields
@@ -71,12 +87,67 @@ export const Docs = () => {
           outline
           color="blue"
           icon={<IconFileEdit />}
-          style={{ marginBottom: 12, cursor: 'pointer !important' }}
+          style={{
+            marginBottom: 12,
+            cursor: 'pointer !important',
+            borderRadius: '50%',
+          }}
         />
         <Text size={16} weight="strong">
           Content
         </Text>
         <Text light>Learn all about content</Text>
+      </StyledCard>
+      <StyledCard onClick={() => route.setQuery({ id: 'connect' })}>
+        <Thumbnail
+          light
+          outline
+          color="brand"
+          icon={<IconDevices />}
+          style={{
+            marginBottom: 12,
+            cursor: 'pointer !important',
+            borderRadius: '50%',
+          }}
+        />
+        <Text size={16} weight="strong">
+          Realtime Connections
+        </Text>
+        <Text light>Connecting to the frontend.</Text>
+      </StyledCard>
+      <StyledCard onClick={() => route.setQuery({ id: 'users' })}>
+        <Thumbnail
+          light
+          outline
+          color="magenta"
+          icon={<IconUsers />}
+          style={{
+            marginBottom: 12,
+            cursor: 'pointer !important',
+            borderRadius: '50%',
+          }}
+        />
+        <Text size={16} weight="strong">
+          Users
+        </Text>
+        <Text light>All about User management.</Text>
+      </StyledCard>
+      <StyledCard onClick={() => route.setQuery({ id: 'users' })}>
+        <Thumbnail
+          light
+          outline
+          color="grape"
+          icon={<IconFunction />}
+          style={{
+            marginBottom: 12,
+            cursor: 'pointer !important',
+            borderRadius: '50%',
+          }}
+        />
+        <Text size={16} weight="strong">
+          Based Functions
+        </Text>
+        <Text light>Create and deploy functions.</Text>
       </StyledCard>
     </styled.div>
   )

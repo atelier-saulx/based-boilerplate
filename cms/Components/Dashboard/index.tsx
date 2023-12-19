@@ -2,7 +2,7 @@ import React from 'react'
 import { styled } from 'inlines'
 import { ShowEnvWidget } from './ShowEnvWidget'
 import { ConnectionsWidget } from './ConnectionsWidget'
-import { Button, Row, Text } from '@based/ui'
+import { Button, Row, Text, Column, color } from '@based/ui'
 import { IntroSteps } from '../../Docs/IntroSteps'
 import { useRoute } from 'kabouter'
 
@@ -18,13 +18,19 @@ export const Dashboard = () => {
         marginTop: 16,
       }}
     >
-      <Row style={{ marginBottom: 42, alignItems: 'start', gap: 12 }}>
-        <ShowEnvWidget />
-        <ConnectionsWidget />
-      </Row>
-
       <IntroSteps />
-      <styled.div style={{ marginBottom: 16, marginTop: 64 }}>
+      <styled.div
+        style={{
+          marginBottom: 42,
+          marginTop: 64,
+          paddingLeft: 16,
+          borderLeft: `2px solid ${color(
+            'inputBorder',
+            'neutralNormal',
+            'default'
+          )}`,
+        }}
+      >
         <Text size={14} weight="strong">
           Documentation
         </Text>
@@ -39,6 +45,10 @@ export const Dashboard = () => {
           Read Documentation
         </Button>
       </styled.div>
+      <Column style={{ maxWidth: 324 }}>
+        <ConnectionsWidget />
+        <ShowEnvWidget />
+      </Column>
       {/* <Docs /> */}
     </styled.div>
   )
