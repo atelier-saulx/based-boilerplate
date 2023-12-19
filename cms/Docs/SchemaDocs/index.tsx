@@ -19,10 +19,8 @@ const StyledCard = styled('div', {
   cursor: 'pointer ',
   display: 'inline-block',
   marginBottom: 12,
-  // flexDirection: 'column',
   width: '30%',
   marginRight: '2%',
-  //   alignItems: 'center',
   border: `1px solid ${color('inputBorder', 'neutralNormal', 'default')}`,
   '&:hover': {
     border: `1px solid ${color('content', 'brand')}`,

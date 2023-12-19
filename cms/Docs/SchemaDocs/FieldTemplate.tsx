@@ -35,28 +35,28 @@ export const FieldTemplate = ({ field }) => {
             {field}
           </Text>
         </Row>
-        <div style={{ marginBottom: 36 }}>
+        <div style={{ marginBottom: 46 }}>
           <Text size={20} weight="strong" style={{ marginBottom: 12 }}>
             Description
           </Text>
           <Description field={field} />
         </div>
 
-        <div style={{ marginBottom: 36 }}>
+        <div style={{ marginBottom: 46 }}>
           <Text size={20} weight="strong" style={{ marginBottom: 12 }}>
             Screenshots
           </Text>
           <Screenshots field={field} />
         </div>
 
-        <div style={{ marginBottom: 36 }}>
+        <div style={{ marginBottom: 46 }}>
           <Text size={20} weight="strong" style={{ marginBottom: 12 }}>
             Field Options
           </Text>
           <FieldOptions field={field} />
         </div>
 
-        <div style={{ marginBottom: 36 }}>
+        <div style={{ marginBottom: 46 }}>
           <Text size={20} weight="strong" style={{ marginBottom: 12 }}>
             Set and Get your field
           </Text>

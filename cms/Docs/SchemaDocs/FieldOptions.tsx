@@ -20,40 +20,53 @@ const StyledTable = styled('table', {
     fontWeight: '600',
     minWidth: '164px',
   },
+  '& tr td:last-child': {
+    color: color('content', 'default', 'secondary'),
+  },
+
   '& td': {
     padding: '8px 12px',
   },
 })
+
+const SharedOptions = () => {
+  return (
+    <>
+      {' '}
+      <tr>
+        <td>name</td>
+        <td>api field name used in the sdk and clients</td>
+      </tr>
+      <tr>
+        <td>Display name</td>
+        <td>cms display name</td>
+      </tr>
+      <tr>
+        <td>Description</td>
+        <td>description for in the cms</td>
+      </tr>
+      <tr>
+        <td>Is Required</td>
+        <td>this field can'be empty</td>
+      </tr>
+      <tr>
+        <td>Read only</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>Write only</td>
+        <td></td>
+      </tr>
+    </>
+  )
+}
 
 export const FieldOptions = ({ field }) => {
   if (field === 'String') {
     return (
       <>
         <StyledTable>
-          <tr>
-            <td>name</td>
-            <td>api field name used in the sdk and clients</td>
-          </tr>
-          <tr>
-            <td>Display name</td>
-            <td>cms display name</td>
-          </tr>
-          <tr>
-            <td>Description</td>
-            <td>description for in the cms</td>
-          </tr>
-          <tr>
-            <td>Is Required</td>
-            <td>this field can'be empty</td>
-          </tr>
-          <tr>
-            <td>Read only</td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Write only</td>
-            <td></td>
-          </tr>
+          <SharedOptions />
           <tr>
             <td>Format</td>
             <td>
@@ -109,5 +122,84 @@ export const FieldOptions = ({ field }) => {
         </StyledTable>
       </>
     )
+  }
+
+  if (field === 'Text') {
+    return <></>
+  }
+  if (field === 'Rich Text') {
+    return <>xx</>
+  }
+  if (field === 'Number') {
+    return (
+      <>
+        <StyledTable>
+          <SharedOptions />
+          <tr>
+            <td>Minimum</td>
+            <td>Minimum required value</td>
+          </tr>
+          <tr>
+            <td>Maximum</td>
+            <td>Maximum required value</td>
+          </tr>
+          <tr>
+            <td>Multiple of</td>
+            <td>Value must be a multiple of a certain number</td>
+          </tr>
+          <tr>
+            <td>Exclusive Maximum</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Exclusive Minimum</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Display Format</td>
+            <td>
+              short | human | ratio | bytes | euro | dollar | pound |
+              round-number
+            </td>
+          </tr>
+        </StyledTable>
+      </>
+    )
+  }
+  if (field === 'Int') {
+    return <></>
+  }
+  if (field === 'Enum') {
+    return <></>
+  }
+  if (field === 'Boolean') {
+    return <></>
+  }
+  if (field === 'Timestamp') {
+    return <></>
+  }
+  if (field === 'Array') {
+    return <></>
+  }
+  if (field === 'Object') {
+    return <></>
+  }
+  if (field === 'Record') {
+    return <></>
+  }
+  if (field === 'Set') {
+    return <></>
+  }
+  if (field === 'JSON') {
+    return <></>
+  }
+  if (field === 'Reference') {
+    return <></>
+  }
+  if (field === 'References') {
+    return <></>
+  }
+  if (field === 'Cardinality') {
+    return <></>
   }
 }

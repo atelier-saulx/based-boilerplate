@@ -30,15 +30,16 @@ export const App = () => {
     $id: authState.userId,
     profileImg: true,
   })
-  if (!authState.userId) return <Login />
+
+  // if (!authState.userId) return <Login />
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
   const [selectedLang, setSelectedLang] = useState(schema?.languages[0])
 
-  // console.log(schema, 'Schema')
-
-  return (
+  return !authState.userId ? (
+    <Login />
+  ) : (
     <styled.div
       style={{
         display: 'flex',

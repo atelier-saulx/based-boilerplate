@@ -1,7 +1,7 @@
 import React from 'react'
 import { styled } from 'inlines'
 import { useRoute } from 'kabouter'
-import { ScrollArea, Row, color, IconArrowLeft, Text } from '@based/ui'
+import { ScrollArea, Row, color, IconArrowLeft, Text, Column } from '@based/ui'
 
 export const StartingDocs = () => {
   const route = useRoute()
@@ -29,13 +29,15 @@ export const StartingDocs = () => {
           <Text weight="strong" size={24} style={{ marginRight: 12 }}>
             Getting Started.
           </Text>
+        </Row>
 
+        <Column>
           <Text>Setting up your schema</Text>
           <Text>
             First you want to set up a schema. You can start building your
             custom schema using any of these fields.
           </Text>
-        </Row>
+        </Column>
       </ScrollArea>
     </styled.div>
   )
