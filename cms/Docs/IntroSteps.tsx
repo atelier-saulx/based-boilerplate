@@ -15,7 +15,8 @@ export const IntroSteps = () => {
       style={{
         justifyContent: 'space-between',
         gap: 24,
-        marginBottom: 42,
+        marginBottom: 64,
+        marginTop: 16,
         maxWidth: 1280,
       }}
     >

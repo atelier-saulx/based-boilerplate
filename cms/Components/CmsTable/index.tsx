@@ -619,6 +619,7 @@ export const CmsTable: FC<CmsTableProps> = ({
             size="xsmall"
             style={{ marginLeft: 8 }}
             onClick={() => {
+              console.log(addedFilters, customFilter)
               setCustomFilter('')
               setAddedFilters([])
             }}

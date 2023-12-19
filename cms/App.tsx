@@ -31,6 +31,7 @@ export const App = () => {
     profileImg: true,
   })
 
+  console.log(client, 'the client??')
   // if (!authState.userId) return <Login />
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')

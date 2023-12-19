@@ -79,7 +79,7 @@ export const Login = () => {
             size="large"
             keyboardShortcut="Enter"
             displayShortcut
-            style={{ marginLeft: 'auto' }}
+            style={{ width: '100%', marginBottom: 12 }}
             onClick={
               data?.user.length === 0
                 ? async () => {
