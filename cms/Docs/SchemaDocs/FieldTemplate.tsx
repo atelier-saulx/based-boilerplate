@@ -5,12 +5,13 @@ import { useRoute } from 'kabouter'
 import { Description } from './Descriptions'
 import { SetAndGet } from './SetAndGet'
 import { Screenshots } from './Screenshots'
+import { FieldOptions } from './FieldOptions'
 
 export const FieldTemplate = ({ field }) => {
   const route = useRoute()
 
   return (
-    <styled.div>
+    <styled.div style={{ maxWidth: 824 }}>
       <ScrollArea style={{ padding: '24px 48px', width: '100%' }}>
         <Row
           style={{
@@ -52,6 +53,7 @@ export const FieldTemplate = ({ field }) => {
           <Text size={20} weight="strong" style={{ marginBottom: 12 }}>
             Field Options
           </Text>
+          <FieldOptions field={field} />
         </div>
 
         <div style={{ marginBottom: 36 }}>
