@@ -18,6 +18,7 @@ import { Dashboard } from './Components/Dashboard'
 import { DatabaseSettings } from './Settings/Database'
 import { GeneralSettings } from './Settings/General'
 import { Docs } from './Docs'
+import { useMousePos } from './Hooks/useMousePos'
 
 export const client = based(basedConfig)
 
@@ -29,10 +30,16 @@ export const App = () => {
   const { data, loading } = useQuery('db', {
     $id: authState.userId,
     profileImg: true,
+    name: true,
   })
 
   console.log(client, 'the client??')
-  // if (!authState.userId) return <Login />
+
+  // keep track of mouseposition
+  // TODO: to possibly track users mouses in the cms
+  ///  Probably really bad for performance
+  // const { x, y } = useMousePos()
+  // console.log(x, y, '🐀', data?.name, route.location)
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
