@@ -68,9 +68,15 @@ export const Management = () => {
                   <Modal.Actions>
                     <Button onClick={close}>Cancel</Button>
                     <Button
-                      onClick={async () =>
-                        client.call('register', { name, email })
-                      }
+                      onClick={async () => {
+                        client
+                          .call('register', { name, email })
+                          .catch((err) => {
+                            console.error(err)
+                          })
+
+                        close()
+                      }}
                     >
                       Confirm
                     </Button>
