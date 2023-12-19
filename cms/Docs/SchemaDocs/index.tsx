@@ -11,6 +11,7 @@ import {
 } from '@based/ui'
 import { useRoute } from 'kabouter'
 import { SCHEMA_FIELDS } from '../../Schema/AddField'
+import { FieldTemplate } from './FieldTemplate'
 
 const StyledCard = styled('div', {
   padding: '12px',
@@ -31,7 +32,11 @@ const StyledCard = styled('div', {
 
 export const SchemaDocs = () => {
   const route = useRoute()
-  return (
+  const field = route.query.field
+
+  console.log('field??', field)
+
+  return !field ? (
     <styled.div>
       <ScrollArea style={{ padding: '24px 48px', width: '100%' }}>
         <Row
@@ -61,7 +66,10 @@ export const SchemaDocs = () => {
         </Text>
         <styled.div style={{}}>
           {SCHEMA_FIELDS.map((item, idx) => (
-            <StyledCard key={idx}>
+            <StyledCard
+              key={idx}
+              onClick={() => route.setQuery({ field: item.label })}
+            >
               <Row>
                 <Thumbnail
                   icon={item.icon}
@@ -81,5 +89,7 @@ export const SchemaDocs = () => {
         </styled.div>
       </ScrollArea>
     </styled.div>
+  ) : (
+    <FieldTemplate field={field} />
   )
 }
