@@ -17,6 +17,8 @@ import { Profile } from './Settings/UserManagement/Profile'
 import { Dashboard } from './Components/Dashboard'
 import { DatabaseSettings } from './Settings/Database'
 import { GeneralSettings } from './Settings/General'
+import { Docs } from './Docs'
+import { useMousePos } from './Hooks/useMousePos'
 
 export const client = based(basedConfig)
 
@@ -28,16 +30,24 @@ export const App = () => {
   const { data, loading } = useQuery('db', {
     $id: authState.userId,
     profileImg: true,
+    name: true,
   })
-  if (!authState.userId) return <Login />
+
+  console.log(client, 'the client??')
+
+  // keep track of mouseposition
+  // TODO: to possibly track users mouses in the cms
+  ///  Probably really bad for performance
+  // const { x, y } = useMousePos()
+  // console.log(x, y, '🐀', data?.name, route.location)
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
   const [selectedLang, setSelectedLang] = useState(schema?.languages[0])
 
-  // console.log(schema, 'Schema')
-
-  return (
+  return !authState.userId ? (
+    <Login />
+  ) : (
     <styled.div
       style={{
         display: 'flex',
@@ -69,6 +79,8 @@ export const App = () => {
             <DatabaseSettings />
           ) : section === 'general-settings' ? (
             <GeneralSettings languages={schema?.languages} />
+          ) : section === 'docs' ? (
+            <Docs />
           ) : !section ? (
             <Dashboard />
           ) : (

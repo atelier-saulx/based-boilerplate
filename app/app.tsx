@@ -8,6 +8,7 @@ export const client = based(basedConfig)
 
 const App = () => {
   const { data: counter, loading } = useQuery('counter')
+
   return (
     <div
       style={{

@@ -49,6 +49,7 @@ type CmsTableProps = {
   columnNamesInRightOrder?: string[]
   style?: CSSProperties | Style
   selectedLang?: string
+  updatedBy?: string
 }
 
 export const changedRows = {}
@@ -66,6 +67,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   style,
   filter,
   selectedLang,
+  updatedBy,
 }) => {
   const [hiddenColumns, setFilteredColumns] = useState<string[]>([
     'ancestors',
@@ -73,6 +75,7 @@ export const CmsTable: FC<CmsTableProps> = ({
     'aliases',
     'parents',
     'children',
+    'updatedby',
   ])
   const [sortOptions, setSortOptions] = useState<SortOptions>({
     $field: 'updatedAt',
@@ -186,6 +189,7 @@ export const CmsTable: FC<CmsTableProps> = ({
   // Cell Component
   const Cell = ({ columnIndex, rowIndex, style }) => {
     let cellFieldTypeOf = schemaFields[hiddenColumnNames[columnIndex]]?.type
+    let displayAs = schemaFields[hiddenColumnNames[columnIndex]]?.meta?.display
 
     const [inputState, setInputState] = useState(
       Object.keys(changedRows)?.includes(parsedData[rowIndex]?.id)
@@ -284,9 +288,10 @@ export const CmsTable: FC<CmsTableProps> = ({
           <Input
             type="text"
             value={inputState && inputState[selectedLang as string]}
-            onChange={(v) => setInputState(v)}
+            onChange={(v) => setInputState({ [selectedLang as string]: v })}
           />
-        ) : cellFieldTypeOf === 'number' && enableInlineEditModus ? (
+        ) : (cellFieldTypeOf === 'number' && enableInlineEditModus) ||
+          (cellFieldTypeOf === 'int' && enableInlineEditModus) ? (
           <Input
             type="number"
             value={inputState}
@@ -297,6 +302,7 @@ export const CmsTable: FC<CmsTableProps> = ({
             input={parsedData[rowIndex][hiddenColumnNames[columnIndex]]}
             colName={hiddenColumnNames[columnIndex]}
             cellFieldTypeOf={cellFieldTypeOf}
+            displayAs={displayAs}
             selectedLang={selectedLang}
           />
         )}
@@ -376,7 +382,7 @@ export const CmsTable: FC<CmsTableProps> = ({
 
                   await client.call('db:set', {
                     // TODO check this language
-                    $language: 'en',
+                    $language: selectedLang,
                     type: parsedData[idx].type,
                     ...parsedData[idx],
                   })
@@ -613,6 +619,7 @@ export const CmsTable: FC<CmsTableProps> = ({
             size="xsmall"
             style={{ marginLeft: 8 }}
             onClick={() => {
+              console.log(addedFilters, customFilter)
               setCustomFilter('')
               setAddedFilters([])
             }}
@@ -633,19 +640,39 @@ export const CmsTable: FC<CmsTableProps> = ({
                 // console.log(shadowData, 'shadow data')
 
                 // save the rows that are changed,
-                Object.keys(changedRows).forEach(
-                  async (key) =>
+                Object.keys(changedRows).forEach(async (key) => {
+                  console.log({
+                    $id: key,
+                    //  $language: selectedLang,
+                    ...changedRows[key],
+                    updatedBy: updatedBy,
+                  })
+                  if (Object.keys(changedRows[key]).includes('updatedBy')) {
+                    console.log('SNURP??')
                     await client
                       .call('db:set', {
                         $id: key,
-                        $language: selectedLang,
+                        //  $language: selectedLang,
+                        ...changedRows[key],
+                        updatedBy: updatedBy,
+                      })
+                      .catch((err) => {
+                        console.error(err)
+                        setErrorMessage(err.message)
+                      })
+                  } else {
+                    await client
+                      .call('db:set', {
+                        $id: key,
+                        //  $language: selectedLang,
                         ...changedRows[key],
                       })
                       .catch((err) => {
                         console.error(err)
                         setErrorMessage(err.message)
                       })
-                )
+                  }
+                })
 
                 // clear the rowChanges
                 setEnableInlineEditModus(!enableInlineEditModus)

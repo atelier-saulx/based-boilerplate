@@ -10,8 +10,10 @@ import {
   IconEdit,
   IconDelete,
   IconCopy,
+  IconFunction,
   Modal,
   Input,
+  Code,
 } from '@based/ui'
 import { SchemaSidebar } from './SchemaSidebar'
 import { useRoute } from 'kabouter'
@@ -25,9 +27,11 @@ export const SchemaBuilder = () => {
   const [typeName, setTypeName] = useState('')
   const [pluralName, setPluralName] = useState('')
   const [description, setDescription] = useState('')
+  const [schemaCode, setSchemaCode] = useState('')
   //
   const [openDeleteModal, setOpenDeleteModal] = useState(false)
   const [openCloneModal, setOpenCloneModal] = useState(false)
+  const [openCodeModal, setOpenCodeModal] = useState(false)
   const [deleteString, setDeleteString] = useState('')
 
   const route = useRoute('[section][type]')
@@ -54,7 +58,12 @@ export const SchemaBuilder = () => {
     },
   })
 
-  console.log('DAS SCHEMA FIELDS', schema?.types[routeType]?.fields)
+  const specificTypeFields = JSON.stringify(
+    schema?.types[routeType]?.fields,
+    null,
+    2
+  )
+  console.log('DAS SCHEMA FIELDS 🧱', schema)
 
   useEffect(() => {
     if (schema) {
@@ -97,7 +106,7 @@ export const SchemaBuilder = () => {
                     }}
                     icon={<IconEdit />}
                   >
-                    Edit Type
+                    Edit Name
                   </Dropdown.Item>
                   <Dropdown.Item
                     onClick={() => {
@@ -106,6 +115,14 @@ export const SchemaBuilder = () => {
                     icon={<IconCopy />}
                   >
                     Clone Type
+                  </Dropdown.Item>
+                  <Dropdown.Item
+                    onClick={() => {
+                      setOpenCodeModal(true)
+                    }}
+                    icon={<IconFunction />}
+                  >
+                    Advanced edit
                   </Dropdown.Item>
                   <Dropdown.Separator />
                   <Dropdown.Item
@@ -209,6 +226,7 @@ export const SchemaBuilder = () => {
           </Modal.Actions>
         </Modal.Content>
       </Modal.Root>
+
       {/* Clone  Modal */}
       <Modal.Root open={openCloneModal} onOpenChange={setOpenCloneModal}>
         <Modal.Content>
@@ -272,6 +290,58 @@ export const SchemaBuilder = () => {
               keyboardShortcut="Enter"
             >
               Clone
+            </Button>
+          </Modal.Actions>
+        </Modal.Content>
+      </Modal.Root>
+      {/* CODE  Modal */}
+      <Modal.Root open={openCodeModal} onOpenChange={setOpenCodeModal}>
+        <Modal.Content style={{ maxWidth: '767px' }}>
+          <Modal.Title>Edit {routeType} through code</Modal.Title>
+          <Text>Set or update your schema fields through code. </Text>
+          <Modal.Body>
+            <div style={{ display: 'grid', gap: 24 }}>
+              <Code
+                language="json"
+                defaultValue={specificTypeFields}
+                //   value={schemaCode}
+                color="neutral"
+                onChange={(v) => setSchemaCode(v)}
+              />
+            </div>
+          </Modal.Body>
+          <Modal.Actions>
+            <Button
+              onClick={() => {
+                setOpenCodeModal(false)
+              }}
+              color="system"
+              displayShortcut
+              keyboardShortcut="Esc"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                console.log(schemaCode)
+
+                await client.call('db:set-schema', {
+                  mutate: true,
+                  schema: {
+                    types: {
+                      [routeType]: {
+                        fields: JSON.parse(schemaCode),
+                      },
+                    },
+                  },
+                })
+                setOpenCodeModal(false)
+              }}
+              color="primary"
+              displayShortcut
+              keyboardShortcut="Enter"
+            >
+              Save
             </Button>
           </Modal.Actions>
         </Modal.Content>

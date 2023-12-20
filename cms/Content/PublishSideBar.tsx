@@ -1,11 +1,12 @@
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { styled } from 'inlines'
-import { color, Button, Text, Input, usePropState } from '@based/ui'
+import { color, Button, Text } from '@based/ui'
 import { prettyDate } from '@based/pretty-date'
 import { useRoute } from 'kabouter'
 
 export const PublishSideBar = ({
   updatedAt,
+  updatedBy,
   onClick,
   someThingChanged,
   setSomeThingChanged,
@@ -65,9 +66,12 @@ export const PublishSideBar = ({
       >
         Publish & close
       </Button>
-      <Text light style={{ marginBottom: 24 }}>
-        Last update: {prettyDate(updatedAt, 'date-time-human')}
-      </Text>
+      <div style={{ marginBottom: 24 }}>
+        <Text light>
+          Last update: {prettyDate(updatedAt, 'date-time-human')}
+        </Text>
+        {updatedBy && <Text light>By: {updatedBy}</Text>}
+      </div>
     </styled.div>
   )
 }

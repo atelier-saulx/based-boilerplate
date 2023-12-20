@@ -36,6 +36,11 @@ export const ContentOverview = ({ selectedLang }) => {
     setTableHeight(height - 296)
   }, [width, height])
 
+  const { data: userData } = useQuery('db', {
+    $id: client.authState.userId,
+    name: true,
+  })
+
   return (
     <styled.div style={{ padding: '24px 48px', width: '100%' }}>
       <Row
@@ -106,6 +111,7 @@ export const ContentOverview = ({ selectedLang }) => {
           onCellClick={(e) => console.log('on cell click -> ', e)}
           columnNamesInRightOrder={arr}
           selectedLang={selectedLang}
+          updatedBy={userData?.name}
         />
       </styled.div>
     </styled.div>

@@ -11,8 +11,26 @@ import {
   Avatar,
 } from '@based/ui'
 
-export const RenderAs = ({ colName, input, cellFieldTypeOf, selectedLang }) => {
+type NumberFormat =
+  | 'short'
+  | 'human'
+  | 'ratio'
+  | 'bytes'
+  | 'euro'
+  | 'dollar'
+  | 'pound'
+  | `round-${number}`
+
+export const RenderAs = ({
+  colName,
+  input,
+  cellFieldTypeOf,
+  selectedLang,
+  displayAs,
+}) => {
   let cName = colName.toLowerCase()
+
+  // map displayAs to pretty number date and types
 
   if (cName === 'id') {
     return (
@@ -22,7 +40,19 @@ export const RenderAs = ({ colName, input, cellFieldTypeOf, selectedLang }) => {
     )
   } else if (cellFieldTypeOf === 'text') {
     return <Text>{input && input[selectedLang]}</Text>
-  } else if (cName === 'createdat' || cName === 'updatedat') {
+  } else if (cellFieldTypeOf === 'number' || cellFieldTypeOf === 'int') {
+    return (
+      <Text>
+        {displayAs
+          ? prettyNumber(input, `number-${displayAs as NumberFormat}`)
+          : input}
+      </Text>
+    )
+  } else if (
+    cName === 'createdat' ||
+    cName === 'updatedat' ||
+    cellFieldTypeOf === 'timestamp'
+  ) {
     return <Text light>{prettyDate(input, 'date-time-human')}</Text>
   } else if (cName === 'size') {
     return <Text>{prettyNumber(input, 'number-bytes')}</Text>

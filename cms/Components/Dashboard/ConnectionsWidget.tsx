@@ -1,7 +1,7 @@
 import React from 'react'
 import { useQuery } from '@based/react'
 import { styled } from 'inlines'
-import { Text, color, Row, IconUsers, IconTree } from '@based/ui'
+import { Text, color, Column, IconUsers, IconTree } from '@based/ui'
 
 export const ConnectionsWidget = () => {
   const { data: concurrentUsers } = useQuery('based:connections')
@@ -10,7 +10,7 @@ export const ConnectionsWidget = () => {
   console.log(uniqueUsers)
 
   return (
-    <Row style={{ marginBottom: 24, gap: 16 }}>
+    <Column style={{ marginBottom: 42, gap: 12 }}>
       <styled.div
         style={{
           padding: '12px 24px',
@@ -39,10 +39,12 @@ export const ConnectionsWidget = () => {
         }}
       >
         <IconUsers style={{ marginRight: 6 }} />
+
         <Text weight="medium">
+          {/* @ts-ignore */}
           Unique Users: {uniqueUsers?.uniqueUsers || ''}
         </Text>
       </styled.div>
-    </Row>
+    </Column>
   )
 }

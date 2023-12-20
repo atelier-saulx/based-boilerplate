@@ -102,7 +102,11 @@ export const SchemaSidebar = () => {
                         onClick={async () => {
                           const type = typeName
                           const typeSchema = {
-                            fields: {},
+                            fields: {
+                              updatedBy: {
+                                type: 'string',
+                              },
+                            },
                             meta: {
                               name: typeName,
                               displayName:

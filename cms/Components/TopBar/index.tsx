@@ -13,7 +13,7 @@ import {
 import { Logo } from '../Sidebar/Logo'
 import { useRoute } from 'kabouter'
 import { styled } from '@based/ui'
-import { useAuthState } from '@based/react'
+import { useAuthState, useQuery } from '@based/react'
 import { languages as allLangs } from './languages'
 
 export const TopBar = ({
@@ -23,10 +23,14 @@ export const TopBar = ({
   selectedLang,
   setSelectedLang,
 }) => {
-  const authState = useAuthState()
   const route = useRoute('[section]')
-  const section = route.query.section
+
   const { theme, setTheme } = useTheme()
+
+  const { data: userData } = useQuery('db', {
+    $id: client.authState.userId,
+    name: true,
+  })
 
   const langOptions = languages?.map((lang) => ({
     value: lang,
@@ -60,7 +64,7 @@ export const TopBar = ({
         <Dropdown.Root>
           <Dropdown.Trigger>
             <Button size="xsmall">
-              <Avatar src={data?.profileImg}>{authState.userId}</Avatar>
+              <Avatar src={data?.profileImg}>{userData?.name}</Avatar>
             </Button>
           </Dropdown.Trigger>
           <Dropdown.Items>

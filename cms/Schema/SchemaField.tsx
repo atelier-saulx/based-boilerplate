@@ -25,6 +25,7 @@ export const SchemaField = ({
   setOpenEditModal,
   setOpenDeleteModal,
   setItemToEdit,
+  setPathToEdit,
   id,
 }) => {
   const { attributes, listeners, setNodeRef, transform, transition } =
@@ -94,7 +95,7 @@ export const SchemaField = ({
               icon={ALL_FIELDS[index]?.icon}
               color={ALL_FIELDS[index]?.color as any}
             />
-            <Text weight="medium">{item.name}</Text>
+            <Text weight="medium">{item?.meta?.displayName || item?.name}</Text>
             {item?.description && <Text light>{item?.description}</Text>}
             <Badge color={ALL_FIELDS[index]?.color as any} light>
               {item.type}
@@ -158,11 +159,15 @@ export const SchemaField = ({
 
           return (
             <NestedSchemaField
-              objPath={objItem.type === 'object' && [item.name]}
+              objPath={[item.name]}
               objItem={objItem}
               key={key}
               ALL_FIELDS={ALL_FIELDS}
               deepness={1}
+              setItemToEdit={setItemToEdit}
+              setOpenEditModal={setOpenEditModal}
+              setPathToEdit={setPathToEdit}
+              setOpenDeleteModal={setOpenDeleteModal}
             />
           )
         })}
@@ -170,7 +175,16 @@ export const SchemaField = ({
   )
 }
 
-const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
+const NestedSchemaField = ({
+  objItem,
+  ALL_FIELDS,
+  objPath,
+  deepness,
+  setItemToEdit,
+  setOpenEditModal,
+  setPathToEdit,
+  setOpenDeleteModal,
+}) => {
   console.log('🚑', objItem)
   // console.log(ALL_FIELDS)
   const [collapsed, setCollapsed] = useState(false)
@@ -178,13 +192,13 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
   let deep = deepness + 1
 
   let path = objPath
-  objItem.type === 'object' ? path.push(objItem?.meta.name) : null
+  path.push(objItem?.meta?.name || objItem?.meta?.displayName)
 
-  console.log('NEW PATH =', path)
+  // console.log('NEW PATH =', path)
   // console.log('deepness', deep)
 
-  const labels = ALL_FIELDS.map((item) => item.label.toLowerCase())
-  const index = labels.indexOf(objItem.type)
+  const labels = ALL_FIELDS.map((item) => item?.label?.toLowerCase())
+  const index = labels.indexOf(objItem?.type)
 
   return (
     <div style={{ position: 'relative' }}>
@@ -224,11 +238,24 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
             icon={ALL_FIELDS[index]?.icon}
             color={ALL_FIELDS[index]?.color as any}
           />
-          <Text weight="medium">{objItem?.name || objItem?.meta?.name}</Text>
+          <Text weight="medium">
+            {objItem?.meta?.displayName || objItem?.meta?.name}
+          </Text>
           {objItem?.description && <Text light>{objItem?.description}</Text>}
           <Badge color={ALL_FIELDS[index]?.color as any} light>
             {objItem.type}
           </Badge>
+          {objItem?.meta?.format && <Badge light>{objItem.meta.format}</Badge>}
+          {objItem?.meta?.contentMediaEncoding && (
+            <Badge light color="blue">
+              {objItem.meta.contentMediaEncoding}
+            </Badge>
+          )}
+          {objItem?.meta?.display && (
+            <Badge light color="magenta">
+              {objItem.meta.display}
+            </Badge>
+          )}
         </Row>
 
         <Dropdown.Root>
@@ -239,9 +266,6 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
                 e.stopPropagation()
               }}
               size="small"
-              // disabled={SYSTEM_FIELDS_LABELS.includes(
-              //   item.name.toLowerCase()
-              // )}
               ghost
               icon={<IconMoreHorizontal />}
             />
@@ -250,16 +274,18 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
             <Dropdown.Item
               //@ts-ignore
               onClick={(e) => {
-                // setOpenEditModal(true)
-                // setItemToEdit(item.name)
+                setOpenEditModal(true)
+                setItemToEdit(objItem?.meta?.name || objItem?.name)
+                setPathToEdit(path)
               }}
             >
               Edit
             </Dropdown.Item>
             <Dropdown.Item
               onClick={() => {
-                // setItemToEdit(item.name)
-                // setOpenDeleteModal(true)
+                setItemToEdit(objItem?.name || objItem?.meta?.name)
+                setOpenDeleteModal(true)
+                setPathToEdit(path)
               }}
             >
               Delete
@@ -281,6 +307,10 @@ const NestedSchemaField = ({ objItem, ALL_FIELDS, objPath, deepness }) => {
               key={key}
               ALL_FIELDS={ALL_FIELDS}
               deepness={deep}
+              setItemToEdit={setItemToEdit}
+              setOpenEditModal={setOpenEditModal}
+              setPathToEdit={setPathToEdit}
+              setOpenDeleteModal={setOpenDeleteModal}
             />
           )
         })}
