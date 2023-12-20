@@ -1,9 +1,17 @@
 import React, { useEffect, useReducer, useRef, useState } from 'react'
 import { styled } from 'inlines'
 import { Tile } from './Tile'
-import { Button, FormGroup, SidePanel, Breadcrumbs, color } from '@based/ui'
+import {
+  Button,
+  FormGroup,
+  SidePanel,
+  Breadcrumbs,
+  color,
+  Modal,
+} from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
+import { Search } from './Search'
 
 const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
 
@@ -17,6 +25,7 @@ const filterFolder = (data, rootId) => {
       (i) => i === 'root' || i.slice(0, 2) === 'di'
     )
     if (parents[0] === rootId) {
+      // if (true) {
       newArr.push(data[i])
     }
   }
@@ -334,6 +343,13 @@ export const Explorer = ({}) => {
           </SidePanel.Actions>
         </SidePanel.Content>
       </SidePanel.Root>
+      <Modal.Root open>
+        <Modal.Content style={{ maxWidth: undefined }}>
+          <Modal.Body>
+            <Search />
+          </Modal.Body>
+        </Modal.Content>
+      </Modal.Root>
     </styled.div>
   )
 }
