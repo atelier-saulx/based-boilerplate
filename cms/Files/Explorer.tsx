@@ -8,6 +8,7 @@ import {
   Breadcrumbs,
   color,
   Modal,
+  IconClose,
 } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
@@ -213,6 +214,7 @@ export const Explorer = ({}) => {
   }
 
   const [openSidebar, setOpenSidebar] = useState(false)
+  const [openSearch, setOpenSearch] = useState(false)
   const [selected, setSelected] = useState('')
   const [formFieldChanges, setFormFieldChanges] = useState<any>({})
   const client = useClient()
@@ -284,6 +286,7 @@ export const Explorer = ({}) => {
                   }}
                 >
                   <Tile
+                    setOpenSearch={setOpenSearch}
                     folder={item.id?.slice(0, 2) === 'di'}
                     selected={item.id === selected}
                     item={item}
@@ -343,8 +346,21 @@ export const Explorer = ({}) => {
           </SidePanel.Actions>
         </SidePanel.Content>
       </SidePanel.Root>
-      <Modal.Root open>
+      <Modal.Root open={openSearch}>
         <Modal.Content style={{ maxWidth: undefined }}>
+          <Modal.Title>
+            <div style={{ display: 'flex' }}>
+              More Items
+              <Button
+                style={{ marginLeft: 'auto', borderRadius: '50%' }}
+                size="small"
+                color="system"
+                keyboardShortcut="Esc"
+                onClick={() => setOpenSearch(false)}
+                icon={<IconClose />}
+              />
+            </div>
+          </Modal.Title>
           <Modal.Body>
             <Search />
           </Modal.Body>

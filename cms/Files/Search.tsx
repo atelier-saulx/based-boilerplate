@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { styled } from 'inlines'
-import { Input, Text, color } from '@based/ui'
+import { Input, Text, border, color } from '@based/ui'
 import { useQuery } from '@based/react'
 
 export type SearchProps = {
@@ -40,16 +40,15 @@ export const Search = ({ onChange }: SearchProps) => {
     },
   })
 
-  const rootFolders = data?.directories
-    .map((i) => {
-      return {
-        name: i.name,
-        id: i.id,
-        parents: i.parents.filter((i) => i !== 'root'),
-        children: i.children,
-      }
-    })
-    .filter((i) => i.parents.length === 0)
+  const rootFolders = data?.directories.map((i) => {
+    return {
+      name: i.name,
+      id: i.id,
+      parents: i.parents.filter((i) => i !== 'root'),
+      children: i.children,
+    }
+  })
+  // .filter((i) => i.parents.length === 0)
 
   console.log(rootFolders)
 
@@ -60,11 +59,11 @@ export const Search = ({ onChange }: SearchProps) => {
         onChange={(v) => setSearchbar(v)}
         value={searchbar}
       />
-      {/* <styled.div style={{ display: 'flex', flexDirection: 'column' }}>
+      <styled.div style={{ border: border(1), borderRadius: 12 }}>
         {rootFolders?.map((i) => (
-          <Branch data={i} />
+          <styled.div>{i.name ?? i.id}</styled.div>
         ))}
-      </styled.div> */}
+      </styled.div>
     </styled.div>
   )
 }

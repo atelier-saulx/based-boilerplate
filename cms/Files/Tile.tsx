@@ -34,6 +34,7 @@ export const Tile = ({
   folder,
   setSelected,
   selected,
+  setOpenSearch,
 }) => {
   const client = useClient()
   const route = useRoute('[folder]')
@@ -162,6 +163,7 @@ export const Tile = ({
                       )}
                     </span>
                   ))}
+                <Dropdown.Item onClick={setOpenSearch}>More...</Dropdown.Item>
               </Dropdown.SubItems>
             </Dropdown.SubTrigger>
           </Dropdown.Sub>
