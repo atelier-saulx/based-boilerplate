@@ -16,6 +16,7 @@ import { Tile } from './Tile'
 import { Explorer } from './Explorer'
 import { CmsTable } from '../Components/CmsTable'
 import { useRoute } from 'kabouter'
+import { useUploadFile } from '../Hooks/useUploadFile'
 
 export const FileLibrary = () => {
   const client = useClient()
@@ -29,6 +30,7 @@ export const FileLibrary = () => {
   const { width, height } = useWindowResize()
   const [tableWidth, setTableWidth] = useState<number>(600)
   const [tableHeight, setTableHeight] = useState<number>(600)
+  const { handleFileInputChange, status, progress } = useUploadFile()
 
   useEffect(() => {
     setTableWidth(width - 324)
@@ -126,7 +128,11 @@ export const FileLibrary = () => {
               //  columnNamesInRightOrder={arr}
             />
           ) : (
-            <Explorer />
+            <Explorer
+              onChange={handleFileInputChange((file) => {
+                console.log('uploaded file', file)
+              })}
+            />
           )}
         </styled.div>
       </Modal.Root>

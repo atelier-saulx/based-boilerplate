@@ -13,6 +13,9 @@ import {
 import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
 import { Search } from './Search'
+import { FileDrop } from 'react-file-drop'
+import './FileCss.css'
+import { useUploadFile } from '../Hooks/useUploadFile'
 
 const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
 
@@ -44,7 +47,7 @@ const filterFolder = (data, rootId) => {
   return [...indexed, ...unindexed]
 }
 
-export const Explorer = ({}) => {
+export const Explorer = ({ onChange }) => {
   const route = useRoute('[folder]')
   const path = route.query.folder as string
 
@@ -56,6 +59,12 @@ export const Explorer = ({}) => {
 
   const dragOverItem = useRef<string>()
   const containerRef = useRef<any>()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+
+  const onFileInputChange = (event) => {
+    const { files } = event.target
+    console.log(files)
+  }
 
   const { data, loading: dataLoading } = useQuery('db', {
     $id: section,
@@ -237,7 +246,7 @@ export const Explorer = ({}) => {
   })
 
   return (
-    <styled.div>
+    <styled.div style={{ position: 'relative' }}>
       <styled.div>
         <Breadcrumbs
           data={Object.fromEntries(path.split('/').map((i) => [i, i]))}
@@ -257,48 +266,75 @@ export const Explorer = ({}) => {
           }}
         />
       </styled.div>
-
-      <styled.div
-        ref={containerRef}
-        style={{
-          display: 'flex',
-          flexWrap: 'wrap',
-          // gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 100px))',
-          height: '100%',
-          gap: 30,
+      <input
+        type="file"
+        style={{ display: 'none' }}
+        onChange={onFileInputChange}
+        ref={fileInputRef}
+      />
+      <FileDrop
+        // onFrameDragEnter={(event) => console.log('onFrameDragEnter', event)}
+        // onFrameDragLeave={(event) => console.log('onFrameDragLeave', event)}
+        // onFrameDrop={(event) => {
+        //   console.log('onFrameDrop!', event)
+        //   // setDragging(false)
+        // }}
+        // onDragOver={(event) => console.log('onDragOver', event)}
+        // onDragLeave={(event) => {
+        //   console.log('onDragLeave', event)
+        //   setDragging(false)
+        // }}
+        onDrop={(files, event) => {
+          console.log('dropped')
+          for (const i in files) {
+            onChange(files[i])
+          }
         }}
       >
-        {data?.files?.length > 0 &&
-          //@ts-ignore
-          filterFolder(data?.files, section).map((item, i) => {
-            return (
-              <div
-                key={item.id}
-                id={item.id}
-                onPointerDown={(e) => dragStart(e, i)}
-                style={{ maxHeight: 130 }}
-              >
+        <styled.div
+          // onDrop={() => setDragging(false)}
+          ref={containerRef}
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            height: '100%',
+            gap: 30,
+            // gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 100px))',
+          }}
+        >
+          {data?.files?.length > 0 &&
+            //@ts-ignore
+            filterFolder(data?.files, section).map((item, i) => {
+              return (
                 <div
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                  }}
+                  key={item.id}
+                  id={item.id}
+                  onPointerDown={(e) => dragStart(e, i)}
+                  style={{ maxHeight: 130 }}
                 >
-                  <Tile
-                    setOpenSearch={setOpenSearch}
-                    folder={item.id?.slice(0, 2) === 'di'}
-                    selected={item.id === selected}
-                    item={item}
-                    setOpenSidebar={setOpenSidebar}
-                    setSelected={setSelected}
-                  />
+                  <div
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Tile
+                      setOpenSearch={setOpenSearch}
+                      folder={item.id?.slice(0, 2) === 'di'}
+                      selected={item.id === selected}
+                      item={item}
+                      setOpenSidebar={setOpenSidebar}
+                      setSelected={setSelected}
+                    />
+                  </div>
                 </div>
-              </div>
-            )
-          })}
-        <div id="last" style={{ flexGrow: 1 }} />
-      </styled.div>
+              )
+            })}
+          <div id="last" style={{ flexGrow: 1 }} />
+        </styled.div>
+      </FileDrop>
+
       <SidePanel.Root open={openSidebar}>
         <SidePanel.Content>
           <SidePanel.Title closeFunc={() => setOpenSidebar(false)}>
