@@ -30,23 +30,12 @@ export const MainMenu = () => {
       .filter((key) => key !== 'user')
       .filter((key) => key !== 'file')
       .map((key) => {
-        // if (schemaTypes[key].parents) {
-        //   menuItems[schemaTypes[key].parents][key] = [
-        //     {
-        //       value: key,
-        //       label: schemaTypes[key]?.meta?.displayName || key,
-        //     },
-        //   ]
-        // } else {
         menuItems[key] = {
           value: key,
           label: schemaTypes[key]?.meta?.displayName || key,
         }
-        // }
       })
   }
-
-  console.log(menuItems)
 
   const [active, setActive] = React.useState(section as string)
 

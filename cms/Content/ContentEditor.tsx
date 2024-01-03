@@ -1,17 +1,10 @@
 import React, { useState } from 'react'
 import { styled } from 'inlines'
 import { useClient, useQuery } from '@based/react'
-import {
-  Text,
-  Badge,
-  Row,
-  FormGroup,
-  IconArrowLeft,
-  color,
-  ScrollArea,
-} from '@based/ui'
+import { color, ScrollArea } from '@based/ui'
 import { PublishSideBar } from './PublishSideBar'
 import { useRoute } from 'kabouter'
+import { Text, Badge, Stack, IconArrowLeft, Form } from 'better-ui'
 
 const FILTER_FIELDS = [
   'type',
@@ -43,8 +36,6 @@ export const ContentEditor = ({ id, section }) => {
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
-  // console.log(data, '🐸', userData)
-
   const route = useRoute('[section][id]')
 
   // filter out some system fields
@@ -58,8 +49,6 @@ export const ContentEditor = ({ id, section }) => {
     }
   }
 
-  // console.log('schema fields', schemaFields)
-
   return (
     <styled.div
       style={{
@@ -69,7 +58,7 @@ export const ContentEditor = ({ id, section }) => {
       }}
     >
       <ScrollArea style={{ padding: '24px 48px', width: '100%' }}>
-        <Row
+        <Stack
           style={{
             cursor: 'pointer',
             marginBottom: 6,
@@ -84,24 +73,40 @@ export const ContentEditor = ({ id, section }) => {
             setSomeThingChanged(false)
           }}
         >
-          <IconArrowLeft style={{ marginRight: 8 }} />
-          <Text weight="medium">Back</Text>
-        </Row>
-        <Row style={{ marginBottom: 32 }}>
-          <Text weight="strong" size={24} style={{ marginRight: 12 }}>
+          <IconArrowLeft />
+          <Text variant="bodyBold">Back</Text>
+        </Stack>
+        <Stack style={{ marginBottom: 32 }}>
+          <Text
+            variant="bodyStrong"
+            as="h3"
+            style={{ marginRight: 12, fontSize: 24 }}
+          >
             {section}
           </Text>
-          <Badge light>{id}</Badge>
-        </Row>
+          <Badge color="auto-muted" copyValue={id}>
+            {id}
+          </Badge>
+        </Stack>
         {schema && (
-          <FormGroup
-            alwaysAccept
-            config={filteredSchemaFields}
+          // <FormGroup
+          //   alwaysAccept
+          //   config={filteredSchemaFields}
+          //   onChange={(v) => {
+          //     setSomeThingChanged(true)
+          //     setFormFieldChanges({ ...formFieldChanges, ...v })
+          //   }}
+          //   values={{ ...data, ...formFieldChanges }}
+          // />
+
+          <Form
+            values={{ ...data, ...formFieldChanges }}
+            fields={schemaFields}
             onChange={(v) => {
+              console.log(v, '🐋')
               setSomeThingChanged(true)
               setFormFieldChanges({ ...formFieldChanges, ...v })
             }}
-            values={{ ...data, ...formFieldChanges }}
           />
         )}
       </ScrollArea>
@@ -116,6 +121,9 @@ export const ContentEditor = ({ id, section }) => {
           //   ...formFieldChanges,
           //   updatedBy: userData.name,
           // })
+
+          // TODO updatedBy can be meta data from updatedAt @yves
+
           if (Object.keys(schemaFields).includes('updatedBy')) {
             await client
               .call('db:set', {
