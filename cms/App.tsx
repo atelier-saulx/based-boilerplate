@@ -7,7 +7,7 @@ import { useRoute } from 'kabouter'
 import { styled } from 'inlines'
 import { Content } from './Content'
 import { FileLibrary } from './Files'
-import { SideBar } from './Components/Sidebar'
+import { MainMenu } from './Components/MainMenu'
 import { SchemaBuilder } from './Schema'
 import { Login } from './Settings/UserManagement/Login'
 import { Management } from './Settings/UserManagement/Management'
@@ -18,7 +18,6 @@ import { Dashboard } from './Components/Dashboard'
 import { DatabaseSettings } from './Settings/Database'
 import { GeneralSettings } from './Settings/General'
 import { Docs } from './Docs'
-import { useMousePos } from './Hooks/useMousePos'
 
 export const client = based(basedConfig)
 
@@ -34,12 +33,6 @@ export const App = () => {
   })
 
   console.log(client, 'the client??')
-
-  // keep track of mouseposition
-  // TODO: to possibly track users mouses in the cms
-  ///  Probably really bad for performance
-  // const { x, y } = useMousePos()
-  // console.log(x, y, '🐀', data?.name, route.location)
 
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
 
@@ -64,9 +57,9 @@ export const App = () => {
         setSelectedLang={setSelectedLang}
       />
       <styled.div style={{ display: 'flex', flexDirection: 'row' }}>
-        {selectedLang}
-        <SideBar />
-        <div style={{ marginTop: 65, width: '100%' }}>
+        <MainMenu />
+        {/* TODO -> Page here */}
+        <div style={{ width: '100%' }}>
           {section === 'file-library' ? (
             <FileLibrary />
           ) : section === 'schema-builder' ? (

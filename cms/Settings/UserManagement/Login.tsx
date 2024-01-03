@@ -10,7 +10,7 @@ import {
   Badge,
   color,
 } from '@based/ui'
-import { Logo } from '../../Components/Sidebar/Logo'
+import { Logo } from '../../Components/MainMenu/Logo'
 import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
 

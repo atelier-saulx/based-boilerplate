@@ -1,20 +1,21 @@
-import React from 'react'
+import React, { useState } from 'react'
+import { Logo } from '../MainMenu/Logo'
+import { useRoute } from 'kabouter'
+import { useAuthState, useQuery } from '@based/react'
+import { languages as allLangs } from './languages'
+
 import {
-  TopNavigation,
-  Avatar,
-  Button,
-  Row,
+  Thumbnail,
+  Stack,
+  SelectInput,
   Dropdown,
   IconEye,
   IconLogOut,
   useTheme,
-  Input,
-} from '@based/ui'
-import { Logo } from '../Sidebar/Logo'
-import { useRoute } from 'kabouter'
-import { styled } from '@based/ui'
-import { useAuthState, useQuery } from '@based/react'
-import { languages as allLangs } from './languages'
+  border,
+  color,
+  useIsMobile,
+} from 'better-ui'
 
 export const TopBar = ({
   data,
@@ -25,6 +26,8 @@ export const TopBar = ({
 }) => {
   const route = useRoute('[section]')
 
+  const isMobile = useIsMobile()
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const { theme, setTheme } = useTheme()
 
   const { data: userData } = useQuery('db', {
@@ -38,7 +41,24 @@ export const TopBar = ({
   }))
 
   return (
-    <TopNavigation>
+    <header
+      style={{
+        height: 64,
+        borderBottom: border(),
+        background: color('background', 'screen'),
+        display: 'flex',
+        alignItems: 'center',
+        padding: '0 24px',
+        ...(isMobile &&
+          mobileMenuOpen && {
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            zIndex: 20,
+          }),
+      }}
+    >
       <Logo
         style={{ cursor: 'pointer' }}
         onClick={() => {
@@ -47,25 +67,26 @@ export const TopBar = ({
         }}
       />
 
-      <Row style={{ marginLeft: 'auto' }}>
-        <styled.div style={{ width: 154, marginLeft: 'auto', marginRight: 12 }}>
-          <Input
-            type="select"
-            style={{ overflow: 'hidden' }}
-            value={selectedLang}
-            options={langOptions || []}
-            onChange={(v) => {
-              console.log(v)
-              setSelectedLang(v)
-            }}
-          />
-        </styled.div>
+      <Stack style={{ marginLeft: 'auto' }}>
+        <SelectInput
+          value={selectedLang}
+          options={langOptions || []}
+          onChange={(v) => {
+            console.log(v)
+            setSelectedLang(v)
+          }}
+          style={{ width: 154, marginRight: 12, marginLeft: 'auto' }}
+        />
 
         <Dropdown.Root>
           <Dropdown.Trigger>
-            <Button size="xsmall">
-              <Avatar src={data?.profileImg}>{userData?.name}</Avatar>
-            </Button>
+            <Thumbnail
+              shape="circle"
+              size="regular"
+              src={data?.profileImg}
+              text={userData?.name}
+              style={{ cursor: 'pointer' }}
+            />
           </Dropdown.Trigger>
           <Dropdown.Items>
             <Dropdown.Item
@@ -76,14 +97,12 @@ export const TopBar = ({
             >
               Profile
             </Dropdown.Item>
-            <Dropdown.Separator />
             <Dropdown.Item
               icon={<IconEye />}
               onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
             >
               {theme === 'light' ? 'Dark Mode' : 'Light Mode'}
             </Dropdown.Item>
-            <Dropdown.Separator />
             <Dropdown.Item
               onClick={() => {
                 //@ts-expect-error
@@ -96,7 +115,7 @@ export const TopBar = ({
             </Dropdown.Item>
           </Dropdown.Items>
         </Dropdown.Root>
-      </Row>
-    </TopNavigation>
+      </Stack>
+    </header>
   )
 }
