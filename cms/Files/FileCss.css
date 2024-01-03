@@ -3,6 +3,7 @@
 .file-drop {
   /* relatively position the container bc the contents are absolute */
   position: relative;
+
   height: 100%;
   width: 100%;
   display: flex;
@@ -12,7 +13,7 @@
 
 .file-drop > .file-drop-target {
   /* basic styles */
-  position: absolute;
+  /* position: absolute; */
   top: 0;
   left: 0;
   height: 100%;

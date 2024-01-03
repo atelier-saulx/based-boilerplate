@@ -87,6 +87,7 @@ export const Explorer = ({ onChange }) => {
   })
 
   const handleDrop = async (id) => {
+    setDragging(false)
     if (!dragOverItem.current || dragOverItem.current.length < 1) {
       return
     }
@@ -141,9 +142,11 @@ export const Explorer = ({ onChange }) => {
     dragOverItem.current = ''
   }
 
+  const [isDragging, setDragging] = useState(false)
+
   const dragStart = (e, index) => {
     if (e.button !== 0) return
-
+    setDragging(true)
     const container = containerRef.current
     const items = [...container.childNodes]
     const otherItems = items.filter((_, i) => i !== index)
@@ -245,27 +248,48 @@ export const Explorer = ({ onChange }) => {
     $all: true,
   })
 
-  return (
-    <styled.div style={{ position: 'relative' }}>
-      <styled.div>
-        <Breadcrumbs
-          data={Object.fromEntries(path.split('/').map((i) => [i, i]))}
-          onChange={(v) => {
-            const pathArr = path.split('/')
-            const newArr = [] as string[]
-            for (const i in pathArr) {
-              if (pathArr[i] === v) {
-                newArr.push(pathArr[i])
-                break
-              } else {
-                newArr.push(pathArr[i])
-              }
-            }
-
-            route.setQuery({ folder: newArr.join('/') })
+  const fileOverlay = () => {
+    const arr = [] as any
+    // for (const i in data?.files) {
+    for (let i = 0; i < 50; i++) {
+      arr.push(
+        <styled.div
+          style={{
+            height: 130,
+            width: '120px',
+            '&:hover': {
+              borderRight: '1px solid red',
+              // backgroundColor: 'red',
+            },
+            // paddingLeft: 15,
+            // paddingRight: 15,
           }}
         />
-      </styled.div>
+      )
+    }
+    return arr
+  }
+
+  return (
+    <styled.div style={{ position: 'relative', height: '100%' }}>
+      <Breadcrumbs
+        data={Object.fromEntries(path.split('/').map((i) => [i, i]))}
+        onChange={(v) => {
+          const pathArr = path.split('/')
+          const newArr = [] as string[]
+          for (const i in pathArr) {
+            if (pathArr[i] === v) {
+              newArr.push(pathArr[i])
+              break
+            } else {
+              newArr.push(pathArr[i])
+            }
+          }
+
+          route.setQuery({ folder: newArr.join('/') })
+        }}
+      />
+
       <input
         type="file"
         style={{ display: 'none' }}
@@ -333,8 +357,22 @@ export const Explorer = ({ onChange }) => {
             })}
           <div id="last" style={{ flexGrow: 1 }} />
         </styled.div>
+        {isDragging && (
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              display: 'flex',
+              flexWrap: 'wrap',
+              overflow: 'hidden',
+              // gridTemplateColumns: 'repeat( auto-fit, minmax(130px, 130px) )',
+              gap: 30,
+            }}
+          >
+            {fileOverlay()}
+          </div>
+        )}
       </FileDrop>
-
       <SidePanel.Root open={openSidebar}>
         <SidePanel.Content>
           <SidePanel.Title closeFunc={() => setOpenSidebar(false)}>
