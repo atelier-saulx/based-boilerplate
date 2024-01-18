@@ -52,6 +52,7 @@ export const ContentViewer = ({ selectedLang }) => {
     <Page>
       <Stack style={{ marginBottom: 24 }}>
         <Text variant="title-page">{routeSection as string}</Text>
+
         <Button
           prefix={<IconPlus />}
           size="small"

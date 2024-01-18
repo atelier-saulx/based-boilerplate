@@ -54,9 +54,9 @@ export const App = () => {
             <>files</>
           ) : section === 'schema-builder' ? (
             <SchemaBuilder />
-          ) : // ) : section === 'profile' ? (
-          //   <Profile />
-          // ) : section === 'user-management' ? (
+          ) : section === 'profile' ? (
+            <Profile />
+          ) : // ) : section === 'user-management' ? (
           //   <Management />
           // ) : section === 'db-settings' ? (
           //   <DatabaseSettings />

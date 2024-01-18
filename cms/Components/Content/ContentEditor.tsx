@@ -15,6 +15,8 @@ export const ContentEditor = ({ id, section }) => {
   console.log(data, '💂🏻‍♀️', section)
   let schemaFields = schema?.types[section].fields
 
+  console.log(schemaFields, 'Fields??')
+
   return (
     <Page>
       <Stack style={{ marginBottom: 24 }}>

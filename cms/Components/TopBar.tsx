@@ -5,6 +5,7 @@ import { useAuthState, useQuery } from '@based/react'
 import { languages as allLangs } from './assets/languages'
 import {
   Thumbnail,
+  Button,
   Stack,
   SelectInput,
   Dropdown,
@@ -79,13 +80,15 @@ export const TopBar = ({
 
         <Dropdown.Root>
           <Dropdown.Trigger>
-            <Thumbnail
-              shape="circle"
-              size="regular"
-              src={data?.profileImg}
-              text={userData?.name}
-              style={{ cursor: 'pointer' }}
-            />
+            <Button variant="icon-only">
+              <Thumbnail
+                shape="circle"
+                size="regular"
+                src={data?.profileImg}
+                text={userData?.name}
+                style={{ cursor: 'pointer' }}
+              />
+            </Button>
           </Dropdown.Trigger>
           <Dropdown.Items>
             <Dropdown.Item

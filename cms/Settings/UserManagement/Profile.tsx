@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useAuthState, useClient, useQuery } from '@based/react'
 import { styled } from 'inlines'
-import { Action, Avatar, Confirmation, Container, Input } from '@based/ui'
+import { Button, Container, TextInput, Thumbnail, Stack, Page } from '@based/ui'
 
 export const Profile = () => {
   const client = useClient()
@@ -26,69 +26,71 @@ export const Profile = () => {
       setPic(data.profileImg)
     }
   }, [data])
-  console.log(authState)
+  // console.log(authState)
 
   return (
-    <styled.div
-      style={{
-        display: 'flex',
-        padding: '48px 48px',
-        width: '100%',
-      }}
-    >
+    <Page>
       <Container
-        icon={<Avatar src={data?.profileImg}>{data?.name}</Avatar>}
+        prefix={
+          <Thumbnail shape="circle" src={data?.profileImg} text={data?.name} />
+        }
         style={{
           maxWidth: '700px',
           width: '70%',
         }}
         description={data?.email}
-        label={data?.name}
+        title={data?.name}
       >
         <styled.div
           style={{ gap: 12, display: 'flex', flexDirection: 'column' }}
         >
           {!loading && (
             <>
-              <Input
-                type="text"
+              <TextInput
                 label="Name"
                 onChange={(v) => setName(v)}
                 value={name}
               />
-              <Input
-                type="text"
+              <TextInput
                 label="Email"
                 onChange={(v) => setEmail(v)}
                 value={email}
               />
-              <Input
-                type="text"
+              <TextInput
                 label="Profile Picture"
                 onChange={(v) => setPic(v)}
                 value={profileImg}
               />
             </>
           )}
-          <div style={{ height: 24 }} />
-          <Confirmation
-            label="Save Changes"
-            onConfirm={async () => {
-              await client.call('db:set', {
-                $id: authState.userId,
-                name,
-                email,
-                profileImg,
-              })
-            }}
-            onCancel={() => {
-              setEmail(data.email)
-              setName(data.name)
-              setPic(data.profileImg)
-            }}
-          />
+          <Stack gap={12} style={{ justifyContent: 'flex-end', marginTop: 24 }}>
+            <Button
+              variant="neutral"
+              onClick={() => {
+                setEmail(data.email)
+                setName(data.name)
+                setPic(data.profileImg)
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={async () => {
+                const setObj = {
+                  $id: authState.userId,
+                  name: name,
+                  email: email,
+                  profileImg: profileImg ? profileImg : { $delete: true },
+                }
+
+                await client.call('db:set', setObj)
+              }}
+            >
+              Save Changes
+            </Button>
+          </Stack>
         </styled.div>
       </Container>
-    </styled.div>
+    </Page>
   )
 }
