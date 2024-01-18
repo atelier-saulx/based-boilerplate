@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { styled } from 'inlines'
 import { Button, Container, TextInput, Text, color } from '@based/ui'
-import { Logo } from '../../Components/SideBar/Logo'
+import { Logo } from '../../Components/assets/Logo'
 import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
 

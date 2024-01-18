@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { styled } from 'inlines'
 import { Text, Input, Button } from '@based/ui'
-import { languages as allLangs } from '../../Components/TopBar/languages'
+import { languages as allLangs } from '../../Components/assets/languages'
 import { useClient } from '@based/react'
 // import { client } from '../../../client'
 

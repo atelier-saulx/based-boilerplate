@@ -8,7 +8,7 @@ import {
   IconUsers,
   Page,
 } from '@based/ui'
-import Env from '../../../based.json'
+import Env from '../../based.json'
 import { useQuery } from '@based/react'
 
 export const Dashboard = () => {

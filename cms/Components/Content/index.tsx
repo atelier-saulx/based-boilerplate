@@ -1,125 +1,22 @@
 import React from 'react'
-import {
-  Table,
-  Dropdown,
-  Modal,
-  useInfiniteQuery,
-  Button,
-  IconMoreVertical,
-  IconCopy,
-  IconPlus,
-  IconDelete,
-  Page,
-  Stack,
-  Text,
-} from '@based/ui'
+import { ContentViewer } from './ContentViewer'
+import { ContentEditor } from './ContentEditor'
 import { useRoute } from 'kabouter'
-import { useClient } from '@based/react'
 
 export const Content = ({ selectedLang }) => {
   const route = useRoute('[section][id]')
-  const routeSection = route.query.section
-
-  const client = useClient()
-
-  const [itemToDelete, setItemToDelete] = React.useState(null)
-  const { data, fetchMore, setVisibleElements } = useInfiniteQuery({
-    accessFn: (data) => data.files,
-    queryFn: (offset) => ({
-      $id: 'root',
-      files: {
-        $all: true,
-        $list: {
-          $sort: { $field: 'updatedAt', $order: 'desc' },
-          $offset: offset,
-          $limit: 25,
-          $find: {
-            $traverse: 'children',
-            $filter: {
-              $operator: '=',
-              $field: 'type',
-              $value: routeSection,
-            },
-          },
-        },
-      },
-    }),
-  })
-
-  console.log(data, 'NANI??', selectedLang)
+  const section = route.query.section
+  const routeId = route.query.id as string
 
   return (
-    <Page>
-      <Stack style={{ marginBottom: 24 }}>
-        <Text variant="title-page">{routeSection as string}</Text>
-        <Button
-          prefix={<IconPlus />}
-          size="small"
-          variant="primary-transparent"
-          onClick={async () => {
-            await client.call('db:set', {
-              // TODO check this ? en default?
-              $language: selectedLang,
-              type: routeSection,
-            })
-          }}
-        >
-          Add new {routeSection as string}
-        </Button>
-      </Stack>
-
-      <Table
-        data={data}
-        onScrollToBottom={fetchMore}
-        onVisibleElementsChange={setVisibleElements}
-        rowAction={(row) => (
-          <Dropdown.Root>
-            <Dropdown.Trigger>
-              <Button shape="square" variant="neutral-transparent">
-                <IconMoreVertical />
-              </Button>
-            </Dropdown.Trigger>
-            <Dropdown.Items>
-              <Dropdown.Item icon={<IconCopy />}>Copy</Dropdown.Item>
-              <Dropdown.Item
-                icon={<IconDelete />}
-                onClick={() => {
-                  setItemToDelete(row.id)
-                }}
-              >
-                Delete
-              </Dropdown.Item>
-            </Dropdown.Items>
-          </Dropdown.Root>
-        )}
-      />
-
-      {itemToDelete && (
-        <Modal.Root
-          open
-          onOpenChange={() => {
-            setItemToDelete(null)
-          }}
-        >
-          <Modal.Overlay>
-            {({ close }) => (
-              <>
-                <Modal.Title description="Are you sure? This action cannot be undone.">
-                  Deleting item #{itemToDelete}
-                </Modal.Title>
-                <Modal.Actions>
-                  <Button onClick={close} variant="neutral">
-                    Cancel
-                  </Button>
-                  <Button onClick={close} variant="error">
-                    Delete
-                  </Button>
-                </Modal.Actions>
-              </>
-            )}
-          </Modal.Overlay>
-        </Modal.Root>
+    <>
+      {section && routeId ? (
+        <ContentEditor id={routeId} section={section} />
+      ) : section ? (
+        <ContentViewer selectedLang={selectedLang} />
+      ) : (
+        ''
       )}
-    </Page>
+    </>
   )
 }

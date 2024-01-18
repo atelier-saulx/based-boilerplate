@@ -1,8 +1,8 @@
 import React, { useState } from 'react'
-import { Logo } from '../SideBar/Logo'
+import { Logo } from './assets/Logo'
 import { useRoute } from 'kabouter'
 import { useAuthState, useQuery } from '@based/react'
-import { languages as allLangs } from './languages'
+import { languages as allLangs } from './assets/languages'
 import {
   Thumbnail,
   Stack,
