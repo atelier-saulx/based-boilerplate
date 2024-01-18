@@ -3,7 +3,7 @@ import { styled } from 'inlines'
 import { Button, FormGroup, IconPlus, Input, Modal, Row, Text } from '@based/ui'
 import { useClient, useQuery } from '@based/react'
 import { useWindowResize } from '@based/ui'
-import { CmsTable } from '../../Components/CmsTable'
+import { CmsTable } from '../../_CmsTable'
 
 export const Management = () => {
   const [email, setEmail] = useState('')

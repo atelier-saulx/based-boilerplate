@@ -15,7 +15,7 @@ import { useRoute } from 'kabouter'
 import { Search } from './Search'
 import { FileDrop } from 'react-file-drop'
 import './FileCss.css'
-import { useUploadFile } from '../Hooks/useUploadFile'
+import { useUploadFile } from 'Hooks/useUploadFile'
 
 const FILTER_FIELDS = ['type', 'ancestors', 'descendants', 'aliases']
 

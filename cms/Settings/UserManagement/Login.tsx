@@ -1,16 +1,7 @@
 import React, { useMemo, useState } from 'react'
 import { styled } from 'inlines'
-import {
-  Button,
-  Container,
-  Input,
-  Tabs,
-  Tab,
-  Text,
-  Badge,
-  color,
-} from '@based/ui'
-import { Logo } from '../../Components/MainMenu/Logo'
+import { Button, Container, TextInput, Text, color } from '@based/ui'
+import { Logo } from '../../Components/SideBar/Logo'
 import { useClient, useQuery } from '@based/react'
 import { useRoute } from 'kabouter'
 
@@ -49,28 +40,28 @@ export const Login = () => {
         padding: 40,
       }}
     >
-      <Container icon={<Logo />} style={{ maxWidth: '456px', width: '100%' }}>
+      <Container prefix={<Logo />} style={{ maxWidth: '456px', width: '100%' }}>
         <styled.div
           style={{ display: 'flex', flexDirection: 'column', gap: 12 }}
         >
-          <Text size={18} weight="strong">
+          <Text variant="title-modal" weight="strong">
             {data?.user.length === 0
               ? 'No users found, please input credentials to create a first user'
               : 'Login'}
           </Text>
           {data?.user.length === 0 && (
-            <Input type="text" label="Name" onChange={(v) => setName(v)} />
+            <TextInput label="Name" onChange={(v) => setName(v)} />
           )}
-          <Input type="text" label="Email" onChange={(v) => setEmail(v)} />
+          <TextInput label="Email" onChange={(v) => setEmail(v)} />
 
           <styled.div
             style={{
-              backgroundColor: color('background', 'brand', 'surface'),
+              backgroundColor: color('semantic-background', 'informative'),
               borderRadius: 4,
               padding: '8px 16px',
             }}
           >
-            <Text color="brand" weight="strong">
+            <Text color="primary" weight="strong">
               {code}
             </Text>
           </styled.div>
@@ -78,7 +69,6 @@ export const Login = () => {
           <Button
             size="large"
             keyboardShortcut="Enter"
-            displayShortcut
             style={{ width: '100%', marginBottom: 12 }}
             onClick={
               data?.user.length === 0

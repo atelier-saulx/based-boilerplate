@@ -16,7 +16,7 @@ import { Tile } from './Tile'
 import { Explorer } from './Explorer'
 import { CmsTable } from '../Components/CmsTable'
 import { useRoute } from 'kabouter'
-import { useUploadFile } from '../Hooks/useUploadFile'
+import { useUploadFile } from 'Hooks/useUploadFile'
 
 export const FileLibrary = () => {
   const client = useClient()

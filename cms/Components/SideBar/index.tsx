@@ -10,9 +10,9 @@ import {
   IconTimeClock,
   IconSettings,
   IconLayerThree,
-} from 'better-ui'
+} from '@based/ui'
 
-export const MainMenu = () => {
+export const Menu = () => {
   const route = useRoute('[section]')
   const section = route.query.section
 
@@ -43,7 +43,7 @@ export const MainMenu = () => {
     <div style={{ height: 'calc(100vh - 65px)' }}>
       <Sidebar
         value={active}
-        onChange={(v) => {
+        onValueChange={(v) => {
           setActive(v)
           // @ts-ignore
           route.setQuery({ section: v, type: null, id: null })
@@ -57,23 +57,23 @@ export const MainMenu = () => {
           ))}
         </SidebarGroup>
         <SidebarGroup title="Schema">
-          <SidebarItem value="schema-builder" icon={<IconLayerThree />}>
+          <SidebarItem value="schema-builder" prefix={<IconLayerThree />}>
             Schema Builder
           </SidebarItem>
         </SidebarGroup>
         <SidebarGroup title="Files">
-          <SidebarItem value="file-library" icon={<IconFolder />}>
+          <SidebarItem value="file-library" prefix={<IconFolder />}>
             File library
           </SidebarItem>
         </SidebarGroup>
         <SidebarGroup title="Settings">
-          <SidebarItem value="user-management" icon={<IconUsers />}>
+          <SidebarItem value="user-management" prefix={<IconUsers />}>
             Users
           </SidebarItem>
-          <SidebarItem value="db-settings" icon={<IconTimeClock />}>
+          <SidebarItem value="db-settings" prefix={<IconTimeClock />}>
             Database
           </SidebarItem>
-          <SidebarItem value="general-settings" icon={<IconSettings />}>
+          <SidebarItem value="general-settings" prefix={<IconSettings />}>
             General
           </SidebarItem>
         </SidebarGroup>

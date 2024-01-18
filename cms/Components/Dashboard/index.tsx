@@ -1,55 +1,34 @@
 import React from 'react'
-import { styled } from 'inlines'
-import { ShowEnvWidget } from './ShowEnvWidget'
-import { ConnectionsWidget } from './ConnectionsWidget'
-import { Button, Row, Text, Column, color } from '@based/ui'
-import { IntroSteps } from '../../Docs/IntroSteps'
-import { useRoute } from 'kabouter'
+import {
+  Stack,
+  Code,
+  Container,
+  Thumbnail,
+  IconTree,
+  IconUsers,
+  Page,
+} from '@based/ui'
+import Env from '../../../based.json'
+import { useQuery } from '@based/react'
 
 export const Dashboard = () => {
-  const route = useRoute('[section]')
+  const { data: concurrentUsers } = useQuery('based:connections')
+  const { data: uniqueUsers } = useQuery('based:analytics')
 
   return (
-    <styled.div
-      style={{
-        padding: '24px 48px',
-        width: '100%',
-        // maxWidth: 924,
-        marginTop: 16,
-      }}
-    >
-      <IntroSteps />
-      <styled.div
-        style={{
-          marginBottom: 42,
-          marginTop: 64,
-          paddingLeft: 16,
-          borderLeft: `2px solid ${color(
-            'inputBorder',
-            'neutralNormal',
-            'default'
-          )}`,
-        }}
-      >
-        <Text size={14} weight="strong">
-          Documentation
-        </Text>
-        <Text light style={{ marginBottom: 12 }}>
-          Learn more about using the based-CMS.
-        </Text>
-        <Button
-          color="system"
-          size="small"
-          onClick={() => route.setQuery({ section: 'docs' })}
-        >
-          Read Documentation
-        </Button>
-      </styled.div>
-      <Column style={{ maxWidth: 324 }}>
-        <ConnectionsWidget />
-        <ShowEnvWidget />
-      </Column>
-      {/* <Docs /> */}
-    </styled.div>
+    <Page>
+      <Stack style={{ maxWidth: 274 }} grid>
+        <Container
+          prefix={<Thumbnail icon={<IconUsers />} color="auto-muted" />}
+          // @ts-ignore
+          title={`Unique Users: ${uniqueUsers?.uniqueUsers || ''}`}
+        />
+        <Container
+          prefix={<Thumbnail icon={<IconTree />} color="positive-muted" />}
+          title={`Active Connections: ${concurrentUsers || ''}`}
+        />
+        <Code language="json" value={JSON.stringify(Env, null, 2)} />
+      </Stack>
+    </Page>
   )
 }

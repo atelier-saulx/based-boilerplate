@@ -5,19 +5,20 @@ import based from '@based/client'
 import basedConfig from '../based.json'
 import { useRoute } from 'kabouter'
 import { styled } from 'inlines'
-import { Content } from './Content'
-import { FileLibrary } from './Files'
-import { MainMenu } from './Components/MainMenu'
-import { SchemaBuilder } from './Schema'
+import { Modal } from '@based/ui'
+import { Content } from './_Content'
+// import { FileLibrary } from './Files'
+import { Menu } from './Components/SideBar'
+import { SchemaBuilder } from './Components/Schema'
 import { Login } from './Settings/UserManagement/Login'
 import { Management } from './Settings/UserManagement/Management'
-import { Provider, color } from '@based/ui'
+import { color } from '@based/ui'
+import { Provider } from '@based/react'
 import { TopBar } from './Components/TopBar'
 import { Profile } from './Settings/UserManagement/Profile'
 import { Dashboard } from './Components/Dashboard'
 import { DatabaseSettings } from './Settings/Database'
 import { GeneralSettings } from './Settings/General'
-import { Docs } from './Docs'
 
 export const client = based(basedConfig)
 
@@ -32,10 +33,7 @@ export const App = () => {
     name: true,
   })
 
-  console.log(client, 'the client??')
-
   const { data: schema, loading: loadingSchema } = useQuery('db:schema')
-
   const [selectedLang, setSelectedLang] = useState(schema?.languages[0])
 
   return !authState.userId ? (
@@ -46,7 +44,7 @@ export const App = () => {
         display: 'flex',
         flexDirection: 'column',
         minHeight: '100vh',
-        backgroundColor: color('background', 'default'),
+        backgroundColor: color('background', 'screen'),
       }}
     >
       <TopBar
@@ -57,27 +55,27 @@ export const App = () => {
         setSelectedLang={setSelectedLang}
       />
       <styled.div style={{ display: 'flex', flexDirection: 'row' }}>
-        <MainMenu />
-        {/* TODO -> Page here */}
+        <Menu />
         <div style={{ width: '100%' }}>
           {section === 'file-library' ? (
-            <FileLibrary />
+            <>files</>
           ) : section === 'schema-builder' ? (
             <SchemaBuilder />
-          ) : section === 'profile' ? (
-            <Profile />
-          ) : section === 'user-management' ? (
-            <Management />
-          ) : section === 'db-settings' ? (
-            <DatabaseSettings />
-          ) : section === 'general-settings' ? (
-            <GeneralSettings languages={schema?.languages} />
-          ) : section === 'docs' ? (
-            <Docs />
-          ) : !section ? (
-            <Dashboard />
           ) : (
-            <Content selectedLang={selectedLang || schema?.languages[0]} />
+            // ) : section === 'profile' ? (
+            //   <Profile />
+            // ) : section === 'user-management' ? (
+            //   <Management />
+            // ) : section === 'db-settings' ? (
+            //   <DatabaseSettings />
+            // ) : section === 'general-settings' ? (
+            //   <GeneralSettings languages={schema?.languages} />
+            // ) : section === 'docs' ? (
+            //   <Docs />
+            // ) : !section ? (
+            <Dashboard />
+            // ) : (
+            //   <Content selectedLang={selectedLang || schema?.languages[0]} />
           )}
         </div>
       </styled.div>
@@ -89,6 +87,8 @@ const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement)
 
 root.render(
   <Provider client={client}>
-    <App />
+    <Modal.Provider>
+      <App />
+    </Modal.Provider>
   </Provider>
 )

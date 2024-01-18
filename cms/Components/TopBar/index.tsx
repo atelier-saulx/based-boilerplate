@@ -1,9 +1,8 @@
 import React, { useState } from 'react'
-import { Logo } from '../MainMenu/Logo'
+import { Logo } from '../SideBar/Logo'
 import { useRoute } from 'kabouter'
 import { useAuthState, useQuery } from '@based/react'
 import { languages as allLangs } from './languages'
-
 import {
   Thumbnail,
   Stack,
@@ -15,7 +14,7 @@ import {
   border,
   color,
   useIsMobile,
-} from 'better-ui'
+} from '@based/ui'
 
 export const TopBar = ({
   data,
@@ -91,7 +90,7 @@ export const TopBar = ({
           <Dropdown.Items>
             <Dropdown.Item
               onClick={() =>
-                //@ts-expect-error
+                //  @ts-expect-error
                 route.setQuery({ section: 'profile', type: null, id: null })
               }
             >

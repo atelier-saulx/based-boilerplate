@@ -25,7 +25,7 @@ import {
   Tooltip,
   IconAlertFill,
 } from '@based/ui'
-import deepCopy from '../utils/deepCopy'
+import deepCopy from './utils/deepCopy'
 
 type CmsTableProps = {
   data?: any

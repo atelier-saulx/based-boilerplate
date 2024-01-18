@@ -4,7 +4,7 @@ import { useClient, useQuery } from '@based/react'
 import { color, ScrollArea } from '@based/ui'
 import { PublishSideBar } from './PublishSideBar'
 import { useRoute } from 'kabouter'
-import { Text, Badge, Stack, IconArrowLeft, Form } from 'better-ui'
+import { Text, Badge, Stack, IconArrowLeft, Form } from '@based/ui'
 
 const FILTER_FIELDS = [
   'type',
@@ -74,11 +74,11 @@ export const ContentEditor = ({ id, section }) => {
           }}
         >
           <IconArrowLeft />
-          <Text variant="bodyBold">Back</Text>
+          <Text variant="body-bold">Back</Text>
         </Stack>
         <Stack style={{ marginBottom: 32 }}>
           <Text
-            variant="bodyStrong"
+            variant="body-strong"
             as="h3"
             style={{ marginRight: 12, fontSize: 24 }}
           >
