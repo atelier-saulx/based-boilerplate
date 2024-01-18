@@ -5,8 +5,8 @@ import based from '@based/client'
 import basedConfig from '../based.json'
 import { useRoute } from 'kabouter'
 import { styled } from 'inlines'
-import { Modal } from '@based/ui'
-import { Content } from './_Content'
+import { Modal, ScrollArea } from '@based/ui'
+import { Content } from './Components/Content'
 // import { FileLibrary } from './Files'
 import { Menu } from './Components/SideBar'
 import { SchemaBuilder } from './Components/Schema'
@@ -39,14 +39,7 @@ export const App = () => {
   return !authState.userId ? (
     <Login />
   ) : (
-    <styled.div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        backgroundColor: color('background', 'screen'),
-      }}
-    >
+    <styled.div>
       <TopBar
         data={data}
         client={client}
@@ -61,21 +54,20 @@ export const App = () => {
             <>files</>
           ) : section === 'schema-builder' ? (
             <SchemaBuilder />
-          ) : (
-            // ) : section === 'profile' ? (
-            //   <Profile />
-            // ) : section === 'user-management' ? (
-            //   <Management />
-            // ) : section === 'db-settings' ? (
-            //   <DatabaseSettings />
-            // ) : section === 'general-settings' ? (
-            //   <GeneralSettings languages={schema?.languages} />
-            // ) : section === 'docs' ? (
-            //   <Docs />
-            // ) : !section ? (
+          ) : // ) : section === 'profile' ? (
+          //   <Profile />
+          // ) : section === 'user-management' ? (
+          //   <Management />
+          // ) : section === 'db-settings' ? (
+          //   <DatabaseSettings />
+          // ) : section === 'general-settings' ? (
+          //   <GeneralSettings languages={schema?.languages} />
+          // ) : section === 'docs' ? (
+          //   <Docs />
+          !section ? (
             <Dashboard />
-            // ) : (
-            //   <Content selectedLang={selectedLang || schema?.languages[0]} />
+          ) : (
+            <Content selectedLang={selectedLang || schema?.languages[0]} />
           )}
         </div>
       </styled.div>
