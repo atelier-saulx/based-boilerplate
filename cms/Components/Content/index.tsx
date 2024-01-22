@@ -13,7 +13,7 @@ export const Content = ({ selectedLang }) => {
       {section && routeId ? (
         <ContentEditor id={routeId} section={section} />
       ) : section ? (
-        <ContentViewer selectedLang={selectedLang} />
+        <ContentViewer selectedLang={selectedLang} section={section} />
       ) : (
         ''
       )}

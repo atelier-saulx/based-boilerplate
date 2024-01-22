@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import {
   Table,
   Dropdown,
@@ -16,13 +16,13 @@ import {
 import { useRoute } from 'kabouter'
 import { useClient } from '@based/react'
 
-export const ContentViewer = ({ selectedLang }) => {
+export const ContentViewer = ({ selectedLang, section }) => {
   const route = useRoute('[section][id]')
-  const routeSection = route.query.section
 
   const client = useClient()
 
   const [itemToDelete, setItemToDelete] = React.useState(null)
+
   const { data, fetchMore, setVisibleElements } = useInfiniteQuery({
     accessFn: (data) => data.files,
     queryFn: (offset) => ({
@@ -38,7 +38,7 @@ export const ContentViewer = ({ selectedLang }) => {
             $filter: {
               $operator: '=',
               $field: 'type',
-              $value: routeSection,
+              $value: section,
             },
           },
         },
@@ -46,12 +46,12 @@ export const ContentViewer = ({ selectedLang }) => {
     }),
   })
 
-  console.log(data, 'NANI??', selectedLang)
+  console.log(data, '🐧', selectedLang)
 
   return (
     <Page>
       <Stack style={{ marginBottom: 24 }}>
-        <Text variant="title-page">{routeSection as string}</Text>
+        <Text variant="title-page">{section as string}</Text>
 
         <Button
           prefix={<IconPlus />}
@@ -61,11 +61,11 @@ export const ContentViewer = ({ selectedLang }) => {
             await client.call('db:set', {
               // TODO check this ? en default?
               $language: selectedLang,
-              type: routeSection,
+              type: section,
             })
           }}
         >
-          Add new {routeSection as string}
+          Add new {section as string}
         </Button>
       </Stack>
 
