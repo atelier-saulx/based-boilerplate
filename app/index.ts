@@ -14,15 +14,11 @@ const app: BasedAppFunction = async (_based, { css, js, favicon }, _ctx) => {
         <meta name="title" content="_project_title_" />
         <title>_project_title_</title>
         <link rel="icon" type="image/x-icon" href="${favicon.url}" />
-        <style>
-          ${await css.text}
-        </style>
+        ${css ? `<link rel="stylesheet" href="${css.url}" />` : ''}
       </head>
       <body style="margin: 0;">
         <div id="root"></div>
-        <script>
-          ${await js.text}
-        </script>
+        <script type="application/javascript" src="${js.url}"></script>
       </body>
     </html>`
 }
