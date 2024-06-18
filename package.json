@@ -1,6 +1,6 @@
 {
   "name": "based-boilerplate",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Based.io app",
   "license": "MIT",
   "main": "dist/server/index.js",
@@ -10,13 +10,13 @@
     "deploy": "npx @based/cli deploy"
   },
   "dependencies": {
-    "@based/client": "^6.0.1",
+    "@based/client": "^6.8.0",
     "@based/react": "^5.0.3",
-    "@based/ui": "^6.3.0-alpha.2"
+    "@based/ui": "^6.5.4-alpha.8"
   },
   "devDependencies": {
-    "@based/cli": "^7.0.1",
-    "@based/functions": "^3.0.1",
+    "@based/cli": "^7.1.2",
+    "@based/functions": "^3.0.2",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
     "react": "18",
