@@ -125,6 +125,7 @@ tmp/**/*
 
 # Various
 .vscode
+.idea
 
 # Based CLI apiKey
 apiKey.key

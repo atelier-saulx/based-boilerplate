@@ -5,7 +5,8 @@
   "license": "MIT",
   "main": "dist/server/index.js",
   "scripts": {
-    "zip": "rm -f latest.zip && zip -r latest.zip ./ -x node_modules/\\* -x package-lock.json -x .DS_Store -x .git/\\*",
+    "zip": "rm -f latest.zip && zip -r latest.zip ./ -x .github/\\* -x node_modules/\\* -x package-lock.json -x .DS_Store -x .git/\\*",
+    "zip:cicd": "rm -f cicd-latest.zip && zip -r cicd-latest.zip ./.github",
     "dev": "npx @based/cli dev",
     "deploy": "npx @based/cli deploy"
   },
