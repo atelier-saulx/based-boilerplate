@@ -1,21 +1,24 @@
 {
   "compilerOptions": {
-    "jsx": "react",
+    "target": "es2020",
+    "module": "ESNext",
+    "moduleResolution": "node",
+    "strict": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
+    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
+    "baseUrl": ".",
     "incremental": true,
     "composite": true,
-    "target": "es2019",
-    "module": "commonjs",
-    "moduleResolution": "node",
     "sourceMap": true,
-    "removeComments": false,
-    "noImplicitAny": false,
-    "skipLibCheck": true,
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "declaration": true,
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "resolveJsonModule": true
+    "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["based.json", "src/**/*.json"]
+  "include": ["based.ts", "src", "test", "vitest.config.ts"],
+  "exclude": ["node_modules", "dist"]
 }
