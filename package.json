@@ -1,26 +1,31 @@
 {
   "name": "based-boilerplate",
-  "version": "2.2.0",
-  "description": "Based.io app",
+  "version": "3.0.0",
+  "description": "My Based.io app",
   "license": "MIT",
-  "main": "dist/server/index.js",
+  "type": "module",
   "scripts": {
-    "zip": "rm -f latest.zip && zip -r latest.zip ./ -x .github/\\* -x node_modules/\\* -x package-lock.json -x .DS_Store -x .git/\\*",
-    "zip:cicd": "rm -f cicd-latest.zip && zip -r cicd-latest.zip ./.github",
     "dev": "npx @based/cli dev",
-    "deploy": "npx @based/cli deploy"
+    "deploy": "npx @based/cli deploy",
+    "test": "vitest"
   },
   "dependencies": {
     "@based/client": "^6.8.0",
     "@based/react": "^5.0.3",
-    "@based/ui": "^6.5.4-alpha.8"
+    "@based/ui": "^6.5.4-alpha.8",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@based/cli": "^7.1.2",
     "@based/functions": "^3.0.2",
+    "@biomejs/biome": "1.9.4",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.0.1",
+    "@types/node": "^22.7.4",
     "@types/react": "^18.0.25",
     "@types/react-dom": "^18.0.9",
-    "react": "18",
-    "react-dom": "18"
+    "jsdom": "^25.0.1",
+    "typescript": "^5.6.2",
+    "vitest": "^2.1.5"
   }
 }
