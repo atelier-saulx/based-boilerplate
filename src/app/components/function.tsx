@@ -18,7 +18,7 @@ export const FunctionModule = ({ name, children }: FunctionModuleProps) => {
         padding: '32px',
         borderRadius: '16px',
         position: 'relative',
-        minWidth: '500px',
+        maxWidth: '300px',
         minHeight: '150px',
         margin: '32px',
       }}
