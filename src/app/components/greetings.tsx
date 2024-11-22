@@ -29,7 +29,7 @@ export const Greetings = () => {
       <h2
         style={{
           color: '#bbbbbb',
-          fontSize: '40pt',
+          fontSize: '20pt',
           margin: '16px',
           height: '70px',
         }}
