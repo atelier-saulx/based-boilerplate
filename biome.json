@@ -7,7 +7,7 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "ignore": ["dist", "node_modules"]
+    "ignore": ["test", "dist", "node_modules"]
   },
   "formatter": {
     "enabled": true,
@@ -20,12 +20,23 @@
     "enabled": true,
     "rules": {
       "recommended": true,
+      "a11y": {
+        "noSvgWithoutTitle": "off"
+      },
+      "performance": {
+        "noDelete": "off"
+      },
       "correctness": {
         "noUnusedVariables": "warn",
         "noUnusedFunctionParameters": "warn",
         "noUnusedImports": "warn"
       },
+      "suspicious": {
+        "noExplicitAny": "off",
+        "noArrayIndexKey": "off"
+      },
       "style": {
+        "noNonNullAssertion": "off",
         "noParameterAssign": "off",
         "noInferrableTypes": "off"
       }
