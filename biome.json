@@ -19,6 +19,10 @@
   "linter": {
     "enabled": true,
     "rules": {
+      "complexity": {
+        "noForEach": "off",
+        "useFlatMap": "off"
+      },
       "recommended": true,
       "a11y": {
         "noSvgWithoutTitle": "off"
@@ -29,7 +33,8 @@
       "correctness": {
         "noUnusedVariables": "warn",
         "noUnusedFunctionParameters": "warn",
-        "noUnusedImports": "warn"
+        "noUnusedImports": "warn",
+        "useImportExtensions": "error"
       },
       "suspicious": {
         "noExplicitAny": "off",
