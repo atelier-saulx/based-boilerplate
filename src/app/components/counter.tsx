@@ -1,5 +1,5 @@
 import { useQuery } from '@based/react'
-import { FunctionModule } from './function'
+import { FunctionModule } from './function.js'
 
 export const Counter = () => {
   const { data: counter, loading } = useQuery('counter')

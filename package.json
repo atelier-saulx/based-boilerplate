@@ -5,6 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
+    "lint": "npx @biomejs/biome lint",
     "dev": "npx @based/cli dev",
     "deploy": "npx @based/cli deploy",
     "test": "vitest"

@@ -1,7 +1,7 @@
 import type { BasedClient } from '@based/client'
 import { useClient } from '@based/react'
 import { useEffect, useState } from 'react'
-import { FunctionModule } from './function'
+import { FunctionModule } from './function.js'
 
 export const Greetings = () => {
   const [stateValue, setStateValue] = useState('')
