@@ -8,7 +8,8 @@
     "lint": "npx @biomejs/biome lint",
     "dev": "npx @based/cli@alpha dev",
     "deploy": "npx @based/cli@alpha deploy",
-    "test": "vitest run"
+    "test": "vitest run",
+    "based:test": "npx @based/cli@alpha test"
   },
   "dependencies": {
     "@based/client": "^6.11.2",
