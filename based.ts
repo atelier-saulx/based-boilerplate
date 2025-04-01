@@ -32,5 +32,5 @@ export default {
    * '@based/client' to the branch you are currently working on.  *
    *                                                              *
    ****************************************************************/
-  env: 'main',
+  env: '#branch',
 }
