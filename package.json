@@ -1,25 +1,27 @@
 {
   "name": "based-boilerplate",
-  "version": "3.0.1",
+  "version": "4.0.0",
   "description": "My Based.io app",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "lint": "npx @biomejs/biome lint",
-    "dev": "npx @based/cli@alpha dev",
-    "deploy": "npx @based/cli@alpha deploy",
-    "test": "vitest run",
-    "based:test": "npx @based/cli@alpha test"
+    "dev": "npx @based/cli dev",
+    "deploy": "npx @based/cli deploy",
+    "test": "vitest",
+    "based:cli:onFirstRun": "node ./scripts/onFirstRun.js"
   },
   "dependencies": {
-    "@based/client": "^6.11.2",
-    "@based/react": "^5.0.3",
-    "@based/ui": "^6.5.4-alpha.8",
+    "@based/client": "latest",
+    "@based/react": "latest",
+    "@based/ui": "alpha",
+    "@based/schema": "latest",
+    "@based/db": "latest",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
   "devDependencies": {
-    "@based/functions": "^3.2.1",
+    "@based/functions": "latest",
     "@biomejs/biome": "1.9.4",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.0.1",

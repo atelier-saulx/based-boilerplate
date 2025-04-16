@@ -20,7 +20,7 @@ const config: BasedFunctionConfig = {
   /************************************************************
    * 'name' receives a string, is the name of your app.       *
    ************************************************************/
-  name: 'hello-app',
+  name: 'my-cms',
   /************************************************************
    *                                                          *
    * 'public' is a boolean that defines whether your function  *
@@ -52,7 +52,7 @@ const config: BasedFunctionConfig = {
    * Default is typically '/'.                                *
    *                                                          *
    ************************************************************/
-  path: '/',
+  path: '/:path*',
   /************************************************************
    *                                                          *
    * 'favicon' receives a string representing the path to     *

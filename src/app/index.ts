@@ -37,7 +37,7 @@ const app: BasedAppFunction = async (
           name="viewport"
           content="width=device-width, height=device-height, initial-scale=1.0, minimum-scale=1.0, viewport-fit=cover"
         />
-        <title>Hello world!</title>
+        <title>My CMS</title>
         <link rel="icon" type="image/x-icon" href="${favicon.url}" />
         ${css ? `<link rel="stylesheet" href="${css.url}" />` : ''}
       </head>
