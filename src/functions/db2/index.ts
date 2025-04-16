@@ -26,8 +26,6 @@ export const timerSub = (
 }
 
 export default (async (based, payload, update) => {
-  console.log({ payload })
-
   const db = based.db.v2 as BasedDb
   if (!payload) {
     throw new Error('no payload for db2')
