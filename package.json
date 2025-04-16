@@ -6,8 +6,8 @@
   "type": "module",
   "scripts": {
     "lint": "npx @biomejs/biome lint",
-    "dev": "npx @based/cli dev",
-    "deploy": "npx @based/cli deploy",
+    "dev": "npx @based/cli@alpha dev",
+    "deploy": "npx @based/cli@alpha deploy",
     "test": "vitest",
     "based:cli:onFirstRun": "node ./scripts/onFirstRun.js"
   },
