@@ -20,7 +20,7 @@ const config: BasedFunctionConfig = {
   /************************************************************
    * 'name' receives a string, is the name of your app.       *
    ************************************************************/
-  name: 'my-cms',
+  name: 'cms',
   /************************************************************
    *                                                          *
    * 'public' is a boolean that defines whether your function *
