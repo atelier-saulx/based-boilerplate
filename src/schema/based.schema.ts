@@ -7,4 +7,4 @@ const schema: Schema = {
   },
 }
 
-export default JSON.parse(JSON.stringify(schema))
+export default schema

@@ -11,7 +11,7 @@ const config: BasedFunctionConfig = {
    * - 'function':  Processes data.                           *
    * - 'job':       Schedules a function to run periodically. *
    * - 'query':     Fetches data from the database.           *
-   * - 'stream':    Handles uploaded files.                    *
+   * - 'stream':    Handles uploaded files.                   *
    * - 'authorize': Acts like a middleware to validate access *
    *                to other functions.                       *
    *                                                          *
@@ -23,7 +23,7 @@ const config: BasedFunctionConfig = {
   name: 'my-cms',
   /************************************************************
    *                                                          *
-   * 'public' is a boolean that defines whether your function  *
+   * 'public' is a boolean that defines whether your function *
    * is accessible externally.                                *
    *                                                          *
    * If you want to restrict access to this function over     *
@@ -35,14 +35,14 @@ const config: BasedFunctionConfig = {
    *                                                          *
    * 'main' sets the entry point of your application.         *
    *                                                          *
-   * Specify the file where your application starts.           *
+   * Specify the file where your application starts.          *
    * This is typically the main logic or component.           *
    *                                                          *
    ************************************************************/
   main: './app.tsx',
   /************************************************************
    *                                                          *
-   * 'path' defines the route of your application after the    *
+   * 'path' defines the route of your application after the   *
    * domain.                                                  *
    *                                                          *
    * For example, if your application is available at:        *
@@ -52,11 +52,11 @@ const config: BasedFunctionConfig = {
    * Default is typically '/'.                                *
    *                                                          *
    ************************************************************/
-  path: '/cms',
+  path: '/cms/:path*',
   /************************************************************
    *                                                          *
    * 'favicon' receives a string representing the path to     *
-   * the favicon file for your application. This icon will     *
+   * the favicon file for your application. This icon will    *
    * be displayed in the browser's tab.                       *
    *                                                          *
    * Example: './favicon.ico'                                 *
