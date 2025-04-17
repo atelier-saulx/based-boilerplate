@@ -34,6 +34,8 @@ import type { BasedQueryFunction } from '@based/functions'
  *                                                          *
  ************************************************************/
 const counter: BasedQueryFunction = async (_based, _payload, update) => {
+  // const db = based.db.v2 as BasedDb
+
   // In this case, there is no payload for this function.
   // However, you can always define a payload if needed.
   let count: number = 0

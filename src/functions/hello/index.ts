@@ -27,6 +27,8 @@ import type { BasedFunction } from '@based/functions'
  *                                                          *
  ************************************************************/
 const hello: BasedFunction = async (_based, payload, _ctx) => {
+  // const db = based.db.v2 as BasedDb
+
   // You can define payloads as needed. They can be an array,
   // an object, or a single value, as shown in this example.
   let greetings: string
