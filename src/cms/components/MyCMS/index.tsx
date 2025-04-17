@@ -22,7 +22,7 @@ export const MyCMS: React.FC = () => {
 
   return (
     <Cms
-      base="/"
+      base="/cms"
       client={client}
       leadComponent={<NavBar name="My CMS" sections={sections} />}
     >
