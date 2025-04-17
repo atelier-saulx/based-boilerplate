@@ -16,14 +16,15 @@
  ******************************************************************/
 
 export default {
+  cluster: 'baseddb',
   /****************************************************************
    * The 'organization' you created in the Based Cloud Dashboard. *
    ****************************************************************/
-  org: 'hello-world',
+  org: 'saulx',
   /****************************************************************
    * The 'project' you created in this organization.              *
    ****************************************************************/
-  project: 'example',
+  project: 'hello-world',
   /****************************************************************
    *                                                              *
    * The 'environment' you created in the project.                *

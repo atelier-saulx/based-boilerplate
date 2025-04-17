@@ -19,6 +19,6 @@
     "declaration": true,
     "types": ["vitest/globals", "@testing-library/jest-dom"]
   },
-  "include": ["based.ts", "src", "test", "vitest.config.ts"],
+  "include": ["based.ts", "src", "test", "vitest.config.ts", "types.d.ts"],
   "exclude": ["node_modules", "dist"]
 }

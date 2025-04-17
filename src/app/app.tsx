@@ -1,16 +1,29 @@
 import client, { type BasedClient } from '@based/client'
-import { Provider as BasedClientProvider } from '@based/react'
-import { createRoot } from 'react-dom/client'
-import basedConfig from '../../based.js'
-import { MyCMS } from './components/MyCMS/index.js'
+import { Provider } from '@based/react'
+import { render } from 'react-dom'
+import { Counter } from './components/counter.js'
+import { Greetings } from './components/greetings.js'
+import { Logo } from './components/logo.js'
 import './index.css'
 
-const rootElement = document.getElementById('root')!
-const root = createRoot(rootElement)
-const based: BasedClient = client(basedConfig)
+import basedConfig from '../../based.js'
+export const based: BasedClient = client(basedConfig)
 
-root.render(
-  <BasedClientProvider client={based}>
-    <MyCMS />
-  </BasedClientProvider>,
+const App = () => {
+  return (
+    <div className="main">
+      <Logo />
+      <Counter />
+      <Greetings />
+    </div>
+  )
+}
+
+const root = document.getElementById('root')
+
+render(
+  <Provider client={based}>
+    <App />
+  </Provider>,
+  root,
 )
