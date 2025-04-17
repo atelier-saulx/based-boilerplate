@@ -52,7 +52,7 @@ const config: BasedFunctionConfig = {
    * Default is typically '/'.                                *
    *                                                          *
    ************************************************************/
-  path: '/:path*',
+  path: '/',
   /************************************************************
    *                                                          *
    * 'favicon' receives a string representing the path to     *
